@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.series}</title>
+        <h:outputStylesheet name="css/default.css"/>
+        <script language="javascript" type="text/javascript">
+            function stopRKey(evt) {
+                if (evt.keyCode === 13) {
+                    evt.preventDefault();
+                    return false;
+                }
+            }
+            document.onkeypress = stopRKey;
+        </script>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmSeries">
+            <p:focus id="focus"/>
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{codigosProductosBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update=":frmSeries:grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{codigosProductosBean.cerrar()}"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:dataTable var="items" 
+                         id="tablaSeries"
+                         emptyMessage="#{msg.tablaVacia}"
+                         value="#{codigosProductosBean.listaSeries}">
+
+                <f:facet name="header">
+                    <p:fragment autoUpdate="true">
+                        <h:outputLabel value="#{msg.codigoBarras}: "/>
+                        <p:inputText value="#{codigosProductosBean.codigoBarras}"
+                                     id="txtCodigoBarras"
+                                     size="35"
+                                     autocomplete="off">
+                            <p:ajax event="change" 
+                                    listener="#{codigosProductosBean.agregarSerie}"
+                                    update="tablaSeries,:frmSeries:grMensajes,@this,@form:focus"/>
+                        </p:inputText>
+                    </p:fragment>
+                </f:facet>
+
+                <p:column headerText="#{msg.series}">
+                    <h:outputLabel value="#{items.facturaDetalleSeriesPK.codigoBarras}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}" 
+                          width="50"
+                          style="text-align: center">
+                    <p:commandButton  icon="ui-icon-close" 
+                                        update=":frmSeries:grMensajes, tablaSeries" 
+                                        actionListener="#{codigosProductosBean.eliminarSerie(items)}"
+                                        title="#{msg.eliminar}">
+                            <p:confirm header="#{msg.confirmacion}" 
+                                       message="#{msg.eliminar}" 
+                                       icon="ui-icon-alert" />
+                      </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog>
+        </h:form>
+    </h:body>
+</html>

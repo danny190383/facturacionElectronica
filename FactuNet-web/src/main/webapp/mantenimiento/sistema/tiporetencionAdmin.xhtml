@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+      
+        <p:panel style="width: 100%" 
+                 id="pnlTipoRetencion">
+            <h:panelGrid columns="2">            
+                <h:panelGrid columns="3">
+                    <h:outputLabel value="#{msg.buscar} #{msg.tiporetencion} "/>
+                    <p:inputText value="#{tipoRetencionBean.buscarTipoRetencion}" 
+                                 maxlength="40" size="50" transient="true"/>
+                    <p:ajax event="keyup" update=":frmCabecera:tabMasterSistema:tablaTipoRetencion" 
+                                listener="#{tipoRetencionBean.buscar()}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{tipoRetencionBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoRetencionBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoRetencionBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+
+        <p:dataTable var="tiporetencion" 
+                     value="#{tipoRetencionBean.lista}" 
+                     id="tablaTipoRetencion" 
+                     emptyMessage="#{msg.tablaVacia}" >
+
+             <f:facet name="header">
+                <p:commandButton value="#{msg.nuevo}"  
+                                 oncomplete="PF('dialogoTipoRetencion').show()"
+                                 actionListener="#{tipoRetencionBean.nuevo()}" 
+                                 immediate="true"
+                                 update=":frmCabecera:tabMasterSistema:dlgTipoRetencion"
+                                 icon="ui-icon-comment" />
+            </f:facet>
+
+            <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                <h:outputLabel value="#{tiporetencion.codigoImpuesto}" />
+            </p:column>
+
+            <p:column headerText="#{msg.tiporetencion}">
+                <h:outputLabel value="#{tiporetencion.nombre}" />
+            </p:column>
+
+            <p:column headerText="#{msg.porcentaje}">
+                <h:outputLabel value="#{tiporetencion.valor}" />
+            </p:column>
+
+            <p:column headerText="#{msg.aplicaretenciona}">
+                <h:outputLabel value="#{msg.iva}" rendered="#{tiporetencion.calculadoCon eq 1}"/>
+                <h:outputLabel value="#{msg.subtotal}" rendered="#{tiporetencion.calculadoCon eq 2}"/>
+            </p:column>
+
+
+            <p:column headerText="#{msg.concepto}">
+                <h:outputLabel value="#{tiporetencion.concepto}" />
+            </p:column>
+            
+            <p:column headerText="#{msg.tipo}">
+                <h:outputLabel value="#{msg.servicios}" rendered="#{tiporetencion.tipo eq 1}"/>
+                <h:outputLabel value="#{msg.bienes}" rendered="#{tiporetencion.tipo eq 2}"/>
+            </p:column>
+
+            <p:column headerText="#{msg.opcion}" 
+                      width="70"
+                      style="text-align: center">
+
+                <p:commandButton  icon="ui-icon-close" 
+                                  update=":frmCabecera:grMensajes, :frmCabecera:tabMasterSistema:tablaTipoRetencion" 
+                                  actionListener="#{tipoRetencionBean.eliminar(tiporetencion)}"
+                                  immediate="true"
+                                  title="#{msg.eliminar}">
+                      <p:confirm header="#{msg.confirmacion}" 
+                                 message="#{msg.eliminar}" 
+                                 icon="ui-icon-alert" />
+                </p:commandButton>
+
+                 <p:commandButton icon="ui-icon-pencil" 
+                                  title="#{msg.editar}"
+                                  process="tablaTipoRetencion"
+                                  update=":frmCabecera:tabMasterSistema:dlgTipoRetencion"
+                                  oncomplete="PF('dialogoTipoRetencion').show()"
+                                  action="#{tipoRetencionBean.seleccionar(tiporetencion)}"/>
+              </p:column>
+        </p:dataTable>
+        </p:panel>  
+                
+        <p:dialog header="#{msg.tiporetencion}" 
+                  widgetVar="dialogoTipoRetencion" 
+                  resizable="false"
+                  id="dlgTipoRetencion">
+
+          <h:form id="frmTipoRetencion">
+              <h:panelGrid columns="2">
+                  
+                  <h:outputLabel value="#{msg.nombre}: "/>
+                  <p:inputText value="#{tipoRetencionBean.tipoRetencion.nombre}"
+                               required="true" 
+                               size="50" maxlength="50"
+                               style="background-color: khaki "/>
+
+                  <h:outputLabel value="#{msg.codigodeimpuesto}: "/>
+                  <p:inputText value="#{tipoRetencionBean.tipoRetencion.codigoImpuesto}"
+                               required="true" 
+                               size="30" maxlength="20"
+                               style="background-color: khaki "/>
+
+                  <h:outputLabel value="#{msg.porcentaje}: "/>
+                  <p:inputText value="#{tipoRetencionBean.tipoRetencion.valor}"
+                               required="true" 
+                               size="5" maxlength="5"
+                               style="background-color: khaki "/>
+
+                  <h:outputLabel value="#{msg.aplicaretenciona}: "/>
+                  <p:selectOneMenu value="#{tipoRetencionBean.tipoRetencion.calculadoCon}" 
+                                   style="width:125px">
+                        <f:selectItem itemLabel="#{msg.iva}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.subtotal}" itemValue="2" />
+                  </p:selectOneMenu>
+                  
+                   <h:outputLabel value="#{msg.tipo}: "/>
+                  <p:selectOneMenu value="#{tipoRetencionBean.tipoRetencion.tipo}" 
+                                   style="width:125px">
+                      <f:selectItem itemLabel="#{msg.servicios}" itemValue="1" />
+                      <f:selectItem itemLabel="#{msg.bienes}" itemValue="2" />
+                  </p:selectOneMenu>
+
+                  <h:outputLabel value="#{msg.concepto}: "/>
+                  <p:inputText value="#{tipoRetencionBean.tipoRetencion.concepto}"
+                               required="true"
+                               style="background-color: khaki "
+                               size="50" maxlength="50"/>
+
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{tipoRetencionBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                   update=":frmCabecera:tabMasterSistema:tablaTipoRetencion, :frmCabecera:grMensajes" />
+
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialogoTipoRetencion').hide()"/>
+              </h:panelGrid> 
+         </h:form>
+      </p:dialog>
+    </body>
+</html>

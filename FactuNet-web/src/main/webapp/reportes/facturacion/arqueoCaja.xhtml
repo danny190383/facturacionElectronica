@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+         <ui:composition template="./../../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:fieldset legend="#{msg.criterioBusqueda}">
+                    <h:panelGrid columns="2"
+                                 id="pnlFiltros">
+                        <h:outputLabel value="#{msg.reporte}: "/>
+                        <p:selectOneMenu value="#{reportesArqueoCajaBean.reporteSeleccionado}" 
+                                         style="width: 250px">
+                            <f:selectItems value="#{reportesArqueoCajaBean.listaReportes}"
+                                           var="repo"
+                                           itemLabel="#{repo.descripcion}"
+                                           itemValue="#{repo.codigo}"/>
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.puntoVenta}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.3' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.5' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.7' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.9' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.10'}"/>
+                        <p:selectOneMenu value="#{reportesArqueoCajaBean.puntoVentaSelc}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith"
+                                         rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.3' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.5' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.7' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.9' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.10'}">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesArqueoCajaBean.listaPuntoVenta}" 
+                                           var="punto"
+                                           itemLabel="#{punto.nombre}"
+                                           itemValue="#{punto.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.tipodocumento}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}"/>
+                        <p:selectOneMenu value="#{reportesArqueoCajaBean.tipoDocumentoSelc}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px" 
+                                         filter="true" filterMatchMode="startsWith"
+                                         rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItem itemLabel="#{msg.factura}" itemValue="21"/>
+                            <f:selectItem itemLabel="#{msg.reservar}" itemValue="22"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.usuario}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.3' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.4'}"/>
+                        <p:selectOneMenu value="#{reportesArqueoCajaBean.usuarioSelec}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith"
+                                         rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.1' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.3' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.4'}">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesArqueoCajaBean.listaCuenta}"
+                                           var="user"
+                                           itemLabel="#{user.empleado.persona.nombres} #{user.empleado.persona.apellidos}"
+                                           itemValue="#{user.empleado.persona.cedula}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.cliente}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado ne '3.4' and
+                                                  reportesArqueoCajaBean.reporteSeleccionado ne '3.6' and
+                                                  reportesArqueoCajaBean.reporteSeleccionado ne '3.7' and
+                                                  reportesArqueoCajaBean.reporteSeleccionado ne '3.8'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosCliente"
+                                     rendered="#{reportesArqueoCajaBean.reporteSeleccionado ne '3.4' and
+                                                 reportesArqueoCajaBean.reporteSeleccionado ne '3.6' and 
+                                                 reportesArqueoCajaBean.reporteSeleccionado ne '3.7' and
+                                                 reportesArqueoCajaBean.reporteSeleccionado ne '3.8'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesArqueoCajaBean.verBusquedaClientes}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesArqueoCajaBean.onClienteSelect}" 
+                                        update="pnlDatosCliente" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosCliente"
+                                             actionListener="#{reportesArqueoCajaBean.iniciarCliente}" />
+                            <h:outputText value="#{reportesArqueoCajaBean.cliente.persona.nombres} #{reportesArqueoCajaBean.cliente.persona.apellidos}"
+                                          rendered="#{reportesArqueoCajaBean.cliente.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.proveedor}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.4' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.6'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosProveedor"
+                                     rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.4' ||
+                                                 reportesArqueoCajaBean.reporteSeleccionado eq '3.6'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesArqueoCajaBean.verBusquedaProveedores}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesArqueoCajaBean.onPRoveedorSelect}" 
+                                        update="pnlDatosProveedor" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosProveedor"
+                                             actionListener="#{reportesArqueoCajaBean.iniciarProveedor}" />
+                            <h:outputText value="#{reportesArqueoCajaBean.proveedor.persona.nombres} #{reportesArqueoCajaBean.proveedor.persona.apellidos}"
+                                          rendered="#{reportesArqueoCajaBean.proveedor.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.producto}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosProducto"
+                                     rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesArqueoCajaBean.verBusquedaProductosStock}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesArqueoCajaBean.onProductoSelect}" 
+                                        update="pnlDatosProducto" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosProducto"
+                                             actionListener="#{reportesArqueoCajaBean.iniciarProducto}" />
+                            <h:outputText value="#{reportesArqueoCajaBean.producto.nombre}"
+                                          rendered="#{reportesArqueoCajaBean.producto.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.todos} los Grupos:" 
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}"/>
+                        <p:selectBooleanCheckbox value="#{reportesArqueoCajaBean.todosGrupos}" 
+                                                 rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}">
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputLabel value="#{msg.grupo}: "
+                                       rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3' and
+                                                   reportesArqueoCajaBean.todosGrupos eq false}"/>
+                        <p:scrollPanel style="width:300px;height:100px"
+                                       rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3' and
+                                                   reportesArqueoCajaBean.todosGrupos eq false}">
+                            <p:tree value="#{reportesArqueoCajaBean.root}" 
+                                    var="node" id="grupoTree"  
+                                    dynamic="true" 
+                                    selection="#{reportesArqueoCajaBean.selectedNode}"
+                                    selectionMode="single"
+                                    style="width: 100%">  
+                                <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                            collapsedIcon="ui-icon-folder-collapsed">  
+                                    <h:outputLabel value="#{node.codigo} #{node.nombre}" />  
+                                </p:treeNode>  
+                            </p:tree> 
+                        </p:scrollPanel>
+                        
+                        <h:outputText value="#{msg.todos} los Números de Documentos:" 
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}"/>
+                        <p:selectBooleanCheckbox value="#{reportesArqueoCajaBean.todosNumeros}" 
+                                                 rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3'}">
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputLabel value="Números de Documentos: "
+                                       rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3' and
+                                                   reportesArqueoCajaBean.todosNumeros eq false}"/>
+                        <h:panelGrid columns="4"
+                                     rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.3' and
+                                                 reportesArqueoCajaBean.todosNumeros eq false}">
+                            <h:outputText value="#{msg.desde}"/>
+                            <p:inputNumber value="#{reportesArqueoCajaBean.numeroDesde}"
+                                           decimalPlaces="0"
+                                           required="true"
+                                           minValue="0"
+                                           size="5"/>
+                            <h:outputText value="#{msg.hasta}"/>
+                            <p:inputNumber value="#{reportesArqueoCajaBean.numeroHasta}"
+                                           decimalPlaces="0"
+                                           required="true"
+                                           minValue="0"
+                                           size="5"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.tiporetencion}: "
+                                      rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.7' ||
+                                                  reportesArqueoCajaBean.reporteSeleccionado eq '3.8'}"/>
+                        <p:selectOneMenu value="#{reportesArqueoCajaBean.calculadoSelec}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px" 
+                                         filter="true" filterMatchMode="startsWith"
+                                         rendered="#{reportesArqueoCajaBean.reporteSeleccionado eq '3.7' ||
+                                                     reportesArqueoCajaBean.reporteSeleccionado eq '3.8'}">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItem itemLabel="#{msg.iva}" itemValue="1"/>
+                            <f:selectItem itemLabel="#{msg.subtotal}" itemValue="2"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.desde}: "
+                                      rendered="#{reportesArqueoCajaBean.todosNumeros}"/>
+                        <p:calendar value="#{reportesArqueoCajaBean.fechaInicio}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true"  showOn="button" 
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesArqueoCajaBean.todosNumeros}"/>
+                        
+                        <h:outputText value="#{msg.hasta}: "
+                                      rendered="#{reportesArqueoCajaBean.todosNumeros}"/>
+                        <p:calendar value="#{reportesArqueoCajaBean.fechaFin}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true" showOn="button" 
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesArqueoCajaBean.todosNumeros}"/>
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" cellspacing="5" >
+                        <h:commandLink target="_blank" actionListener="#{reportesArqueoCajaBean.generarReportePDF()}">
+                            <p:graphicImage url="/resources/imagenes/pdf.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesArqueoCajaBean.generarReporteXlS()}">
+                            <p:graphicImage url="/resources/imagenes/excel.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesArqueoCajaBean.generarReporteHTML()}">
+                            <p:graphicImage url="/resources/imagenes/html.png"
+                                            width="27"/>
+                        </h:commandLink>
+                    </h:panelGrid>
+                </p:fieldset>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

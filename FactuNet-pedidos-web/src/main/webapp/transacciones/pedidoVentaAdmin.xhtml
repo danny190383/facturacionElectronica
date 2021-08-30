@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <body>
+        <ui:composition template="./../plantilla/main-plantilla.xhtml">
+            <ui:define name="content">
+                <p:tabView id="pnlPrincipal"
+                           style="width: 98%">
+                    <c:forEach var="empresaTmp"
+                               items="#{pedidoVentasPedidosBean.listaEmpresasTmp}">
+                        <c:forEach var="seccion"
+                                   items="#{empresaTmp.seccionList}">
+                            <p:tab title="#{seccion.nombre}">
+                                <p:dataGrid var="mesa" 
+                                            value="#{seccion.mesaList}" 
+                                            columns="1"
+                                            style="width: 100%">
+                                    <p:panel header="#{mesa.nombre}" 
+                                             style="text-align:center;height: 600px">
+                                        <h:panelGrid columns="1"
+                                                     id="pnlDatosCliente">
+                                            <p:fragment autoUpdate="true">
+                                                <h:panelGrid columns="5">
+                                                    <p:commandButton value="#{msg.listar} #{msg.clientes}"  
+                                                                    icon="ui-icon-search"
+                                                                    rendered="#{pedidoVentasPedidosBean.empresa ne null}"
+                                                                    actionListener="#{pedidoVentasPedidosBean.verBusquedaClientes(mesa)}">
+                                                        <p:ajax event="dialogReturn" 
+                                                                process="pnlDatosCliente"
+                                                                listener="#{pedidoVentasPedidosBean.onClienteSelect}" 
+                                                                update="grMensajes, tablaFacturaVenta, scrollID" />
+                                                    </p:commandButton>
+
+                                                    <p:commandButton title="#{msg.nuevo} #{msg.cliente}"
+                                                                     rendered="#{pedidoVentasPedidosBean.empresa ne null}"
+                                                                     value="#{msg.nuevo} #{msg.cliente}"
+                                                                     actionListener="#{pedidoVentasPedidosBean.verNuevoCliente(mesa)}" 
+                                                                     icon="ui-icon-comment">
+                                                          <p:ajax event="dialogReturn" 
+                                                                  listener="#{pedidoVentasPedidosBean.onClienteSelect}"
+                                                                  update="grMensajes, tablaFacturaVenta, scrollID"/>
+                                                    </p:commandButton>
+
+                                                    <p:commandButton title="#{msg.nuevo} #{msg.pedido}"
+                                                                     value="#{msg.nuevo} #{msg.pedido}"
+                                                                     rendered="#{pedidoVentasPedidosBean.cliente ne null}"
+                                                                     actionListener="#{pedidoVentasPedidosBean.consumidorFinal(mesa)}" 
+                                                                     update="grMensajes, tablaFacturaVenta, scrollID"/>
+
+                                                    <p:commandButton icon="ui-icon-disk"
+                                                                    value="#{msg.despachar}"
+                                                                    title="#{msg.despachar}"
+                                                                    rendered="#{pedidoVentasPedidosBean.empresa ne null}"
+                                                                    update="grMensajes, tablaFacturaVenta, scrollID"
+                                                                    actionListener="#{pedidoVentasPedidosBean.registrarPedidos(mesa)}">
+                                                       <p:confirm header="#{msg.confirmacion}" 
+                                                                  message="#{msg.registrar}" 
+                                                                  icon="ui-icon-alert" />
+                                                   </p:commandButton> 
+                                                </h:panelGrid>
+                                            </p:fragment>
+                                        </h:panelGrid>
+                                        <p:scrollPanel style="height:500px;width: 100%"
+                                                       id="scrollID">
+                                            <p:dataGrid var="items" 
+                                                        id="tablaFacturaVenta"
+                                                        value="#{mesa.listaPedidosVenta}" 
+                                                        columns="1"
+                                                        emptyMessage="#{msg.tablaVacia}">
+                                                <h:panelGrid columns="4"
+                                                             style="width: 100%">
+                                                    <p:selectBooleanCheckbox value="#{items.facturar}"
+                                                                             style="float:left"
+                                                                              rendered="#{pedidoVentasPedidosBean.empresa ne null}">
+                                                        <p:ajax/> 
+                                                    </p:selectBooleanCheckbox>
+                                                    <h:panelGrid columns="3"
+                                                                 style="float:left">
+
+                                                        <h:outputLabel value="#{items.fecha}" 
+                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left;color: red">
+                                                                <f:convertDateTime timeZone="#{parametrosApplicationPedidos.timeZone}" 
+                                                                                   pattern="#{parametrosApplicationPedidos.formatoFechaHoraSMS}"/>
+                                                        </h:outputLabel>
+
+                                                        <h:outputLabel value="#{items.cliente.persona.cedula}" 
+                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left;color: red"/>
+
+                                                        <h:outputLabel value="#{items.cliente.persona.nombres } #{items.cliente.persona.apellidos}" 
+                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left;color: red"/>
+
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="1">
+                                                        <h:outputLabel value="#{items.cliente.persona.telefono}" 
+                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left;color: red"/>
+                                                        <p:dataScroller value="#{items.cliente.persona.contactarPersonaList}" 
+                                                                        var="contactar"
+                                                                        rendered="#{clie.contactarPersonaList.size()>0}">
+                                                            <h:outputText value="#{contactar.valor}"/>
+                                                        </p:dataScroller>
+                                                    </h:panelGrid>
+                                                    <h:panelGrid columns="3"
+                                                                 style="float:right">
+
+                                                        <p:fragment autoUpdate="true">
+
+                                                            <p:commandButton icon="ui-icon-search"
+                                                                             value="#{msg.producto}"
+                                                                             title="#{msg.productos}"
+                                                                            actionListener="#{pedidoVentasPedidosBean.verBusquedaProductosStock(items)}">
+                                                                 <p:ajax event="dialogReturn" 
+                                                                         listener="#{pedidoVentasPedidosBean.onProductoSelect}" 
+                                                                         update="tablaFacturaVentaDetalle, grMensajes" />
+                                                            </p:commandButton>
+
+                                                            <p:commandButton icon="ui-icon-close" 
+                                                                             value="#{msg.eliminar} #{msg.pedido}"
+                                                                             update="grMensajes, tablaFacturaVenta" 
+                                                                             actionListener="#{pedidoVentasPedidosBean.eliminarPedidoMesa(mesa,items)}"
+                                                                             title="#{msg.eliminar}"
+                                                                             rendered="#{pedidoVentasPedidosBean.empresa ne null}">
+                                                                <p:confirm header="#{msg.confirmacion}" 
+                                                                           message="#{msg.eliminar}" 
+                                                                           icon="ui-icon-alert" />
+                                                            </p:commandButton>
+
+                                                        </p:fragment>
+                                                    </h:panelGrid>              
+                                                </h:panelGrid>
+                                                <p:dataTable var="itemsD" 
+                                                             id="tablaFacturaVentaDetalle"
+                                                             value="#{items.facturaDetalleList}"
+                                                             emptyMessage="#{msg.tablaVacia}"
+                                                             style="width: 100%">
+
+                                                   <p:column headerText="#{msg.hora}"
+                                                             style="text-align: left"
+                                                             width="30">
+                                                         <h:outputLabel value="#{itemsD.fecha}"
+                                                                        style="font-size: 10px">
+                                                             <f:convertDateTime timeZone="#{parametrosApplicationPedidos.timeZone}" 
+                                                                                pattern="#{parametrosApplicationPedidos.formatoHoraSMS}"/>
+                                                         </h:outputLabel>
+                                                   </p:column>
+
+                                                   <p:column headerText="#{msg.productos}"
+                                                             style="text-align: left">
+                                                       <h:outputLabel value="#{itemsD.productoServicio.nombre}" 
+                                                                      style="font-size: 10px"/>
+                                                   </p:column>
+
+                                                   <p:column headerText="#{msg.detalle}"
+                                                             style="text-align: left">
+                                                       <p:inputTextarea rows="2" cols="30" 
+                                                                        autoResize="false" 
+                                                                        maxlength="800"
+                                                                        style="width: 90%"
+                                                                        value="#{itemsD.descripcion}">
+                                                           <p:ajax update="grMensajes"
+                                                                   listener="#{pedidoVentasPedidosBean.onCellEdit(itemsD)}"/>
+                                                       </p:inputTextarea>
+                                                   </p:column>
+
+                                                   <p:column headerText="Cant."
+                                                             width="50"
+                                                             style="text-align:right">
+                                                       <p:inputNumber value="#{itemsD.cantidad}" 
+                                                                        decimalPlaces="2"
+                                                                        minValue="0"
+                                                                        inputStyle="width:80%;text-align: right ">
+                                                            <p:ajax update="grMensajes, tablaFacturaVentaDetalle"
+                                                                    listener="#{pedidoVentasPedidosBean.onCellEdit(itemsD)}"/>
+                                                       </p:inputNumber> 
+                                                   </p:column>
+
+                                                    <p:column width="20">      
+                                                        <p:commandButton icon="ui-icon-close" 
+                                                                         update="grMensajes, tablaFacturaVentaDetalle" 
+                                                                         actionListener="#{pedidoVentasPedidosBean.eliminarDetalle(itemsD,items)}"
+                                                                         title="#{msg.eliminar}"
+                                                                         style="font-size: 10px;">
+                                                            <p:confirm header="#{msg.confirmacion}" 
+                                                                       message="#{msg.eliminar}" 
+                                                                       icon="ui-icon-alert" />
+                                                        </p:commandButton>
+                                                   </p:column>
+                                               </p:dataTable>
+                                            </p:dataGrid>
+                                        </p:scrollPanel>
+                                    </p:panel>
+                                </p:dataGrid>
+                            </p:tab>
+                        </c:forEach>
+                    </c:forEach>
+                </p:tabView>
+            </ui:define>
+        </ui:composition>         
+    </body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.producto} #{msg.bodega}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="true" 
+                     showSummary="false"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.guardar}" 
+                                     actionListener="#{nuevoProductoPedidosBean.agregar()}"
+                                     style="width: 100%;"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoProductoPedidosBean.cerrar()}"
+                                     style="width: 100%;"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2"
+                             style="width: 75%"
+                             rendered="#{nuevoProductoPedidosBean.tipo ne 1}">
+                    <h:outputLabel value="#{msg.grupo}: "/>
+                    <p:selectOneMenu value="#{nuevoProductoPedidosBean.grupoSelect}"
+                                     style="width: 147px"
+                                     filter="true" filterMatchMode="startsWith">
+                        <p:ajax listener="#{nuevoProductoPedidosBean.buscarNombreGrupo}"
+                                update="txtNombreCompleto"/>
+                        
+                        <f:selectItems value="#{nuevoProductoPedidosBean.listaGrupos}" 
+                                       var="grupo"
+                                       itemValue="#{grupo.codigo}"
+                                       itemLabel="#{grupo.nombre}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <h:panelGrid columns="2" 
+                             style="width: 100%">
+                    
+                    <h:outputLabel value="#{msg.nombre} #{msg.producto}: "/>
+                    <p:inputText value="#{nuevoProductoPedidosBean.productoBodega.nombre}"
+                                 size="90"
+                                 maxlength="100"
+                                 required="true"
+                                 styleClass="texto_obligatorio"
+                                 id="txtNombreCompleto"/>  
+
+                    <h:outputLabel value="#{msg.modelo}: "/>
+                    <p:inputText value="#{nuevoProductoPedidosBean.productoBodega.modelo}"
+                                 size="35"
+                                 maxlength="200"/>
+                    
+                    <h:outputLabel value="#{msg.descripcion}: "/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     maxlength="500"
+                                     value="#{nuevoProductoPedidosBean.productoBodega.descripcion}"/>
+                    
+                    <h:outputLabel value="#{msg.foto}" />
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoProductoPedidosBean.urlLogo}"
+                                        width="150px"
+                                        height="150px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <p:fileUpload  mode="advanced" 
+                                       skinSimple="true"
+                                       sizeLimit="1000000"  
+                                       label="Seleccionar"
+                                       auto="true"
+                                       fileUploadListener="#{nuevoProductoPedidosBean.subirLogo}"
+                                       allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                       cancelLabel="Cancelar" 
+                                       update=":frmNuevo:grMensajes, :frmNuevo:logo"/>
+                    </h:panelGrid>
+                    
+                </h:panelGrid>
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>#{msg.productos}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaProductos">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:tabView rendered="#{buscarProductosBean.visible}">
+                <p:ajax event="tabChange" 
+                        listener="#{buscarProductosBean.onTabChange}" 
+                        update=":frmBusquedaProductos:tablaProductos"/>
+                <c:forEach var="padre"
+                           items="#{buscarProductosBean.listaPadres}">
+                    <p:tab title="#{padre.nombre}">
+                         <p:dataGrid var="hijo" 
+                                    value="#{padre.grupoProductoList}" 
+                                    columns="9" 
+                                    layout="grid">
+                                <p:commandButton value="#{hijo.nombre}"
+                                                 style="width:120px;height:30px"
+                                                 update=":frmBusquedaProductos:tablaProductos" 
+                                                 actionListener="#{buscarProductosBean.onNodeSelect(hijo)}"/>
+                        </p:dataGrid>
+                    </p:tab>
+                </c:forEach>
+            </p:tabView>
+            
+            <p:dataTable var="producto" 
+                         id="tablaProductos"
+                         value="#{buscarProductosBean.lazyModel}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="5" 
+                         lazy="true" 
+                         rowKey="#{producto.codigo}"
+                         style="position: static; top: 0px"
+                         resizableColumns="true"
+                         resizeMode="expand">
+
+                <p:ajax event="rowSelectRadio" 
+                        listener="#{buscarProductosBean.onRowSelect}" 
+                        update=":frmBusquedaProductos:tablaSeleccionados" />
+
+                <p:column selectionMode="single" style="width:16px;text-align:center"/>
+
+                <p:column headerText="#{msg.codigoBarras}" filterBy="#{producto.codigoBarras}"
+                          width="100">
+                    <h:outputLabel value="#{producto.codigoBarras}" 
+                                   title="#{producto.grupo.nombre}"/>
+                </p:column>
+
+                <p:column headerText="#{msg.producto}" filterBy="#{producto.nombre}">
+                    <h:outputLabel value="#{producto.nombre}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.grupo}" filterBy="#{producto.grupo.nombre}"
+                          width="100"
+                          rendered="#{!buscarProductosBean.visible}">
+                    <h:outputLabel value="#{producto.grupo.nombre}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.modelo}" filterBy="#{producto.modelo}"
+                          width="100">
+                    <h:outputLabel value="#{producto.modelo}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.marca}" 
+                          filterBy="#{producto.marca.nombre}"
+                          width="100">
+                    <h:outputLabel value="#{producto.marca.nombre}"
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.costo}"
+                          width="80"
+                          style="text-align: right">
+                    <p:inputNumber value="#{producto.precioUltimaCompra}" 
+                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                </p:column>
+
+                <p:column headerText="#{msg.pvp}"
+                          width="80">
+                    <p:inputNumber value="#{producto.pvp}" 
+                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                </p:column>
+
+                <p:column headerText="#{msg.stock}"
+                          width="90">
+                    <p:dataScroller value="#{producto.productoStockList}" 
+                                    var="bodega">
+                        <h:outputText value="#{bodega.bodega.siglas} : " 
+                                      style="font-size: 13px;font-style: normal;font-weight: bold"
+                                      title="#{bodega.bodega.nombre} #{bodega.bodega.ubicacion}"/>
+                        <h:outputText value="#{bodega.stock}"
+                                      style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                    </p:dataScroller>
+                </p:column>
+
+                <p:column headerText="#{msg.opcion}"
+                          style="text-align: center"
+                          width="60"
+                          rendered="false">
+
+                    <p:commandButton  actionListener="#{buscarProductosBean.seleccionar(producto)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check"/>
+                </p:column>
+
+            </p:dataTable>
+            <p:dataTable var="selec" 
+                         id="tablaSeleccionados"
+                         value="#{buscarProductosBean.listaProductosTodosSelc}" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         style="position: static; top: 0px">
+
+                <f:facet name="header" >
+                    <p:commandButton process="tablaSeleccionados" 
+                                     icon="ui-icon-check" 
+                                     value="#{msg.agregarSeleccion}" 
+                                     action="#{buscarProductosBean.seleccionarLista}"/>
+                </f:facet>
+
+                <p:column headerText="#{msg.producto}" >
+                    <h:outputLabel value="#{selec.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.grupo}" 
+                          width="150">
+                    <h:outputLabel value="#{selec.grupo.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.pvp}" 
+                          width="100"
+                          style="text-align: right">
+                    <p:inputNumber value="#{selec.pvp}" 
+                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                </p:column>
+
+                <p:column style="text-align: center"
+                          width="20">
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update="tablaSeleccionados" 
+                                      actionListener="#{buscarProductosBean.eliminarSeleccion(selec)}"
+                                      title="#{msg.eliminar}">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

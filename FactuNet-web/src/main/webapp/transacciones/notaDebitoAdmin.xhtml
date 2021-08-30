@@ -1,0 +1,442 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             process="@this"
+                                             actionListener="#{notaDebitoBean.inicializar}"
+                                             update=":frmCabecera:pnlPrincipal, pnlBotones" 
+                                             icon="ui-icon-document"/>  
+                            
+                            <p:commandButton value="#{msg.guardar}" 
+                                             icon="ui-icon-disk"
+                                             disabled="#{notaDebitoBean.notaDebito.codigo ne null}"
+                                             actionListener="#{notaDebitoBean.verPago()}" 
+                                             update=":frmCabecera:pnlPrincipal, :frmCabecera:grMensajes" >
+                               <p:ajax event="dialogReturn" 
+                                       oncomplete="document.getElementById('frmCabecera:btnPrint').click();"
+                                       listener="#{notaDebitoBean.onPagoSelect}"
+                                       update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones"/>
+                            </p:commandButton>
+
+                            <p:commandButton value="#{msg.facturaVenta}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             actionListener="#{notaDebitoBean.verBusquedaFacturas}" 
+                                             disabled="#{notaDebitoBean.notaDebito.documentoRelacionado ne null}">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{notaDebitoBean.onFacturaSelect}" 
+                                        update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.notaCredito}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             update=":frmCabecera:grMensajes"
+                                             actionListener="#{notaDebitoBean.verBusquedaNotasCredito}" 
+                                             disabled="#{notaDebitoBean.notaDebito.documentoRelacionado ne null}">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{notaDebitoBean.onNotaCreditoSelect}" 
+                                        update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                            
+                            
+                            <p:commandButton value="#{msg.notaDebito}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             update=":frmCabecera:grMensajes"
+                                             actionListener="#{notaDebitoBean.verBusquedaNotasDebito}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{notaDebitoBean.onNotaDebitoSelect}" 
+                                        update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                            
+                            
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           id="btnPrint"
+                                           actionListener="#{notaDebitoBean.generarReportePDF()}"
+                                           disabled="#{notaDebitoBean.notaDebito.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print" />
+                            </h:commandLink>
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{notaDebitoBean.notaDebito.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{notaDebitoBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{notaDebitoBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{notaDebitoBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.notaDebito}"
+                         id="pnlPrincipal">
+                    <h:panelGrid columns="3"
+                                 style="width: 100%">
+                        <p:fieldset legend="#{msg.datosGenerales}"
+                                     style="height: 150px">
+                            <h:panelGrid columns="2">
+                                
+                                <h:outputLabel value="#{msg.numero} :" 
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.numero}" 
+                                               styleClass="texto_etiquetas"
+                                               style="color: #e9322d;font-size: 13px"/>
+                                
+                                <h:outputLabel value="#{msg.fecha} :" 
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.fecha}">
+                                     <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                        pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                </h:outputLabel>
+                                <h:outputLabel value="#{msg.motivo}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputTextarea rows="1" cols="40" 
+                                                 autoResize="false" 
+                                                 maxlength="800"
+                                                 required="true"
+                                                 value="#{notaDebitoBean.notaDebito.descripcion}"
+                                                 readonly="#{notaDebitoBean.notaDebito.estado ne 1}"/>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.cliente}"
+                                    style="height: 150px">
+                            
+                            <h:panelGrid columns="2"
+                                         id="pnlCliente">
+                                <h:outputLabel value="#{msg.cedula}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.cliente.persona.cedula}"
+                                               styleClass="texto_etiquetas"/>
+                                
+                                <h:outputLabel value="#{msg.cliente}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.cliente.persona.nombres} #{notaDebitoBean.cliente.persona.apellidos}"
+                                               styleClass="texto_etiquetas"/>
+                                
+                                <h:outputLabel value="#{msg.direccion}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.cliente.persona.direccion}"
+                                               styleClass="texto_etiquetas"/>
+                                
+                                <h:outputLabel value="#{msg.correo}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.cliente.persona.email}"
+                                               styleClass="texto_etiquetas"/>
+                                
+                                <h:outputLabel value="#{msg.descuento}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputNumber value="#{notaDebitoBean.descuento}" 
+                                               decimalPlaces="2" symbol="%" 
+                                               symbolPosition="s" emptyValue="zero"
+                                               minValue="0" maxValue="100"
+                                               required="true"
+                                               disabled="true"
+                                               inputStyle="width: 35px;background-color: khaki;text-align: right">
+                                    <p:ajax listener="#{notaDebitoBean.generalDescuento}"
+                                               update=":frmCabecera:tablaProforma"/>
+                                </p:inputNumber> 
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.documento}"
+                                     style="height: 150px">
+                            <h:panelGrid columns="2">
+                                
+                                <h:outputLabel value="#{msg.tipodocumento}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.tipoDocumentoRelacionado}"/>
+                                
+                                <h:outputLabel value="#{msg.numero}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.documentoRelacionado.numero}"/>
+                                
+                                <h:outputLabel value="#{msg.fecha} :" 
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.documentoRelacionado.fecha}">
+                                     <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                        pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                </h:outputLabel>
+                                
+                                <h:outputLabel value="#{msg.responsable}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.documentoRelacionado.empleado.persona.nombres} #{notaDebitoBean.notaDebito.documentoRelacionado.empleado.persona.apellidos}"/>
+                                
+                                <h:outputLabel value="#{msg.descripcion}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.documentoRelacionado.descripcion}"/>
+                                
+                                <h:outputLabel value="#{msg.total}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{notaDebitoBean.notaDebito.documentoRelacionado.total}"/>
+                                
+                            </h:panelGrid>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <p:dataTable var="items" 
+                                 id="tablaProforma"
+                                 value="#{notaDebitoBean.notaDebito.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand"
+                                 rowKey="#{items}"
+                                 widgetVar="items">
+
+                        <f:facet name="header">
+                            
+                            <p:fragment autoUpdate="true">
+                                <p:commandButton value="#{msg.buscar}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{notaDebitoBean.verBusquedaProductosStock(null)}">
+                                 <p:ajax event="dialogReturn" 
+                                         listener="#{notaDebitoBean.onProductoSelect}" 
+                                         update="tablaProforma, :frmCabecera:grMensajes" />
+                                </p:commandButton>
+                                
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column style="width:16px">
+                            <p:rowToggler rendered="#{items.isPaquete}"/>
+                        </p:column>
+                        
+                        <p:rowExpansion>
+                            <p:dataTable var="paqueteP"
+                                         value="#{items.productoServicio.paqueteVentaList}"
+                                         rows="10"
+                                         paginator="true"
+                                         id="tablaProductosPaquete"
+                                         rendered="#{items.isPaquete}">
+
+                                <p:column headerText="#{msg.codigoBarras}"
+                                          width="130">
+                                    <h:outputLabel value="#{paqueteP.producto.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.producto.nombre}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40">
+                                    <h:outputLabel value="#{paqueteP.cantidad}" />
+                                </p:column> 
+                            </p:dataTable>
+                        </p:rowExpansion>   
+                        
+                        <p:column headerText="#{msg.iva}"
+                                  width="100"
+                                  style="text-align:center">
+                            <p:selectOneMenu value="#{items.impuestoTarifa}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             style="width: 80%"
+                                             disabled="#{notaDebitoBean.notaDebito.codigo ne null}">
+                               <f:selectItems value="#{notaDebitoBean.listaTarifas}" 
+                                              var="impT"
+                                              itemLabel="#{impT.descripcion}"
+                                              itemValue="#{impT}"/>
+                               <p:ajax update="tablaProforma" 
+                                       listener="#{notaDebitoBean.calcularTodo}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.stock}"
+                                  width="50"
+                                  style="text-align:right"
+                                  visible="false">
+                            <h:outputLabel value="#{items.stock}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.bodega}"
+                                  width="30"
+                                  style="text-align:center"
+                                  visible="false">
+                            <h:outputLabel value="#{items.bodega.siglas}"
+                                           title="#{items.bodega.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="Cant."
+                                  width="60"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.cantidad}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="60"
+                                  style="text-align:right"
+                                  rendered="#{notaDebitoBean.notaDebito.codigo ne null}">
+                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="60"
+                                  style="text-align:right"
+                                  rendered="#{notaDebitoBean.notaDebito.codigo eq null}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitario}"
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitario}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                        <p:ajax update="tablaProforma, :frmCabecera:grMensajes"
+                                                listener="#{notaDebitoBean.onCellEditValorUnitario(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  visible="false">
+                            <h:outputLabel value="#{items.descuento} %"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  visible="false">
+                            <h:outputLabel value="#{items.valorDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right"
+                                  visible="false">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right"
+                                  visible="false">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="60"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="60"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                              update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
+                                              actionListener="#{notaDebitoBean.eliminar(items)}"
+                                              title="#{msg.eliminar}"
+                                              disabled="#{notaDebitoBean.notaDebito.codigo ne null}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton  icon="ui-icon-folder-open"
+                                              title="#{msg.kardex}"
+                                              actionListener="#{notaDebitoBean.verKardex(items.productoServicio)}"/>
+                            
+                        </p:column>
+                        
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="9"
+                                          colspan="2">
+                                    
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{notaDebitoBean.notaDebito.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{notaDebitoBean.notaDebito.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{notaDebitoBean.notaDebito.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="3"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{notaDebitoBean.notaDebito.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{notaDebitoBean.notaDebito.total}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

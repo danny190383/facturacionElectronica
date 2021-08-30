@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+        <p:panel style="width: 100%" 
+                 id="pnlEspecie">
+            <h:panelGrid columns="2">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.buscar} #{msg.especie} "/>
+                    <p:inputText value="#{especieMascotaBean.buscarEspecieMascota}" size="50">
+                        <p:ajax event="keyup" update=":frmCabecera:tabMasterVeterinaria:tablaEspecie" 
+                                listener="#{especieMascotaBean.buscar()}"/>
+                    </p:inputText>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{especieMascotaBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{especieMascotaBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{especieMascotaBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <p:dataTable var="especie" 
+                         value="#{especieMascotaBean.lista}" 
+                         id="tablaEspecie" 
+                         emptyMessage="#{msg.tablaVacia}">
+
+                 <f:facet name="header">
+                    <p:commandButton value="#{msg.nuevo}"  
+                                     oncomplete="PF('dialog003').show()"
+                                     actionListener="#{especieMascotaBean.nuevo()}" 
+                                     immediate="true"
+                                     update=":frmCabecera:tabMasterVeterinaria:dlgEspecie"
+                                     icon="ui-icon-comment"/>
+                </f:facet>
+
+                <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                    <h:outputLabel value="#{especie.codigo}" />
+                </p:column>
+
+                <p:column headerText="#{msg.especie}">
+                    <h:outputLabel value="#{especie.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.orden}"
+                          width="50">
+                    <h:outputLabel value="#{especie.orden}" />
+                </p:column>
+
+                <p:column headerText="#{msg.opcion}" 
+                          width="70"
+                          style="text-align: center">
+
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmCabecera:grMensajes, :frmCabecera:tabMasterVeterinaria:tablaEspecie" 
+                                      actionListener="#{especieMascotaBean.eliminar(especie)}"
+                                      immediate="true"
+                                      title="#{msg.eliminar}">
+                          <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                     <p:commandButton icon="ui-icon-pencil" 
+                                      title="#{msg.editar}"
+                                      process="tablaEspecie"
+                                      update=":frmCabecera:tabMasterVeterinaria:dlgEspecie"
+                                      oncomplete="PF('dialog003').show()"
+                                      action="#{especieMascotaBean.seleccionar(especie)}"/>
+                  </p:column>
+            </p:dataTable>
+        </p:panel>  
+
+        <p:dialog header="#{msg.especie}" 
+                  widgetVar="dialog003" 
+                  resizable="false"
+                  id="dlgEspecie">
+
+          <h:form id="frm003">
+              <h:panelGrid columns="2">
+                  
+                  <h:outputLabel value="#{msg.especie}: "/>
+                  <p:inputText value="#{especieMascotaBean.especie.nombre}" 
+                               required="true" 
+                               size="40" maxlength="100"
+                               style="background-color: khaki "/>
+                  
+                  <h:outputLabel value="#{msg.orden}" />
+                  <p:spinner value="#{especieMascotaBean.especie.orden}" 
+                             min="1" max="100" 
+                             size="10"/>
+
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{especieMascotaBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                   update=":frmCabecera:tabMasterVeterinaria:tablaEspecie, :frmCabecera:grMensajes" />
+
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialog003').hide()"/>
+                </h:panelGrid> 
+            </h:form>
+        </p:dialog>
+    </body>
+</html>

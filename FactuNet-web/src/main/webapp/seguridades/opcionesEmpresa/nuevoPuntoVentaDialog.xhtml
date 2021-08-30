@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.puntoVenta}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmPuntoVenta">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{puntoVentaBean.agregar}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{puntoVentaBean.cerrar}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="6">
+                    <h:outputLabel value="#{msg.nombre}" />
+                    <p:inputText value="#{puntoVentaBean.puntoVenta.nombre}"
+                                 maxlength="50"
+                                 size="22"/>
+
+                    <h:outputLabel value="#{msg.ubicacion}" />
+                    <p:inputText value="#{puntoVentaBean.puntoVenta.ubicacion}"
+                                 maxlength="50"
+                                 size="30"/>
+
+                    <h:outputLabel value="#{msg.codigoSRI}" />
+                    <p:inputText value="#{puntoVentaBean.puntoVenta.codigoSri}"
+                                 maxlength="3"
+                                 size="5"/>
+                    
+                    <h:outputLabel value="#{msg.bodega} #{msg.referencia}" />
+                    <p:selectOneMenu value="#{puntoVentaBean.bodegaSelc}" 
+                                      panelStyle="width:150px"
+                                      style="width:150px" >
+                          <f:selectItems value="#{puntoVentaBean.listaBodegas}" 
+                                         var="bodega" 
+                                         itemLabel="#{bodega.nombre}" 
+                                         itemValue="#{bodega.codigo}" />
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.impresora}" />
+                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.impresora}" 
+                                      panelStyle="width:150px"
+                                      style="width:150px" >
+                            <f:selectItems value="#{puntoVentaBean.services}" 
+                                          var="imp" 
+                                          itemLabel="#{imp.name}" 
+                                          itemValue="#{imp.name}" />
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.tipo}: "/>  
+                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tipoImpresora}" 
+                                     style="width: 50px">
+                        <f:selectItem itemLabel="#{msg.otro}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.tiket}" itemValue="2" />
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.rise}: "/>  
+                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.rise}" 
+                                     style="width: 50px">
+                        <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.movil}: "/>  
+                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tablet}" 
+                                     style="width: 50px">
+                        <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </p:fieldset>
+            <p:tabView>
+                <p:tab title="#{msg.usuario}">
+                    <p:pickList value="#{puntoVentaBean.listaCuentas}" 
+                                var="cuenta" 
+                                itemValue="#{cuenta}" 
+                                itemLabel="#{cuenta.persona.nombres}" 
+                                showCheckbox="true" 
+                                responsive="true"
+                                showSourceFilter="true" 
+                                showTargetFilter="true" 
+                                filterMatchMode="contains" 
+                                converter="empleadoConverter"
+                                style="width: 600px">
+
+                        <f:facet name="sourceCaption">#{msg.disponibles}</f:facet>
+                        <f:facet name="targetCaption">#{msg.asignados}</f:facet>
+
+                        <p:column >
+                            <h:outputLabel value="#{cuenta.cuenta.identificador}"/><br/>
+                            <h:outputLabel value="#{cuenta.persona.nombres} #{cuenta.persona.apellidos}" />
+                        </p:column>
+                    </p:pickList>
+                </p:tab>
+                <p:tab title="#{msg.numero}">
+                    <h:panelGrid columns="4" id="pnlSecuencia">
+                        <h:outputLabel value="#{msg.tipodocumento}" />
+                        <p:selectOneMenu value="#{puntoVentaBean.tipoDocumentoSlc}"
+                                         style="width: 147px">
+                            <f:selectItems value="#{puntoVentaBean.listaTipoDocumento}" 
+                                          var="tipoDoc"
+                                          itemLabel="#{tipoDoc.nombre}"
+                                          itemValue="#{tipoDoc.codigo}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.desde}" />
+                        <p:inputText value="#{puntoVentaBean.secuenciaDocumento.desde}">
+                            <p:keyFilter regEx="/[\d]/" />
+                        </p:inputText>
+
+                        <h:outputLabel value="#{msg.hasta}" />
+                        <p:inputText value="#{puntoVentaBean.secuenciaDocumento.hasta}">
+                            <p:keyFilter regEx="/[\d]/" />
+                        </p:inputText>
+                        
+                        <h:outputLabel value="#{msg.maxItems}" />
+                        <p:inputText value="#{puntoVentaBean.secuenciaDocumento.maxItems}">
+                            <p:keyFilter regEx="/[\d]/" />
+                        </p:inputText>
+                        
+                        <h:outputLabel value="#{msg.autoprint}: "/>  
+                        <p:selectOneMenu value="#{puntoVentaBean.secuenciaDocumento.autoPrint}" 
+                                         style="width: 50px">
+                            <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                        </p:selectOneMenu>
+                        
+                        <p:commandButton value="#{msg.agregar}" 
+                                         actionListener="#{puntoVentaBean.agregarSecuencia}"
+                                         icon="ui-icon-check" 
+                                         partialSubmit="true"
+                                         process="pnlSecuencia"
+                                         update=":frmPuntoVenta:grMensajes, pnlSecuencia, tablaSecuancias"/>
+                    </h:panelGrid>
+
+                    <p:dataTable var="rango" 
+                                 value="#{puntoVentaBean.puntoVenta.secuenciaDocumentoList}"
+                                 id="tablaSecuancias"
+                                 style="width: 75%">
+
+                        <p:column headerText="#{msg.tipodocumento}">
+                            <h:outputLabel value="#{rango.tipoDocumento.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.desde}"
+                                  width="60">
+                            <h:outputLabel value="#{rango.desde}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.hasta}"
+                                  width="60">
+                            <h:outputLabel value="#{rango.hasta}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.actual}"
+                                  width="60">
+                            <h:outputLabel value="#{rango.numeroActual}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.autoprint}"
+                                  width="50">
+                            <p:selectBooleanCheckbox value="#{rango.autoPrintB}" >
+                                <p:ajax/>
+                            </p:selectBooleanCheckbox> 
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.maxItems}"
+                                  width="60">
+                            <p:inputText value="#{rango.maxItems}"
+                                         size="3"
+                                         maxlength="2">
+                                <p:ajax/>
+                            </p:inputText>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}"
+                                  width="60">
+                            <h:outputLabel value="#{msg.activo}" rendered="#{rango.estado eq 1}"/>
+                            <h:outputLabel value="#{msg.inactivo}" rendered="#{rango.estado eq 2}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="40"
+                                  style="text-align: center">
+
+                              <p:commandButton  icon="ui-icon-close" 
+                                                update=":frmPuntoVenta:grMensajes, tablaSecuancias" 
+                                                actionListener="#{puntoVentaBean.eliminarSecuencia(rango)}"
+                                                title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                              </p:commandButton>
+                         </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="#{msg.restriccion}">
+                    <p:pickList value="#{puntoVentaBean.listaGrupos}" 
+                                var="grupo" 
+                                itemValue="#{grupo}" 
+                                itemLabel="#{grupo.nombre}" 
+                                showCheckbox="true" 
+                                responsive="true"
+                                showSourceFilter="true" 
+                                showTargetFilter="true" 
+                                filterMatchMode="contains" 
+                                converter="grupoConverter"
+                                style="width: 600px">
+
+                        <f:facet name="sourceCaption">#{msg.disponibles}</f:facet>
+                        <f:facet name="targetCaption">#{msg.restriccion}</f:facet>
+
+                    </p:pickList>
+                </p:tab>
+            </p:tabView> 
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog>
+        </h:form>
+    </h:body>
+</html>

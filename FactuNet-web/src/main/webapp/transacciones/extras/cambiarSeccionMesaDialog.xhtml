@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.producto}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <p:fieldset>
+                <p:dataGrid var="seccion" 
+                            id="tablaSecciones"
+                            value="#{cambiarSeccionMesaBean.empresa.seccionList}" 
+                            columns="1"
+                            emptyMessage="#{msg.tablaVacia}">
+
+                    <p:dataTable var="mesaC" 
+                                 value="#{seccion.mesaList}" 
+                                 emptyMessage="#{msg.tablaVacia}">
+
+                      <p:column headerText="#{seccion.nombre}">
+                          <h:outputLabel value="#{mesaC.nombre}" 
+                                         style="font-size: 10px"/>
+                      </p:column>
+
+                      <p:column headerText="#{msg.opcion}"
+                                style="text-align: center"
+                                width="60">
+
+                          <p:commandButton  actionListener="#{cambiarSeccionMesaBean.agregar(mesaC)}"
+                                            title="#{msg.seleccionar}" 
+                                            icon="ui-icon-check"/>
+                      </p:column>
+                   </p:dataTable>
+                </p:dataGrid>
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

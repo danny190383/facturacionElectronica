@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.producto} #{msg.bodega}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.guardar}" 
+                                     actionListener="#{nuevoProductoBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoProductoBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2"
+                             width="80%"
+                             rendered="#{nuevoProductoBean.tipo ne 1}">
+                    <h:outputLabel value="#{msg.grupo}: "/>
+                    <p:selectOneMenu value="#{nuevoProductoBean.productoBodega.grupo}"
+                                     style="width: 147px"
+                                     filter="true" 
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filterMatchMode="startsWith">
+                        <p:ajax listener="#{nuevoProductoBean.buscarNombreGrupo}"
+                                update="txtNombreCompleto"/>
+                        
+                        <f:selectItems value="#{nuevoProductoBean.listaGrupos}" 
+                                       var="grupo"
+                                       itemValue="#{grupo}"
+                                       itemLabel="#{grupo.nombre}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <h:panelGrid columns="3" 
+                             width="90%">
+                    
+                    <h:outputLabel value="#{msg.nombre} #{msg.producto}: "/>
+                    <p:inputText value="#{nuevoProductoBean.productoBodega.nombre}"
+                                 size="90"
+                                 maxlength="100"
+                                 required="true"
+                                 styleClass="texto_obligatorio"
+                                 id="txtNombreCompleto"/>    
+                    <p:barcode value="#{nuevoProductoBean.productoBodega.codigoBarras}" 
+                               type="code128"
+                               format="png"
+                               width="90"
+                               height="40"/>
+                </h:panelGrid>
+                <h:panelGrid columns="4" 
+                             width="90%">
+                    <h:outputLabel value="#{msg.codigoBarras}: "/>
+                    <h:panelGrid columns="3">
+                        <p:focus id="focus"
+                                 for="txtCodigoBarras"/>
+                        <p:inputText value="#{nuevoProductoBean.codigoBarras}"
+                                     size="30"
+                                     maxlength="100"
+                                     id="txtCodigoBarras"
+                                     autocomplete="off"
+                                     placeholder="#{msg.codigoBarras}"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}"
+                                     readonly="#{nuevoProductoBean.autogenerar}">
+                            <p:ajax event="change" 
+                                    listener="#{nuevoProductoBean.buscarProductoBarras}"
+                                    update=":frmNuevo:grMensajes,@this"/>
+                        </p:inputText>
+                        <p:selectBooleanCheckbox value="#{nuevoProductoBean.autogenerar}"
+                                                 title="#{msg.autogenerar}">
+                            <p:ajax update="txtCodigoBarras"/>
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+
+                    <h:outputLabel value="#{msg.marca}: "/>
+                    <h:panelGrid id="pnlMarca"
+                                 columns="3">
+                        <p:selectOneMenu value="#{nuevoProductoBean.productoBodega.marca}"
+                                         style="width: 147px"
+                                         converter="omnifaces.SelectItemsConverter"
+                                         filter="true" filterMatchMode="startsWith"
+                                         id="slcMarca"
+                                         required="true">
+                            <f:selectItem itemLabel="--Seleccione--" itemValue=""/>
+                            <f:selectItems value="#{nuevoProductoBean.listaMarca}" 
+                                           var="marca"
+                                           itemLabel="#{marca.nombre}"
+                                           itemValue="#{marca}"/>
+                        </p:selectOneMenu>
+                        
+                        <p:commandButton icon="ui-icon-plus"
+                                         oncomplete="PF('dialog005').show()"
+                                         actionListener="#{nuevoProductoBean.nuevo()}"
+                                         immediate="true"
+                                         title="#{msg.nuevo}" 
+                                         update="dlgMarca"/>
+                    </h:panelGrid>
+
+                    <h:outputLabel value="#{msg.modelo}: "/>
+                    <p:inputText value="#{nuevoProductoBean.productoBodega.modelo}"
+                                 size="35"
+                                 maxlength="200"/>
+                    
+                    <h:outputLabel value="#{msg.garantia}: "/>
+                    <p:inputText value="#{nuevoProductoBean.productoBodega.garantia}"
+                                 size="35"
+                                 maxlength="10"/>
+
+                    <h:outputLabel value="#{msg.utilidad}: "/> 
+                    <p:inputNumber value="#{nuevoProductoBean.productoBodega.utilidad}"
+                                   minValue="0.00" maxValue="1000"
+                                   size="5"
+                                   symbol="%" 
+                                   symbolPosition="s"/> 
+                    
+                    <h:outputLabel value="#{msg.enlaceWeb}: "/>
+                    <p:inputText value="#{nuevoProductoBean.productoBodega.enlaceWeb}"
+                                 size="35"
+                                 maxlength="200"/>
+                    
+                    <h:outputLabel value="#{msg.presentacion}: "/> 
+                    <h:panelGrid columns="4">
+                        <p:selectOneMenu value="#{nuevoProductoBean.productoBodega.presentacion}"
+                                         style="width:100px">
+                            <f:selectItem itemLabel="#{msg.individual}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.empaque}" itemValue="2" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.cantidad}: "/>
+                        <p:inputText value="#{nuevoProductoBean.productoBodega.cantidadEmpaque}"
+                                     size="5"
+                                     maxlength="4"
+                                     required="true"
+                                     styleClass="texto_obligatorio">
+                            <p:keyFilter regEx="/[\d]/" />
+                        </p:inputText>
+                        <p:selectBooleanCheckbox value="#{nuevoProductoBean.autogenerarEmpaque}"
+                                                 title="#{msg.autogenerarEmpaque}"
+                                                 rendered="#{nuevoProductoBean.tipo eq 1 and
+                                                             nuevoProductoBean.productoBodega.codigo eq null}"/>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.descripcion}: "/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     maxlength="500"
+                                     value="#{nuevoProductoBean.productoBodega.descripcion}"/>
+                    
+                    <h:outputLabel value="#{msg.unidadmedida}: "/>
+                    <h:panelGrid id="pnlUnidadMedida"
+                                 columns="2">
+                        <p:selectOneMenu value="#{nuevoProductoBean.productoBodega.unidadMedida}"
+                                        style="width: 147px"
+                                        converter="omnifaces.SelectItemsConverter"
+                                        id="slcUnidadMedida">
+                            <f:selectItems value="#{nuevoProductoBean.listaUnidadMedida}" 
+                                           var="unidad"
+                                           itemLabel="#{unidad.nombre}"
+                                           itemValue="#{unidad}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton actionListener="#{nuevoProductoBean.refreshUnidadMedida()}"
+                                        icon="ui-icon-arrowrefresh-1-w"
+                                        title="#{msg.recargar}" 
+                                        update="slcUnidadMedida"
+                                        partialSubmit="true"
+                                        process="pnlUnidadMedida"/>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.referencia}: "/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     maxlength="500"
+                                     value="#{nuevoProductoBean.productoBodega.referencia}"/>
+                    
+                </h:panelGrid>
+                <h:panelGrid columns="4" 
+                             width="90%">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{msg.impuesto}: "/>
+                        <p:dataTable var="impuesto" 
+                                     value="#{nuevoProductoBean.productoBodega.productoImpuestoTarifaList}"
+                                     style="width: 70%"
+                                     id="tablaImpuestos"
+                                     emptyMessage="#{msg.tablaVacia}">
+                            
+                            <f:facet name="header">
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                 oncomplete="PF('dialogoImpuestoTarifa').show()"
+                                                 actionListener="#{nuevoProductoBean.nuevoImpuesto()}" 
+                                                 immediate="true"
+                                                 update="dlgImpuestoTarifa"
+                                                 icon="ui-icon-comment" />
+                            </f:facet>
+
+                            <p:column headerText="#{msg.impuesto}">
+                                <h:outputText value="#{impuesto.impuestoTarifa.impuesto.nombre}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{msg.tarifa}">
+                                <h:outputText value="#{impuesto.impuestoTarifa.descripcion} / #{impuesto.impuestoTarifa.porcentaje}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{msg.valor} Fijo">
+                                <h:outputText value="#{impuesto.valor}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{msg.opcion}" 
+                                      width="40"
+                                      style="text-align: center">
+
+                                  <p:commandButton  icon="ui-icon-close" 
+                                                    update="tablaImpuestos" 
+                                                    actionListener="#{nuevoProductoBean.eliminar(impuesto)}"
+                                                    immediate="true"
+                                                    title="#{msg.eliminar}"/>
+                            </p:column>
+                        </p:dataTable>
+                       
+                        <h:outputLabel value="#{msg.stock}: "/>
+                        <p:dataTable var="stock" 
+                                     value="#{nuevoProductoBean.productoBodega.productoStockList}"
+                                     editable="true" 
+                                     style="width: 70%"
+                                     editMode="cell"
+                                     emptyMessage="#{msg.tablaVacia}">
+
+                            <p:column headerText="#{msg.bodega}">
+                                <h:outputText value="#{stock.bodega.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.stock} Min"
+                                      width="60">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{stock.stockMin}" />
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText value="#{stock.stockMin}" style="width:96%"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="#{msg.stock} Max"
+                                      width="60">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                            <h:outputText value="#{stock.stockMax}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText value="#{stock.stockMax}" style="width:96%"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <h:outputLabel value="#{msg.foto}" />
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoProductoBean.urlLogo}"
+                                        width="150px"
+                                        height="150px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <h:panelGrid columns="2">
+                            <p:fileUpload  mode="advanced" 
+                                           skinSimple="true"
+                                           sizeLimit="1000000"  
+                                           label="Seleccionar"
+                                           auto="true"
+                                           listener="#{nuevoProductoBean.subirLogo}"
+                                           allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                           cancelLabel="Cancelar" 
+                                           update=":frmNuevo:grMensajes, :frmNuevo:logo"/>
+                            <p:commandButton onclick="PF('dlgCamara').show();"
+                                             icon="fa fa-fw fa-camera"
+                                             style="width: 35px;height: 30px"
+                                             title="#{msg.camara}"
+                                             rendered="#{login.empleado.cuenta.camara ne 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+               </h:panelGrid>
+            </p:fieldset>
+            <p:dialog header="#{msg.foto}" 
+                        widgetVar="dlgCamara"
+                        minHeight="40"
+                        rendered="#{login.empleado.cuenta.camara ne 1}">
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:photoCam widgetVar="imagen" 
+                                listener="#{nuevoProductoBean.onCapture}" 
+                                update=":frmNuevo:logo" />
+                    <p:commandButton type="button" 
+                                     icon="fa fa-fw fa-camera"
+                                     title="#{msg.capturar}"
+                                     style="width: 35px;height: 30px"
+                                     onclick="PF('imagen').capture()"/>
+                </h:panelGrid>
+            </p:dialog>
+            
+            
+        </h:form>
+        <p:dialog header="#{msg.impuesto}" 
+                widgetVar="dialogoImpuestoTarifa" 
+                resizable="false"
+                modal="true"
+                id="dlgImpuestoTarifa"
+                width="40%">
+            <h:form>
+                <h:panelGrid columns="2"
+                             id="pnlDatosImpuesto">
+                    <h:outputLabel value="#{msg.impuesto}: "/>
+                    <p:selectOneMenu value="#{nuevoProductoBean.impuestoSlc}"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     required="true">
+
+                        <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                        <f:selectItems value="#{nuevoProductoBean.listaImpuestos}" 
+                                       var="imp"
+                                       itemLabel="#{imp.nombre}"
+                                       itemValue="#{imp}"/>
+                        <p:ajax update="slcTarifa"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.tarifa}: "/>
+                    <p:selectOneMenu value="#{nuevoProductoBean.impuestoTarifa.impuestoTarifa}"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     id="slcTarifa"
+                                     required="true">
+
+                        <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                        <f:selectItems value="#{nuevoProductoBean.impuestoSlc.impuestoTarifaList}" 
+                                       var="impT"
+                                       itemLabel="#{impT.descripcion}"
+                                       itemValue="#{impT}"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.valor} Fijo: : "/>
+                    <p:inputNumber value="#{nuevoProductoBean.impuestoTarifa.valor}" 
+                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                   minValue="0"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2" style="margin: 0 auto;">    
+                    <p:commandButton value="#{msg.guardar}"  
+                                     process="@form"
+                                     actionListener="#{nuevoProductoBean.agregarImpuesto}"
+                                     icon="ui-icon-disk" 
+                                     update="@form, pnlDatosImpuesto, :frmNuevo:grMensajes, :frmNuevo:tablaImpuestos"/>
+                    <p:commandButton value="#{msg.cancelar}" 
+                                     immediate="true"
+                                     icon=" ui-icon-closethick"
+                                     process="pnlDatosImpuesto"
+                                     oncomplete="PF('dialogoImpuestoTarifa').hide()"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+        <p:dialog header="#{msg.marca}" 
+                  widgetVar="dialog005" 
+                  resizable="false"
+                  modal="true"
+                  id="dlgMarca">
+
+          <h:form id="frm002">
+              <h:panelGrid columns="2">
+                  
+                  <h:outputLabel value="#{msg.marca}: "/>
+                  <p:inputText value="#{nuevoProductoBean.marca.nombre}"
+                               required="true"
+                               size="40" maxlength="100" 
+                               style="background-color: khaki "/>
+
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{nuevoProductoBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                   update="@form, :frmNuevo:slcMarca, :frmNuevo:grMensajes" />
+                
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialog005').hide()"/>
+                </h:panelGrid> 
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>

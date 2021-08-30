@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.notaDebito}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarNotasDebitoBean.listaNotaDebito}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         rowsPerPageTemplate="10,15,20"
+                         selection="#{buscarNotasDebitoBean.listaNotaDebitoSlc}"
+                         rowKey="#{pedido.codigo}">
+                
+                <f:facet name="header">
+                    <p:commandButton value="#{msg.agregarSeleccion}"  
+                                      icon="ui-icon-search"
+                                      rendered="#{buscarNotasDebitoBean.tipoSeleccion eq 2}"
+                                      actionListener="#{buscarNotasDebitoBean.seleccionarLista}" />
+                </f:facet>
+                
+                <p:column selectionMode="multiple" 
+                          style="width:16px;text-align:center"
+                          rendered="#{buscarNotasDebitoBean.tipoSeleccion eq 2}"/>
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="detalle"
+                                 value="#{pedido.facturaDetalleList}"
+                                 rows="10"
+                                 paginator="true">
+                        
+                        <p:column headerText="#{msg.codigoBarras}"
+                                  width="110">
+                            <h:outputLabel value="#{detalle.productoServicio.codigoBarras}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{detalle.productoServicio.nombre}" />
+                            <p:dataScroller value="#{detalle.facturaDetalleSeriesList}" 
+                                            var="serie"
+                                            rendered="#{!detalle.facturaDetalleSeriesList.isEmpty()}">
+                                <f:facet name="header">
+                                    #{msg.series}
+                                </f:facet>
+                                <h:outputText value="#{serie.facturaDetalleSeriesPK.codigoBarras}"
+                                              style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                            </p:dataScroller>
+                        </p:column>
+
+                        <p:column headerText="#{msg.cantidad}"
+                                  width="50">
+                            <h:outputLabel value="#{detalle.cantidad}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.costo}"
+                                  width="50">
+                            <h:outputLabel value="#{detalle.precioVentaUnitario}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.subtotal}"
+                                  width="50">
+                            <h:outputLabel value="#{detalle.subtotalConDescuento}"/>
+                        </p:column>      
+                    </p:dataTable>
+                    <br/>
+                </p:rowExpansion>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="130"
+                          filterBy="#{pedido.numero}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotasDebitoBean.numero}"
+                                     size="7"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarNotasDebitoBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarNotasDebitoBean.generarReportePDF(pedido.codigo,200)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{pedido.numero}" />
+                    </h:commandLink>
+                    <p:spacer width="10"/>
+                    <h:outputLabel value="#{msg.notaDebito}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.documento} Relacionado"
+                          width="150">
+                    <h:commandLink actionListener="#{buscarNotasDebitoBean.generarReportePDF(pedido.codigo,21)}"
+                                   target="_blank"
+                                   rendered="#{pedido.tipoDocumentoRelacionado eq 'Factura de Venta'}">
+                        <h:outputLabel value="#{pedido.documentoRelacionado.numero}" />
+                    </h:commandLink>
+                    <h:commandLink actionListener="#{buscarNotasDebitoBean.generarReportePDF(pedido.codigo,100)}"
+                                   target="_blank" 
+                                   rendered="#{pedido.tipoDocumentoRelacionado eq 'Nota de Crédito'}">
+                        <h:outputLabel value="#{pedido.documentoRelacionado.numero}" />
+                    </h:commandLink>
+                    <p:spacer width="10"/>
+                    <h:outputLabel value="#{pedido.tipoDocumentoRelacionado}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarNotasDebitoBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarNotasDebitoBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarNotasDebitoBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.cedula}"
+                          filterBy="#{pedido.cliente.persona.cedula}"
+                          width="110">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotasDebitoBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarNotasDebitoBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}"
+                          filterBy="#{pedido.cliente.persona.nombres}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotasDebitoBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarNotasDebitoBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.nombres} #{pedido.cliente.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.responsable}"
+                          visible="false">
+                    <h:outputLabel value="#{pedido.empleado.persona.nombres} #{pedido.empleado.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.motivo}"
+                          width="150">
+                    <h:outputLabel value="#{pedido.descripcion}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.total}"
+                          width="40">
+                    <h:outputLabel value="#{pedido.total}"/>
+                </p:column>
+                
+                <p:column headerText="SRI"
+                          width="100">
+                    <h:outputLabel value="#{pedido.estadoSri}"/><br/>
+                    <h:outputLabel value="#{pedido.estadoAutorizacionSri}"/>
+                </p:column>
+                
+                <p:column style="text-align: center"
+                          width="30"
+                          rendered="#{buscarNotasDebitoBean.tipoSeleccion eq 1}">
+                    <p:commandButton  actionListener="#{buscarNotasDebitoBean.seleccionar(pedido)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

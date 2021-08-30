@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+               
+               <p:tabView id="tabMasterSistema"
+                          dynamic="true" cache="true">
+
+                    <p:tab title="#{msg.tipodocumento}">
+                        <ui:include src="/mantenimiento/sistema/tipodocumentoAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.tipoIdentificacion}">
+                        <ui:include src="/mantenimiento/sistema/tipoIdentificacionAdmin.xhtml"/>
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.tiporetencion}">
+                        <ui:include src="/mantenimiento/sistema/tiporetencionAdmin.xhtml"/>
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.tipoContacto}">
+                        <ui:include src="/mantenimiento/sistema/tipoContactoAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.tipoValidacion}">
+                        <ui:include src="/mantenimiento/sistema/tipoValidacionAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.tipo} #{msg.empresa}">
+                        <ui:include src="/mantenimiento/sistema/tipoEmpresaAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.tipo} #{msg.impuesto}">
+                        <ui:include src="/mantenimiento/sistema/tipoImpuestoAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.impuesto} #{msg.tarifa} ">
+                        <ui:include src="/mantenimiento/sistema/tipoTarifaImpuestoAdmin.xhtml"/>
+                    </p:tab>
+                </p:tabView>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

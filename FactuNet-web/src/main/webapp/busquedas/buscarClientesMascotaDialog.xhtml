@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>#{msg.clientes} #{msg.mascotas}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaClientes">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="clie" 
+                         id="tablaClientes"
+                         value="#{buscarClientesMascotaBean.lazyModel}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="9" 
+                         lazy="true">
+                
+                <p:column headerText="#{msg.numero}" 
+                          sortBy="#{clie.persona.numero}" filterBy="#{clie.persona.numero}"
+                          width="100"
+                          visible="false">
+                    <h:outputLabel value="#{clie.persona.numero}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cedula}" sortBy="#{clie.persona.cedula}" filterBy="#{clie.persona.cedula}"
+                          width="100">
+                    <h:outputLabel value="#{clie.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.nombres}" sortBy="#{clie.persona.nombres}" filterBy="#{clie.persona.nombres}">
+                    <h:commandLink actionListener="#{buscarClientesMascotaBean.generarReportePDF(clie.persona.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{clie.persona.nombres} #{clie.persona.apellidos}" />
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.mascotas}" 
+                          sortBy="#{clie.nombre}" 
+                          filterBy="#{clie.nombre}">
+                    <h:outputLabel value="#{clie.nombre}" /><br/>
+                    <h:outputLabel value="#{clie.reproductor ? msg.reproductor : ''}" 
+                                   rendered="#{clie.sexo.codigo eq 387}"
+                                   style="color: #e9322d;font-size: 14px;font-style: normal;font-weight: bold"/>
+                    <h:outputLabel value="#{clie.reproductor ? msg.cachorros : ''}"
+                                   rendered="#{clie.sexo.codigo ne 387}"
+                                   style="color: #e9322d;font-size: 14px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.raza}"
+                          width="120"
+                          sortBy="#{clie.raza.nombre}" 
+                          filterBy="#{clie.raza.nombre}">
+                    <h:outputLabel value="#{clie.raza.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.sexo}"
+                          width="60">
+                    <h:outputLabel value="#{clie.sexo.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.fechaNacimiento}"
+                          width="120">
+                    <h:outputText value="#{clie.fechaNacimiento}">
+                        <f:convertDateTime pattern="#{parametrosApplication.formatoFecha}"
+                                           timeZone="#{parametrosApplication.timeZone}" />
+                    </h:outputText>
+                    <br/>
+                    <h:outputLabel value="#{clie.edad}"
+                                   style="color: #e9322d;font-size: 14px;font-style: normal;font-weight: bold">
+                        <f:converter converterId="convertidorEdadMeses" />
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.contactar}"
+                          width="110"
+                          style="text-align: center">
+                    <h:outputText value="#{clie.persona.telefono}"
+                                  styleClass="texto_negrita"/>
+                    <p:dataScroller value="#{clie.contactarPersonaList}" 
+                                    var="contactar"
+                                    rendered="#{clie.contactarPersonaList.size()>0}">
+                        <h:outputText value="#{contactar.valor}"/>
+                    </p:dataScroller>
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}"
+                          style="text-align: center"
+                          width="70">
+                    
+                    <p:commandButton  actionListener="#{buscarClientesMascotaBean.seleccionar(clie)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check"
+                                      update=":frmBusquedaClientes:grMensajes, :frmBusquedaClientes:dlgRestriccionID" 
+                                      style="font-size: 14px"/>
+                    
+                    <p:commandButton actionListener="#{buscarClientesMascotaBean.verNuevoCliente(clie)}" 
+                                     icon="ui-icon-pencil"
+                                     style="font-size: 14px">
+                         <p:ajax event="dialogReturn" 
+                                 listener="#{buscarClientesMascotaBean.onClienteSelect}"
+                                 update=":frmBusquedaClientes:grMensajes, tablaClientes"/>
+                    </p:commandButton>
+                </p:column>
+                
+            </p:dataTable>
+            <p:dialog header="#{msg.cuenta} #{msg.cobro}" 
+                      widgetVar="dlgRestriccion" 
+                      height="100"
+                      id="dlgRestriccionID">
+                
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.cuenta}"/>
+                    <h:outputLabel value="#{buscarClientesMascotaBean.cliente.totalDeuda}"
+                                   style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                    <p:commandButton value="#{msg.aceptar}" 
+                                     actionListener="#{buscarClientesMascotaBean.cerrarSeleccionar()}"
+                                     onclick="PF('dlgRestriccion').hide();" />
+
+                    <p:commandButton value="#{msg.cancelar}" 
+                                     onclick="PF('dlgRestriccion').hide();" />
+                </h:panelGrid>
+            </p:dialog>  
+        </h:form>
+    </h:body>
+    
+</html>

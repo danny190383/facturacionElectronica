@@ -1,0 +1,540 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.productos} ">
+                    <h:panelGrid columns="2">
+                        <p:fieldset id="flsMenu0001" 
+                                    style="width:250px;height:750px;" 
+                                    legend="#{msg.grupo} #{msg.productos}">
+                                
+                            <p:commandButton value="#{msg.nuevo} #{msg.grupo}"  
+                                             icon="ui-icon-comment" 
+                                             actionListener="#{productoAdminBean.nuevoGrupoPadre}"
+                                             update="dlgGrupo"
+                                             immediate="true"/>
+                            <p:scrollPanel style="height:650px;">
+                                <p:tree value="#{productoAdminBean.root}" 
+                                        var="node" id="grupoTree"  
+                                        dynamic="true" 
+                                        selectionMode="single"
+                                        style="width: 100%">  
+
+                                    <p:ajax event="select" 
+                                            update=":frmCabecera:flsTablas" 
+                                            listener="#{productoAdminBean.onNodeSelect}" />
+
+                                    <p:ajax event="contextMenu" 
+                                            update=":frmCabecera:flsTablas" 
+                                            listener="#{productoAdminBean.onNodeSelect}" />
+
+                                    <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                                collapsedIcon="ui-icon-folder-collapsed">  
+                                        <h:outputLabel value="#{node.nombre}" 
+                                                       style="font-size: 12px;font-style: normal;font-weight: bold"/>  
+                                    </p:treeNode>  
+
+                                </p:tree> 
+                            </p:scrollPanel>
+                            <p:fragment autoUpdate="true">
+                                <p:contextMenu for="grupoTree">
+                                    <p:menuitem value="#{msg.nuevo}" 
+                                                icon="ui-icon-comment" 
+                                                actionListener="#{productoAdminBean.nuevoGrupo}"
+                                                update="dlgGrupo,:frmCabecera:grMensajes"/>
+                                    <p:menuitem value="#{msg.editar}" 
+                                                icon="ui-icon-pencil" 
+                                                actionListener="#{productoAdminBean.editarGrupo}"
+                                                update="dlgGrupo"/>
+                                    <p:menuitem value="#{msg.eliminar}" 
+                                                update="grupoTree, :frmCabecera:grMensajes" 
+                                                icon="ui-icon-close"
+                                                actionListener="#{productoAdminBean.eliminarGrupo}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:menuitem>
+                                </p:contextMenu>
+                            </p:fragment>
+                        </p:fieldset>
+                        
+                        <p:fieldset style="height:750px;"  
+                                    legend="#{msg.productos}"
+                                    id="flsTablas">
+                            
+                            <p:dataTable var="producto" 
+                                         id="tablaProductos"
+                                         value="#{productoAdminBean.lazyModel}" 
+                                         paginator="true" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         rows="15" 
+                                         lazy="true" 
+                                         resizableColumns="true"
+                                         resizeMode="expand"
+                                         rendered="#{productoAdminBean.grupoProductoSelc.tipo eq 1}"
+                                         selection="#{productoAdminBean.listaProductosSelc}" 
+                                         rowKey="#{producto.codigo}">
+                                
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton value="#{msg.nuevo}"  
+                                                         actionListener="#{productoAdminBean.verNuevoProducto(null)}" 
+                                                         icon="ui-icon-comment"
+                                                         update=":frmCabecera:grMensajes"
+                                                         process="@this">
+                                               <p:ajax event="dialogReturn" 
+                                                       listener="#{productoAdminBean.onProductoSelect}"
+                                                       update=":frmCabecera:grMensajes, :frmCabecera:tablaProductos"/>
+                                        </p:commandButton>
+
+                                        <p:commandButton value="#{msg.reordenar}"  
+                                                         icon="ui-icon-refresh"
+                                                         actionListener="#{productoAdminBean.llenarReordenar}"
+                                                         process="tablaProductos" 
+                                                         update=":frmCabecera:grMensajes, :frmCabecera:dialogReordenarWigetID"/>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column style="width:16px">
+                                    <p:rowToggler rendered="#{producto.presentacion eq 2}"/>
+                                </p:column>
+                        
+                                <p:rowExpansion>
+                                    <p:dataTable var="productoPaca" 
+                                                id="tablaProductosPaca"
+                                                value="#{producto.pacaProductoList}" 
+                                                emptyMessage="#{msg.tablaVacia}"
+                                                resizableColumns="true"
+                                                resizeMode="expand">
+
+                                       <f:facet name="header">
+                                           <p:fragment autoUpdate="true">
+                                               <p:commandButton value="#{msg.nuevo}"  
+                                                                actionListener="#{productoAdminBean.verNuevoProductoPaca(producto)}" 
+                                                                icon="ui-icon-comment">
+                                                      <p:ajax event="dialogReturn" 
+                                                              listener="#{productoAdminBean.onProductoSelect}"
+                                                              update=":frmCabecera:grMensajes, tablaProductosPaca"/>
+                                               </p:commandButton>
+                                           </p:fragment>
+                                       </f:facet>
+
+                                       <p:column headerText="#{msg.codigoBarras}" 
+                                                 width="105">
+                                           <h:outputLabel value="#{productoPaca.codigoBarras}" />
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.producto}">
+                                           <h:outputLabel value="#{productoPaca.nombre}"
+                                                          style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.modelo}"
+                                                 width="110">
+                                           <h:outputLabel value="#{productoPaca.modelo}" />
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.marca}"
+                                                 width="110">
+                                           <h:outputLabel value="#{productoPaca.marca.nombre}" />
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.opcion}" 
+                                                 width="80"
+                                                 style="text-align: center">
+                                           <p:fragment autoUpdate="true">
+                                                <p:commandButton  icon="ui-icon-close"
+                                                                  partialSubmit="true"
+                                                                  process="tablaProductosPaca"
+                                                                  update=":frmCabecera:grMensajes, tablaProductosPaca" 
+                                                                  actionListener="#{productoAdminBean.eliminarProducto(productoPaca)}"
+                                                                  title="#{msg.eliminar}">
+                                                    <p:confirm header="#{msg.confirmacion}" 
+                                                               message="#{msg.eliminar}" 
+                                                               icon="ui-icon-alert" />
+                                                </p:commandButton>
+
+                                                <p:commandButton icon="ui-icon-pencil" 
+                                                                 title="#{msg.editar}"
+                                                                 action="#{productoAdminBean.verNuevoProducto(productoPaca)}">
+                                                    <p:ajax event="dialogReturn" 
+                                                            listener="#{productoAdminBean.onProductoSelect}"
+                                                            update=":frmCabecera:grMensajes, tablaProductosPaca"/>
+                                                </p:commandButton>
+
+                                                <p:commandButton icon="ui-icon-print" 
+                                                                 title="#{msg.imprimir}"
+                                                                 action="#{productoAdminBean.verImprimirBarras(productoPaca.codigoBarras)}">
+                                                    <p:ajax event="dialogReturn"/>
+                                                </p:commandButton>
+                                            </p:fragment>
+                                       </p:column>
+                                   </p:dataTable>
+                                </p:rowExpansion>
+                                
+                                <p:column selectionMode="multiple" 
+                                          style="width:16px;text-align:center"/>
+                                
+                                <p:column headerText="#{msg.codigoBarras}" 
+                                          filterBy="#{producto.codigoBarras}"
+                                          width="105">
+                                    <h:outputLabel value="#{producto.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}" filterBy="#{producto.nombre}">
+                                    <h:outputLabel value="#{producto.nombre}" 
+                                                   style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.modelo}" filterBy="#{producto.modelo}"
+                                          width="110">
+                                    <h:outputLabel value="#{producto.modelo}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.marca}" filterBy="#{producto.marca.nombre}"
+                                          width="110">
+                                    <h:outputLabel value="#{producto.marca.nombre}" />
+                                </p:column>
+                             
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="80"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tablaProductos" 
+                                                      actionListener="#{productoAdminBean.eliminarProducto(producto)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     process="tablaProductos"
+                                                     action="#{productoAdminBean.verNuevoProducto(producto)}">
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{productoAdminBean.onProductoSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tablaProductos"/>
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton icon="ui-icon-print" 
+                                                     title="#{msg.imprimir}"
+                                                     immediate="true"
+                                                     action="#{productoAdminBean.verImprimirBarras(producto.codigoBarras)}">
+                                        <p:ajax event="dialogReturn"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <p:dataTable var="servicio" 
+                                        id="tablaServicios"
+                                        value="#{productoAdminBean.lazyModelServicios}" 
+                                        paginator="true" 
+                                        emptyMessage="#{msg.tablaVacia}"
+                                        rows="10" 
+                                        lazy="true" 
+                                        rowsPerPageTemplate="10,15,20"
+                                        resizableColumns="true"
+                                        resizeMode="expand"
+                                        rendered="#{productoAdminBean.grupoProductoSelc.tipo eq 2}"
+                                        selection="#{productoAdminBean.listaProductosSelc}" 
+                                        rowKey="#{servicio.codigo}">
+                                
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton value="#{msg.nuevo}"  
+                                                         actionListener="#{productoAdminBean.verNuevoProductoServicio(null)}" 
+                                                         icon="ui-icon-comment"
+                                                         update=":frmCabecera:grMensajes">
+                                               <p:ajax event="dialogReturn" 
+                                                       listener="#{productoAdminBean.onProductoServicioSelect}"
+                                                       update=":frmCabecera:grMensajes, :frmCabecera:tablaServicios"/>
+                                        </p:commandButton>
+                                        
+                                        <p:commandButton value="#{msg.reordenar}"  
+                                                         icon="ui-icon-refresh"
+                                                         actionListener="#{productoAdminBean.llenarReordenar}"
+                                                         process="tablaServicios" 
+                                                         update=":frmCabecera:grMensajes, :frmCabecera:dialogReordenarWigetID"/>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column selectionMode="multiple" 
+                                          style="width:16px;text-align:center"/>
+                                
+                                <p:column headerText="#{msg.codigoBarras}" 
+                                          filterBy="#{servicio.codigoBarras}"
+                                          width="105">
+                                    <h:outputLabel value="#{servicio.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.servicios}" filterBy="#{servicio.nombre}">
+                                    <h:outputLabel value="#{servicio.nombre}" 
+                                                   style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.costo}"
+                                          width="50">
+                                    <h:outputLabel value="#{servicio.precioUltimaCompra}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.pvp}"
+                                          width="50">
+                                    <h:outputLabel value="#{servicio.pvp}" />
+                                </p:column>
+                             
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="80"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tablaServicios" 
+                                                      actionListener="#{productoAdminBean.eliminarServicio(servicio)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     process="tablaServicios"
+                                                     action="#{productoAdminBean.verNuevoProductoServicio(servicio)}">
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{productoAdminBean.onProductoServicioSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tablaServicios"/>
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton icon="ui-icon-print" 
+                                                     title="#{msg.imprimir}"
+                                                     immediate="true"
+                                                     action="#{productoAdminBean.verImprimirBarras(servicio.codigoBarras)}">
+                                        <p:ajax event="dialogReturn"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <p:dataTable var="paquete" 
+                                        id="tablaPaquetes"
+                                        value="#{productoAdminBean.lazyModelPaquetes}" 
+                                        paginator="true" 
+                                        emptyMessage="#{msg.tablaVacia}"
+                                        rows="10" 
+                                        lazy="true" 
+                                        rowsPerPageTemplate="10,15,20"
+                                        resizableColumns="true"
+                                        resizeMode="expand"
+                                        rendered="#{productoAdminBean.grupoProductoSelc.tipo eq 3}"
+                                        selection="#{productoAdminBean.listaProductosSelc}" 
+                                        rowKey="#{paquete.codigo}">
+                                
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton value="#{msg.nuevo}"  
+                                                         actionListener="#{productoAdminBean.verNuevoProductoPaquete(null)}" 
+                                                         icon="ui-icon-comment"
+                                                         update=":frmCabecera:grMensajes">
+                                               <p:ajax event="dialogReturn" 
+                                                       listener="#{productoAdminBean.onProductoPaqueteSelect}"
+                                                       update=":frmCabecera:grMensajes, :frmCabecera:tablaPaquetes"/>
+                                        </p:commandButton>
+                                        
+                                         <p:commandButton value="#{msg.reordenar}"  
+                                                         icon="ui-icon-refresh"
+                                                         actionListener="#{productoAdminBean.llenarReordenar}"
+                                                         process="tablaPaquetes" 
+                                                         update=":frmCabecera:grMensajes, :frmCabecera:dialogReordenarWigetID"/>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column style="width:16px">
+                                    <p:rowToggler />
+                                </p:column>
+
+                                <p:rowExpansion>
+                                    <p:dataTable var="paqueteP"
+                                                 value="#{paquete.paqueteVentaList}"
+                                                 rows="10"
+                                                 paginator="true">
+
+                                        <p:column headerText="#{msg.codigoBarras}"
+                                                  width="110">
+                                            <h:outputLabel value="#{paqueteP.producto.codigoBarras}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.producto}">
+                                            <h:outputLabel value="#{paqueteP.producto.nombre}" 
+                                                           style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                        </p:column>   
+                                        
+                                        <p:column headerText="#{msg.cantidad}"
+                                                  width="40"
+                                                  style="text-align: right">
+                                            <h:outputLabel value="#{paqueteP.cantidad}" />
+                                        </p:column>  
+                                        
+                                        <p:column headerText="#{msg.total}"
+                                                  width="40"
+                                                  style="text-align: right">
+                                            <h:outputLabel value="#{paqueteP.total}" />
+                                        </p:column>  
+                                    </p:dataTable>
+                                </p:rowExpansion>
+                                
+                                <p:column selectionMode="multiple" 
+                                          style="width:16px;text-align:center"/>
+                                
+                                <p:column headerText="#{msg.codigoBarras}" 
+                                          filterBy="#{paquete.codigoBarras}"
+                                          width="105">
+                                    <h:outputLabel value="#{paquete.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.paquetes}" filterBy="#{paquete.nombre}">
+                                    <h:outputLabel value="#{paquete.nombre}"
+                                                   style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.costo}"
+                                          width="50">
+                                    <h:outputLabel value="#{paquete.costo}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.pvp}"
+                                          width="50">
+                                    <h:outputLabel value="#{paquete.pvp}" />
+                                </p:column>
+                             
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="80"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tablaPaquetes" 
+                                                      actionListener="#{productoAdminBean.eliminarPaquete(paquete)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     process="tablaPaquetes"
+                                                     action="#{productoAdminBean.verNuevoProductoPaquete(paquete)}">
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{productoAdminBean.onProductoPaqueteSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tablaPaquetes"/>
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton icon="ui-icon-print" 
+                                                     title="#{msg.imprimir}"
+                                                     immediate="true"
+                                                     action="#{productoAdminBean.verImprimirBarras(paquete.codigoBarras)}">
+                                        <p:ajax event="dialogReturn"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:panel>
+                
+                <p:dialog header="#{msg.grupo}" 
+                          widgetVar="dialogWiget" 
+                          resizable="false"
+                          id="dlgGrupo">
+
+                    <h:form id="frm003">
+                        
+                        <h:panelGrid columns="2"
+                                     id="pnlGrupo">
+                            <h:outputLabel value="#{msg.padre}: "
+                                           rendered="#{productoAdminBean.grupoProducto.padre ne null}"/>
+                            <h:outputLabel value="#{productoAdminBean.grupoProducto.padre.nombre}"
+                                           rendered="#{productoAdminBean.grupoProducto.padre ne null}"/>
+                            
+                            <h:outputLabel value="#{msg.grupo}: "/>
+                            <p:inputText value="#{productoAdminBean.grupoProducto.nombre}"
+                                         required="true" 
+                                         transient="true"
+                                         size="40" maxlength="100" 
+                                         style="background-color: khaki "/>
+                            
+                            <h:outputLabel value="#{msg.tipo}" 
+                                           rendered="#{productoAdminBean.grupoProducto.nivel eq 1}"/>
+                            <p:selectOneMenu value="#{productoAdminBean.grupoProducto.tipo}" 
+                                             style="width:125px"
+                                             rendered="#{productoAdminBean.grupoProducto.nivel eq 1}"
+                                             disabled="#{productoAdminBean.grupoProducto.codigo ne null}" >
+                                <f:selectItem itemLabel="#{msg.producto} #{msg.bodega}" itemValue="1" />
+                                <f:selectItem itemLabel="#{msg.servicios}" itemValue="2" />
+                                <f:selectItem itemLabel="#{msg.paquetes}" itemValue="3" />
+                            </p:selectOneMenu>
+
+                            <p:commandButton value="#{msg.guardar}"  
+                                             actionListener="#{productoAdminBean.guardarGrupo}"
+                                             icon="ui-icon-check" 
+                                             partialSubmit="true"
+                                             process="pnlGrupo"
+                                             update="pnlGrupo,:frmCabecera:grupoTree, :frmCabecera:grMensajes, @form" />
+
+                            <p:commandButton value="#{msg.cancelar}" 
+                                             immediate="true"
+                                             update="pnlGrupo"
+                                             icon="ui-icon-cancel" 
+                                             oncomplete="PF('dialogWiget').hide()"/>
+                          </h:panelGrid> 
+                      </h:form>
+                </p:dialog>
+                
+                <p:dialog header="#{msg.grupo} #{msg.destino}" 
+                          widgetVar="dialogReordenarWiget" 
+                          resizable="false"
+                          id="dialogReordenarWigetID">
+                    
+                    <h:form>
+                        <h:panelGrid columns="2"
+                                     id="pnlGrupoReordenar">
+                            <h:outputLabel value="#{msg.grupo}: "/>
+                            <p:selectOneMenu value="#{productoAdminBean.grupoSelect}"
+                                             style="width: 147px"
+                                             filter="true" 
+                                             filterMatchMode="startsWith"
+                                             converter="omnifaces.SelectItemsConverter">
+                               <f:selectItems value="#{productoAdminBean.listaGrupos}" 
+                                              var="grupo"
+                                              itemValue="#{grupo}"
+                                              itemLabel="#{grupo.nombre}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton value="#{msg.guardar}"  
+                                             actionListener="#{productoAdminBean.moverProductosGrupo}"
+                                             icon="ui-icon-check" 
+                                             partialSubmit="true"
+                                             process="pnlGrupoReordenar"
+                                             update="pnlGrupoReordenar, :frmCabecera:grMensajes, :frmCabecera:flsTablas" />
+
+                            <p:commandButton value="#{msg.cancelar}" 
+                                             immediate="true"
+                                             icon="ui-icon-cancel" 
+                                             oncomplete="PF('dialogReordenarWiget').hide()"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

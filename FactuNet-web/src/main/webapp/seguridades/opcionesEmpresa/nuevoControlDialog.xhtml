@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.controles}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoControlBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoControlBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                        style="width: 100%">
+
+                <h:outputLabel value="#{msg.controles}: "/>
+                <p:inputText value="#{nuevoControlBean.control.nombre}"
+                             required="true"
+                             style="background-color: khaki"/>
+               
+                <h:outputLabel value="#{msg.valor}: "/>
+                <p:inputText value="#{nuevoControlBean.control.valor}"
+                             required="true"
+                             style="background-color: khaki"/>
+
+                <h:outputLabel value="#{msg.descripcion}"/>
+                <p:inputTextarea rows="3" cols="40" 
+                                 value="#{nuevoControlBean.control.detalle}"/>
+           </h:panelGrid>
+            </p:fieldset>
+            
+        </h:form>
+    </h:body>
+</html>

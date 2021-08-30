@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pedidoTablet" pageWidth="400" pageHeight="300" columnWidth="400" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d7aeb7c9-2182-449a-86ec-4a6e517755a6">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="empresa" class="java.lang.String"/>
+	<parameter name="mesa" class="java.lang.String"/>
+	<parameter name="fecha" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String">
+		<fieldDescription><![CDATA[productoServicio.nombre]]></fieldDescription>
+	</field>
+	<field name="cantidad" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[cantidad]]></fieldDescription>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<fieldDescription><![CDATA[descripcion]]></fieldDescription>
+	</field>
+	<field name="codigo" class="java.lang.Integer">
+		<fieldDescription><![CDATA[factura.empresa.codigo]]></fieldDescription>
+	</field>
+	<pageHeader>
+		<band height="60">
+			<textField>
+				<reportElement x="90" y="12" width="100" height="15" uuid="526c02cd-a9fb-4c8c-b901-6e2bd0228901"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$P{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="28" width="123" height="15" uuid="4251fd22-3b02-416c-adb4-9fe7096fbd70"/>
+				<textFieldExpression><![CDATA[$P{mesa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="28" width="54" height="15" uuid="ef2fe4be-c5d4-414a-b9dd-0c6ee237bd83"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[MESA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="43" width="54" height="15" uuid="33e6aae3-fb27-4919-a75b-0b0667dd27a4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="67" y="44" width="123" height="15" uuid="b5313319-929f-4e1a-8ba4-ef5447171982"/>
+				<textFieldExpression><![CDATA[$P{fecha}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="13" y="0" width="28" height="13" uuid="f7b15d9d-4242-478d-a99e-2d35e07dab7b"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CANT.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="41" y="0" width="292" height="13" uuid="bd32e87f-e42a-4913-b935-2c620025c4ce"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRODUCTO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="41" y="0" width="292" height="13" uuid="80f8e0c7-32b5-430e-ae18-5dd682e2b1ea"/>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="13" y="13" width="320" height="13" uuid="4ae12b2d-43ec-402c-9324-f6a8769b354e"/>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="13" y="0" width="28" height="13" uuid="e1e771d6-7907-45e5-b5af-85af3b401813"/>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

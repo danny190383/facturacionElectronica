@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.productos} #{msg.stock}">
+                    <h:panelGrid columns="3"
+                                 style="margin-bottom:10px" cellpadding="5">
+                        <p:fieldset id="flsMenu0001" 
+                                    style="width:250px;height:700px;" 
+                                    legend="#{msg.opciones}">
+                            
+                                <h:outputLabel value="#{msg.bodega}"
+                                               rendered="#{productoStockBean.listaBodegas.size() > 1}"/>
+                                <p:selectOneMenu id="bodegas" 
+                                                 value="#{productoStockBean.bodegaSelc}" 
+                                                 panelStyle="width:190px"
+                                                 style="width:190px" 
+                                                 rendered="#{productoStockBean.listaBodegas.size() > 1}">
+                                    <p:ajax update=":frmCabecera:tablaProductos" 
+                                            listener="#{productoStockBean.llenarTabla}" />
+                                    
+                                    <f:selectItems value="#{productoStockBean.listaBodegas}" 
+                                                   var="bodega" 
+                                                   itemLabel="#{bodega.nombre}" 
+                                                   itemValue="#{bodega.codigo}" />
+                                </p:selectOneMenu>
+                                <p:spacer width="20" height="20" />
+                                <p:scrollPanel style="height:650px;">
+                                    <p:tree value="#{productoStockBean.root}" 
+                                            var="node" id="grupoTree"  
+                                            dynamic="true" 
+                                            selectionMode="single"
+                                            style="width: 100%">  
+
+                                        <p:ajax event="select" 
+                                                update=":frmCabecera:tablaProductos" 
+                                                listener="#{productoStockBean.onNodeSelect}" />
+
+                                        <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                                    collapsedIcon="ui-icon-folder-collapsed">  
+                                            <h:outputLabel value="#{node.nombre}"
+                                                           style="font-size: 12px;font-style: normal;font-weight: bold"/>  
+                                        </p:treeNode>  
+
+                                    </p:tree> 
+                                </p:scrollPanel>
+                        </p:fieldset>
+                        
+                        <p:fieldset id="flsMenu0002" 
+                                    style="width:98%;height:700px;" 
+                                    legend="#{msg.productos}">
+                            
+                            <p:dataTable var="producto" 
+                                        id="tablaProductos"
+                                        value="#{productoStockBean.lazyModelStock}" 
+                                        paginator="true" 
+                                        emptyMessage="#{msg.tablaVacia}"
+                                        rows="15" 
+                                        lazy="true" 
+                                        editable="true" 
+                                        editMode="cell"
+                                        resizableColumns="true"
+                                        resizeMode="expand">
+                                
+                                <f:facet name="header">
+                                    <p:commandButton id="toggler" type="button"
+                                                     style="float:right" icon="ui-icon-calculator" />
+                                    <p:columnToggler datasource="tablaProductos" trigger="toggler" />
+                                </f:facet>
+                                
+                                <p:ajax event="rowToggle" 
+                                        listener="#{productoStockBean.buscarDatosLote(producto)}"
+                                        update="tablaLote"/>
+                                
+                                <p:column style="width:16px">
+                                    <p:rowToggler />
+                                </p:column>
+                                
+                                <p:rowExpansion>
+                                    <p:dataTable var="lote" 
+                                                 value="#{productoStockBean.listaLotesCompra}"
+                                                 emptyMessage="#{msg.tablaVacia}"
+                                                 id="tablaLote">
+                                        
+                                        <p:column headerText="#{msg.lote}"
+                                                  width="40"
+                                                  style="text-align: right">
+                                            <h:outputLabel value="#{lote.codigo}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.proveedor}">
+                                            <h:outputLabel value="#{lote.factura.proveedor.persona.nombres} #{lote.factura.proveedor.persona.apellidos}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.fecha} #{msg.caducidad}" 
+                                                  width="100">
+                                            <h:outputLabel value="#{lote.fechaCaducidad}">
+                                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                                    pattern="#{parametrosApplication.formatoFecha}"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.fecha} #{msg.ingreso}" 
+                                                  width="100">
+                                            <h:outputLabel value="#{lote.fecha}">
+                                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                                    pattern="#{parametrosApplication.formatoFecha}"/>
+                                            </h:outputLabel>
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.cantidad}" 
+                                                  width="50">
+                                            <h:outputLabel value="#{lote.cantidad}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.costo} #{msg.unitario}" 
+                                                  width="50">
+                                            <h:outputLabel value="#{lote.precioVentaUnitarioDescuento}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:rowExpansion>
+                                
+                                <p:column headerText="#{msg.codigoBarras}"  
+                                          filterBy="#{producto.productoBodega.codigoBarras}"
+                                          width="110"
+                                          visible="false">
+                                    <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}" filterBy="#{producto.productoBodega.nombre}">
+                                    <h:outputLabel value="#{producto.productoBodega.nombre}"
+                                                   title="#{producto.productoBodega.grupo.nombre}"
+                                                   style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.modelo}" filterBy="#{producto.productoBodega.modelo}"
+                                          width="105" visible="false">
+                                    <h:outputLabel value="#{producto.productoBodega.modelo}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.marca}" filterBy="#{producto.productoBodega.marca.nombre}"
+                                          width="105" visible="false">
+                                    <h:outputLabel value="#{producto.productoBodega.marca.nombre}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.stock}" 
+                                          width="30">
+                                    <h:outputLabel value="#{producto.stock}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.costo}" 
+                                          width="60">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <p:inputNumber value="#{producto.productoBodega.precioUltimaCompra}" 
+                                                           decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                           minValue="0"
+                                                           inputStyle="width:90%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                            </p:inputNumber> 
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputNumber value="#{producto.productoBodega.precioUltimaCompra}" 
+                                                           decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                           minValue="0"
+                                                           inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                                <p:ajax update="tablaProductos, :frmCabecera:grMensajes"
+                                                        listener="#{productoStockBean.onCellEditUtilidad(producto)}"/>
+                                            </p:inputNumber>  
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                
+                                <p:column headerText="% #{msg.utilidad}" 
+                                          width="30">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{producto.productoBodega.utilidad} %"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputNumber value="#{producto.productoBodega.utilidad}" 
+                                                           decimalPlaces="2" symbol="%" 
+                                                           symbolPosition="s" emptyValue="zero"
+                                                           minValue="0"
+                                                           inputStyle="width:80%;text-align: right ">
+                                                <p:ajax update="tablaProductos, :frmCabecera:grMensajes"
+                                                        listener="#{productoStockBean.onCellEditUtilidad(producto)}"/>
+                                            </p:inputNumber>  
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.pvp}"
+                                            width="60">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <p:inputNumber value="#{producto.productoBodega.pvp}" 
+                                                           decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                           minValue="0"
+                                                           inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                            </p:inputNumber>  
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputNumber value="#{producto.productoBodega.pvp}" 
+                                                           decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                           minValue="0"
+                                                           inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                                <p:ajax update="tablaProductos, :frmCabecera:grMensajes"
+                                                        listener="#{productoStockBean.onCellEditPVP(producto)}"/>
+                                            </p:inputNumber>  
+                                        </f:facet>
+                                    </p:cellEditor>
+                                 </p:column>
+                                
+                                <p:column width="45"
+                                          style="text-align: center">
+                                    
+                                    <p:commandButton  icon="ui-icon-folder-open"
+                                                      title="#{msg.kardex}"
+                                                      actionListener="#{productoStockBean.verKardex(producto.productoBodega)}"/>
+                                    
+                                    <p:commandButton  icon="ui-icon-refresh"
+                                                      title="#{msg.individual}"
+                                                      actionListener="#{productoStockBean.verIndividual(producto)}"
+                                                      rendered="#{producto.productoBodega.presentacion eq 2}">
+                                        <p:ajax event="dialogReturn" 
+                                                update=":frmCabecera:grMensajes, tablaProductos"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

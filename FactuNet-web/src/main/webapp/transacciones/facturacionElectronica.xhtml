@@ -1,0 +1,428 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.procesar} Recepción" 
+                                             actionListener="#{facturacionElectronicaBean.procesarFacturasRecepcion}"
+                                             icon="ui-icon-shuffle"
+                                             update=":frmCabecera:tabPrincipal:tablaRetencion, :frmCabecera:tabPrincipal:tablaGuiaRemision, :frmCabecera:tabPrincipal:tablaManuales, :frmCabecera:grMensajes"/>
+                            
+                            <p:commandButton value="#{msg.procesar} Autorización" 
+                                             actionListener="#{facturacionElectronicaBean.procesarFacturasAutorizacion}"
+                                             icon="ui-icon-shuffle"
+                                             update=":frmCabecera:tabPrincipal:tablaRetencion, :frmCabecera:tabPrincipal:tablaGuiaRemision, :frmCabecera:tabPrincipal:tablaManuales, :frmCabecera:grMensajes"/>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+
+            <ui:define name="content">
+                <p:tabView id="tabPrincipal">
+                    <p:tab title="Documentos Contables">
+                        <h:panelGrid columns="1" 
+                                     style="width: 100%" 
+                                     cellpadding="5" 
+                                     cellspacing="5">
+
+                            <p:dataTable value="#{facturacionElectronicaBean.listaDocumentos}" 
+                                        var="pedido"
+                                        emptyMessage="#{msg.tablaVacia}" 
+                                        rows="15" paginator="true"
+                                        style="width: 100%"
+                                        id="tablaManuales"
+                                        rowIndexVar="index">
+
+                               <f:facet name="header">
+                                    <p:commandButton value="#{msg.facturaVenta}"  
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{facturacionElectronicaBean.verBusquedaFacturas}" >
+                                       <p:ajax event="dialogReturn" 
+                                               listener="#{facturacionElectronicaBean.onFacturaSelect}" 
+                                               update="tablaManuales" />
+                                    </p:commandButton>
+                                    <p:spacer width="10"/>
+                                    <p:commandButton value="#{msg.notaCredito}"  
+                                                     icon="ui-icon-search"
+                                                     update=":frmCabecera:grMensajes"
+                                                     actionListener="#{facturacionElectronicaBean.verBusquedaNotasCredito}" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{facturacionElectronicaBean.onFacturaSelect}" 
+                                                update="tablaManuales" />
+                                    </p:commandButton>
+                                    <p:spacer width="10"/>
+                                    <p:commandButton value="#{msg.notaDebito}"  
+                                                     icon="ui-icon-search"
+                                                     update=":frmCabecera:grMensajes"
+                                                     actionListener="#{facturacionElectronicaBean.verBusquedaNotasDebito}" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{facturacionElectronicaBean.onFacturaSelect}" 
+                                                update="tablaManuales" />
+                                    </p:commandButton>
+                               </f:facet>
+
+                                <p:column width="40"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                     update=":frmCabecera:grMensajes, tablaManuales" 
+                                                    actionListener="#{facturacionElectronicaBean.eliminarFactura(index)}"
+                                                    title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+
+                               <p:column headerText="#{msg.numero}"
+                                         width="50">
+                                      <h:outputLabel value="#{pedido.numero}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="65">
+                                    <h:outputLabel value="#{pedido.fecha}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.cliente}"
+                                          width="150">
+                                    <p:panelGrid columns="1"
+                                                 rendered="#{pedido.documentoRelacionado ne null}">
+                                        <h:outputLabel value="#{pedido.documentoRelacionado.cliente.persona.cedula}" />
+                                        <h:outputLabel value="#{pedido.documentoRelacionado.cliente.persona.nombres} #{pedido.documentoRelacionado.cliente.persona.apellidos}" />
+                                    </p:panelGrid>
+                                    <p:panelGrid columns="1"
+                                                 rendered="#{pedido.documentoRelacionado eq null}">
+                                        <h:outputLabel value="#{pedido.cliente.persona.cedula}" />
+                                        <h:outputLabel value="#{pedido.cliente.persona.nombres} #{pedido.cliente.persona.apellidos}" />
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.total}"
+                                          width="150">
+                                    <h:outputLabel value="#{msg.factura}:"
+                                                   rendered="#{pedido.documentoRelacionado ne null}"/>
+                                    <h:outputLabel value="#{pedido.documentoRelacionado.total}"
+                                                   rendered="#{pedido.documentoRelacionado ne null}"/>
+                                    <br/>
+                                    <h:outputLabel value="Nota:"
+                                                   rendered="#{pedido.documentoRelacionado ne null}"/>
+                                    <h:outputLabel value="#{pedido.total}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Recepción SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{pedido.estadoSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.tipo} Mensage Recepción SRI"
+                                          width="100">
+                                    <h:outputLabel value="#{pedido.tipoMensajeSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Recepción SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{pedido.fechaEnvioSri}"
+                                                       rendered="#{pedido.fechaEnvioSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{pedido.empleadoEnvioSri.persona.apellidos} #{pedido.empleadoEnvioSri.persona.nombres}"
+                                                       rendered="#{pedido.empleadoEnvioSri.persona.nombres ne null}"/>
+                                        <h:outputLabel value="#{pedido.identificadorErrorSri}" 
+                                                       rendered="#{pedido.identificadorErrorSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.descripcionErrorSri}" 
+                                                       rendered="#{pedido.descripcionErrorSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.descripcionAdicionalErrorSri}"
+                                                       rendered="#{pedido.descripcionAdicionalErrorSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Autorización SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{pedido.estadoAutorizacionSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Autorización SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{pedido.fechaAutorizacionSri}"
+                                                       rendered="#{pedido.fechaAutorizacionSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{pedido.ambienteAutorizacionSri}"
+                                                       rendered="#{pedido.ambienteAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.identificadorErrorAutorizacionSri}" 
+                                                       rendered="#{pedido.identificadorErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.descripcionErrorAutorizacionSri}" 
+                                                       rendered="#{pedido.descripcionErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.descripcionAdicionalErrorAutorizacionSri}" 
+                                                       rendered="#{pedido.descripcionAdicionalErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{pedido.tipoMensajeAutorizacionSri}" 
+                                                       rendered="#{pedido.tipoMensajeAutorizacionSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                           </p:dataTable>
+                        </h:panelGrid>  
+                    </p:tab>
+                    <p:tab title="Documentos de Retención">
+                        <h:panelGrid columns="1" 
+                                     style="width: 100%" 
+                                     cellpadding="5" 
+                                     cellspacing="5">
+
+                            <p:dataTable value="#{facturacionElectronicaBean.listaDocumentoRetencion}" 
+                                        var="retencion"
+                                        emptyMessage="#{msg.tablaVacia}" 
+                                        rows="15" paginator="true"
+                                        style="width: 100%"
+                                        id="tablaRetencion"
+                                        rowIndexVar="indexDR">
+
+                               <f:facet name="header">
+                                    <p:commandButton value="#{msg.retencion}"  
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{facturacionElectronicaBean.verBusquedaDocumentoRetencion}" >
+                                       <p:ajax event="dialogReturn" 
+                                               listener="#{facturacionElectronicaBean.onDocumentoRetencionSelect}" 
+                                               update="tablaRetencion" />
+                                    </p:commandButton>
+                               </f:facet>
+
+                                <p:column width="40"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                     update=":frmCabecera:grMensajes, tablaRetencion" 
+                                                    actionListener="#{facturacionElectronicaBean.eliminarRetencion(indexDR)}"
+                                                    title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+
+                               <p:column headerText="#{msg.numero}"
+                                         width="50">
+                                   <h:outputLabel value="#{retencion.numero}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="65">
+                                    <h:outputLabel value="#{retencion.fecha}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.proveedor}"
+                                          width="150">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{retencion.factura.proveedor.persona.cedula}" />
+                                        <h:outputLabel value="#{retencion.factura.proveedor.persona.nombres} #{retencion.factura.proveedor.persona.apellidos}" />
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.total}"
+                                          width="100"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{retencion.totalRetencion}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Recepción SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{retencion.estadoSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.tipo} Mensage Recepción SRI"
+                                          width="100">
+                                    <h:outputLabel value="#{retencion.tipoMensajeSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Recepción SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{retencion.fechaEnvioSri}"
+                                                       rendered="#{retencion.fechaEnvioSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{retencion.empleadoEnvioSri.persona.apellidos} #{retencion.empleadoEnvioSri.persona.nombres}"
+                                                       rendered="#{retencion.empleadoEnvioSri.persona.nombres ne null}"/>
+                                        <h:outputLabel value="#{retencion.identificadorErrorSri}" 
+                                                       rendered="#{retencion.identificadorErrorSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.descripcionErrorSri}" 
+                                                       rendered="#{retencion.descripcionErrorSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.descripcionAdicionalErrorSri}"
+                                                       rendered="#{retencion.descripcionAdicionalErrorSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Autorización SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{retencion.estadoAutorizacionSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Autorización SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{retencion.fechaAutorizacionSri}"
+                                                       rendered="#{retencion.fechaAutorizacionSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{retencion.ambienteAutorizacionSri}"
+                                                       rendered="#{retencion.ambienteAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.identificadorErrorAutorizacionSri}" 
+                                                       rendered="#{retencion.identificadorErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.descripcionErrorAutorizacionSri}" 
+                                                       rendered="#{retencion.descripcionErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.descripcionAdicionalErrorAutorizacionSri}" 
+                                                       rendered="#{retencion.descripcionAdicionalErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{retencion.tipoMensajeAutorizacionSri}" 
+                                                       rendered="#{retencion.tipoMensajeAutorizacionSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                           </p:dataTable>
+                        </h:panelGrid>  
+                    </p:tab>
+                    <p:tab title="Guías de Remisión">
+                        <h:panelGrid columns="1" 
+                                     style="width: 100%" 
+                                     cellpadding="5" 
+                                     cellspacing="5">
+
+                            <p:dataTable value="#{facturacionElectronicaBean.listaGuiasRemision}" 
+                                        var="gria"
+                                        emptyMessage="#{msg.tablaVacia}" 
+                                        rows="15" paginator="true"
+                                        style="width: 100%"
+                                        id="tablaGuiaRemision"
+                                        rowIndexVar="indexGR">
+
+                               <f:facet name="header">
+                                    <p:commandButton value="#{msg.guia} #{msg.remision}"  
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{facturacionElectronicaBean.verBusquedaGuiasRemision}" >
+                                       <p:ajax event="dialogReturn" 
+                                               listener="#{facturacionElectronicaBean.onGuiasRemisionSelect}" 
+                                               update="tablaGuiaRemision" />
+                                    </p:commandButton>
+                               </f:facet>
+
+                                <p:column width="40"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                     update=":frmCabecera:grMensajes, tablaGuiaRemision" 
+                                                    actionListener="#{facturacionElectronicaBean.eliminarGuia(indexGR)}"
+                                                    title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+
+                               <p:column headerText="#{msg.numero}"
+                                         width="50">
+                                    <h:outputLabel value="#{gria.secuencia}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="65">
+                                    <h:outputLabel value="#{gria.factura.fecha}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.destinatario}"
+                                          width="150">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{gria.destinatario.persona.cedula}" />
+                                        <h:outputLabel value="#{gria.destinatario.persona.nombres} #{gria.destinatario.persona.apellidos}" />
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.total}"
+                                          width="150">
+                                    <h:outputLabel value="#{gria.factura.total}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Recepción SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{gria.estadoSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.tipo} Mensage Recepción SRI"
+                                          width="100">
+                                    <h:outputLabel value="#{gria.tipoMensajeSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Recepción SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{gria.fechaEnvioSri}"
+                                                       rendered="#{gria.fechaEnvioSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{gria.empleadoEnvioSri.persona.apellidos} #{gria.empleadoEnvioSri.persona.nombres}"
+                                                       rendered="#{gria.empleadoEnvioSri.persona.nombres ne null}"/>
+                                        <h:outputLabel value="#{gria.identificadorErrorSri}" 
+                                                       rendered="#{gria.identificadorErrorSri ne null}"/>
+                                        <h:outputLabel value="#{gria.descripcionErrorSri}" 
+                                                       rendered="#{gria.descripcionErrorSri ne null}"/>
+                                        <h:outputLabel value="#{gria.descripcionAdicionalErrorSri}"
+                                                       rendered="#{gria.descripcionAdicionalErrorSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="#{msg.estado} Autorización SRI"
+                                          width="80">
+                                    <h:outputLabel value="#{gria.estadoAutorizacionSri}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.detalle} Autorización SRI">
+                                    <p:panelGrid columns="1">
+                                        <h:outputLabel value="#{gria.fechaAutorizacionSri}"
+                                                       rendered="#{gria.fechaAutorizacionSri ne null}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{gria.ambienteAutorizacionSri}"
+                                                       rendered="#{gria.ambienteAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{gria.identificadorErrorAutorizacionSri}" 
+                                                       rendered="#{gria.identificadorErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{gria.descripcionErrorAutorizacionSri}" 
+                                                       rendered="#{gria.descripcionErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{gria.descripcionAdicionalErrorAutorizacionSri}" 
+                                                       rendered="#{gria.descripcionAdicionalErrorAutorizacionSri ne null}"/>
+                                        <h:outputLabel value="#{gria.tipoMensajeAutorizacionSri}" 
+                                                       rendered="#{gria.tipoMensajeAutorizacionSri ne null}"/>
+                                    </p:panelGrid>
+                                </p:column>
+
+                           </p:dataTable>
+                        </h:panelGrid>  
+                    </p:tab>
+                </p:tabView>
+                
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

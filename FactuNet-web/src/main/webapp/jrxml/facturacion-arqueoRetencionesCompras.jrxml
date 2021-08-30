@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="facturacion-arqueoCaja" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e2e9e607-6158-4239-b567-fbaa5c83fce3">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="214"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
+			<style backcolor="#CCCCCC"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="ad_fini" class="java.util.Date"/>
+	<parameter name="ad_ffin" class="java.sql.Timestamp"/>
+	<parameter name="proveedor" class="java.lang.String"/>
+	<parameter name="puntoventa" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" class="java.lang.Integer"/>
+	<parameter name="cliente" class="java.lang.String"/>
+	<parameter name="estado" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT factura.fecha,factura.observacion, factura.numero,
+factura.total_retencion,documento_retencion.codigo,
+proveedor.codigo as proveedor,
+datos_personales_proveedor(proveedor,1) as apellidos_p,
+datos_personales_proveedor(proveedor,2) as nombres_p,
+datos_personales_proveedor(proveedor,3) as cedula_p,
+factura.codigo as factura
+from factura  inner join documento_retencion on 
+documento_retencion.factura = factura.codigo inner join  proveedor on
+factura.proveedor = proveedor.codigo 
+where
+factura.estado = $P{estado} and
+factura.empresa = $P{empresa} and
+proveedor.codigo::text like $P{proveedor} and
+factura.fecha between $P{ad_fini}  and  $P{ad_ffin} 
+order by factura.fecha]]>
+	</queryString>
+	<field name="fecha" class="java.sql.Timestamp"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Integer"/>
+	<field name="total_retencion" class="java.math.BigDecimal"/>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="proveedor" class="java.lang.Integer"/>
+	<field name="apellidos_p" class="java.lang.String"/>
+	<field name="nombres_p" class="java.lang.String"/>
+	<field name="cedula_p" class="java.lang.String"/>
+	<field name="factura" class="java.lang.Integer"/>
+	<sortField name="numero"/>
+	<variable name="contador" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$F{numero}]]></variableExpression>
+	</variable>
+	<variable name="total_fin" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_retencion}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="10" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="10" uuid="1d165f48-e560-4dff-9a5e-9969815f32bd"/>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cabecera.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-19" y="0" width="595" height="20" backcolor="#9DB1B8" uuid="49a0d759-2933-4e84-a710-24b35c83309d"/>
+				<staticText>
+					<reportElement mode="Transparent" x="20" y="0" width="274" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="b38111a2-ad78-4b43-be56-e38875e994b9"/>
+					<textElement>
+						<font size="14" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Reporte de Retenciones en Compras]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy HH.mm.ss">
+					<reportElement x="349" y="5" width="57" height="13" forecolor="#FFFFFF" uuid="a4edd925-3dc5-4bd6-ac50-d5c7f091e690"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{ad_fini}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy HH.mm.ss">
+					<reportElement x="450" y="5" width="61" height="12" forecolor="#FFFFFF" uuid="dd398160-8c27-4048-b7b1-1eb1fee0318f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{ad_ffin}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="311" y="5" width="38" height="12" uuid="1e796e48-d99c-4578-af0c-a649d7de67ff"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Desde:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="417" y="5" width="33" height="12" uuid="e49ad40c-0609-4c5d-b487-210bdaedd20a"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Hasta:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="71" height="13" uuid="38f7496e-c158-4c01-905a-8b06e69555e7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No. Documento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="131" y="0" width="76" height="13" uuid="4efe288f-99bf-493b-81e0-8b81a7f5ffc2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Identificador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="207" y="0" width="285" height="13" uuid="cb685517-7843-46ef-9607-ce93495edd20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Proveedor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="71" y="0" width="60" height="13" uuid="6485b8f5-9996-4835-8cde-5c8da3c0026c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="492" y="0" width="58" height="13" uuid="c64d38bb-fbb6-41eb-af3f-8b214afc9394"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="1" y="0" width="553" height="12" uuid="7f877228-aa2f-4f77-9bd9-2e4ea0bccc1b"/>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="491" y="0" width="58" height="12" forecolor="#FF0000" uuid="e8bf73d2-0ebc-48ea-9fb9-3719def95355"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total_retencion}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="206" y="0" width="285" height="12" forecolor="#FF0000" uuid="abfb3d7a-523b-47fa-84bc-78e3723b11f1"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombres_p}+" "+$F{apellidos_p}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="129" y="0" width="76" height="12" forecolor="#FF0000" uuid="5192fd16-8810-49a8-b50a-ad0f07be18f2"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cedula_p}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="69" y="0" width="60" height="12" forecolor="#FF0000" uuid="3a1d0ec3-48bd-4d89-8a81-b85783bec71d"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="69" height="12" forecolor="#FF0000" uuid="c566db15-4ad8-45af-bc7d-130e65f5298f"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="9" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{observacion}+"-"+$F{numero}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<subreport>
+				<reportElement x="1" y="12" width="554" height="10" uuid="fbc5770b-ddab-44e7-9220-1339685a9562"/>
+				<subreportParameter name="factura">
+					<subreportParameterExpression><![CDATA[$F{factura}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "documento-retencion-detalle.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="13">
+			<staticText>
+				<reportElement x="434" y="0" width="58" height="12" forecolor="#000000" uuid="0c719c41-36a5-43b4-90f3-3ae4e781c5db"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="495" y="0" width="58" height="12" uuid="686bae3c-572a-4ef8-9cbc-29e9f4fbac8c"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_fin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-19" y="2" width="595" height="13" backcolor="#9DB1B8" uuid="a8b4542b-3745-4618-bb57-7b6b79377aeb"/>
+				<textField>
+					<reportElement mode="Transparent" x="239" y="0" width="332" height="13" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="218542f6-e181-4a91-8302-e22cfc62b658"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de "+ $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField pattern="EEEEE, dd  MMMMM yyyy HH:mm:ss">
+					<reportElement x="21" y="0" width="218" height="13" forecolor="#FFFFFF" uuid="5dcb7ee5-1bc0-4fd0-86a8-f579f50458b0"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+</jasperReport>

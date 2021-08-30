@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.transferencia}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarTransferenciasBean.listaTransferenciaProductos}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         lazy="true" 
+                         rowsPerPageTemplate="10,15,20">
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="detalle"
+                                 value="#{pedido.facturaDetalleList}"
+                                 rows="10"
+                                 paginator="true">
+                        
+                        <p:column headerText="#{msg.bodega}"
+                                  width="120">
+                            <h:outputLabel value="#{detalle.bodega.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.codigoBarras}"
+                                  width="120">
+                            <h:outputLabel value="#{detalle.productoServicio.codigoBarras}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{detalle.productoServicio.nombre}" />
+                        </p:column>   
+                    </p:dataTable>
+                </p:rowExpansion>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="60"
+                          filterBy="#{pedido.numero}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarTransferenciasBean.numero}"
+                                     size="5"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarTransferenciasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarTransferenciasBean.generarReportePDF(pedido.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{pedido.numero}" />
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarTransferenciasBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarTransferenciasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarTransferenciasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.bodega}"
+                          width="50">
+                    <h:outputLabel value="#{pedido.bodega.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.responsable}"
+                          width="130">
+                    <h:outputLabel value="#{pedido.empleado.persona.nombres} #{pedido.empleado.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.descripcion}"
+                          width="150">
+                    <h:outputLabel value="#{pedido.descripcion}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.estado}"
+                          width="110"
+                          filterBy="#{pedido.estado}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu value="#{buscarTransferenciasBean.estado}" 
+                                         style="width:5px"
+                                         panelStyle="width:5px">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue='0' />
+                            <f:selectItem itemLabel="#{msg.ingresada}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.anulada}" itemValue="2" />
+                            <p:ajax listener="#{buscarTransferenciasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputLabel value="#{msg.ingresada}" rendered="#{pedido.estado eq 1}" />
+                    <h:outputLabel value="#{msg.anulada}" rendered="#{pedido.estado eq 2}" />
+                </p:column>
+
+                <p:column headerText="#{msg.total}"
+                          width="40">
+                    <h:outputLabel value="#{pedido.total}"/>
+                </p:column>
+                
+                <p:column style="text-align: center"
+                          width="30">
+                    <p:commandButton  actionListener="#{buscarTransferenciasBean.seleccionar(pedido)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,307 @@
+ <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.producto}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="true" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoPaquetePedidosBean.agregar()}"
+                                     style="width: 100%;"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoPaquetePedidosBean.cerrar()}"
+                                     style="width: 100%;"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 100%">
+                    
+                    <h:outputLabel value="#{msg.nombre} #{msg.producto}: "/>
+                    <h:panelGrid columns="2">
+                        <p:inputText value="#{nuevoPaquetePedidosBean.productoPaquete.nombre}"
+                                     size="80"
+                                     maxlength="100"
+                                     required="true"
+                                     styleClass="texto_obligatorio"/>    
+                        <p:barcode value="#{nuevoPaquetePedidosBean.productoPaquete.codigoBarras}" 
+                                   type="code128"
+                                   format="png"
+                                   width="90"
+                                   height="40"/>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.codigoBarras}: "/>
+                    <h:panelGrid columns="2">
+                        <p:inputText value="#{nuevoPaquetePedidosBean.productoPaquete.codigoBarras}"
+                                     size="35"
+                                     maxlength="100"
+                                     id="txtCodigoBarras"
+                                     readonly="#{nuevoPaquetePedidosBean.autogenerar}"/>
+                        <p:selectBooleanCheckbox value="#{nuevoPaquetePedidosBean.autogenerar}"
+                                                 title="#{msg.autogenerar}">
+                            <p:ajax update="txtCodigoBarras"/>
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.iva}: "/>         
+                    <p:selectOneMenu value="#{nuevoPaquetePedidosBean.productoPaquete.iva}" 
+                                     style="width: 50px">
+                        <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                    </p:selectOneMenu>
+                    
+                </h:panelGrid>
+                <h:panelGrid columns="4">
+                    
+                    <h:outputLabel value="#{msg.descripcion}: "/>
+                    <p:inputTextarea rows="4" cols="50" 
+                                     autoResize="false" 
+                                     maxlength="500"
+                                     value="#{nuevoPaquetePedidosBean.productoPaquete.descripcion}"/>
+                    
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoPaquetePedidosBean.urlLogo}"
+                                        width="100px"
+                                        height="100px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <h:panelGrid columns="2">
+                            <p:fileUpload  mode="advanced" 
+                                           skinSimple="true"
+                                           sizeLimit="1000000"  
+                                           label="Seleccionar"
+                                           auto="true"
+                                           fileUploadListener="#{nuevoPaquetePedidosBean.subirLogo}"
+                                           allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                           cancelLabel="Cancelar" 
+                                           update=":frmNuevo:grMensajes, :frmNuevo:logo"/>
+                            <p:commandButton onclick="PF('dlgCamara').show();"
+                                             icon="fa fa-fw fa-camera"
+                                             style="width: 35px;height: 30px"
+                                             title="#{msg.camara}"
+                                             rendered="#{login.cuenta.camara ne 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                   
+                </h:panelGrid>
+                <h:panelGrid columns="1"
+                             columnClasses="topAligned">
+                    
+                    
+                    
+                    <p:dataTable var="pro" 
+                                 value="#{nuevoPaquetePedidosBean.productoPaquete.paqueteVentaList}"
+                                 id="tablaProductosPaquete"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+                        
+                        <f:facet name="header">
+                            <p:fragment autoUpdate="true">
+                                <p:commandButton value="#{msg.buscar} #{msg.productos}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{nuevoPaquetePedidosBean.verBusquedaProductosStock}">
+                                 <p:ajax event="dialogReturn" 
+                                         listener="#{nuevoPaquetePedidosBean.onProductoSelect}" 
+                                         update="tablaProductosPaquete, :frmNuevo:grMensajes" />
+                                </p:commandButton>
+                            </p:fragment>
+                        </f:facet>
+
+                        <p:column headerText="#{msg.producto}">
+                            <h:outputText value="#{pro.producto.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.cantidad}"
+                                  width="40"
+                                  style="text-align: right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{pro.cantidad}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{pro.cantidad}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax listener="#{nuevoPaquetePedidosBean.onCellEdit(pro)}"
+                                                update=":frmNuevo:tablaProductosPaquete"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp}"
+                                  width="40"
+                                  style="text-align: right">
+                            <h:outputText value="#{pro.producto.pvp}" />
+                        </p:column>
+                        
+                        <p:column headerText="% #{msg.descuento}"
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{pro.descuento} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{pro.descuento}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="sign"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax listener="#{nuevoPaquetePedidosBean.onCellEditDescuento(pro)}"
+                                                update=":frmNuevo:tablaProductosPaquete"/>
+                                    </p:inputNumber>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% #{msg.comision}"
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{pro.comision}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{pro.comision}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="sign"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax listener="#{nuevoPaquetePedidosBean.onCellEditComision(pro)}"
+                                                update=":frmNuevo:tablaProductosPaquete"/>
+                                    </p:inputNumber>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp} #{msg.paquetes}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{pro.pvp}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp} #{msg.paquetes}"
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="false">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{pro.pvp}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{pro.pvp}" 
+                                                   decimalPlaces="#{login.cuenta.empleado.persona.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="font-size: 13px;font-style: normal;font-weight: bold">
+                                        <p:ajax listener="#{nuevoPaquetePedidosBean.onCellEdit(pro)}"
+                                                update=":frmNuevo:tablaProductosPaquete"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{pro.total}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="40"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                              update=":frmNuevo:grMensajes, :frmNuevo:tablaProductosPaquete" 
+                                              actionListener="#{nuevoPaquetePedidosBean.eliminarProducto(pro)}"
+                                              title="#{msg.eliminar}">
+                                  <p:confirm header="#{msg.confirmacion}" 
+                                             message="#{msg.eliminar}" 
+                                             icon="ui-icon-alert" />
+                            </p:commandButton>
+                        </p:column>
+                        
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column footerText="#{msg.pvp} #{msg.normal}" 
+                                          colspan="2" 
+                                          style="text-align:right"/>
+                                <p:column footerText="#{nuevoPaquetePedidosBean.pvpNormal}" 
+                                          style="text-align:right"/>
+                                
+                                <p:column footerText="#{msg.pvp} #{msg.paquetes}" 
+                                          colspan="3" 
+                                          style="text-align:right"/>
+                                <p:column footerText="#{nuevoPaquetePedidosBean.productoPaquete.pvp}" 
+                                          style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </h:panelGrid> 
+            </p:fieldset>
+            <p:dialog header="#{msg.foto}" 
+                        widgetVar="dlgCamara"
+                        minHeight="40"
+                        rendered="#{login.cuenta.camara ne 1}">
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:photoCam widgetVar="imagen" 
+                                listener="#{nuevoPaquetePedidosBean.onCapture}" 
+                                update=":frmNuevo:logo" />
+                    <p:commandButton type="button" 
+                                     icon="fa fa-fw fa-camera"
+                                     title="#{msg.capturar}"
+                                     style="width: 35px;height: 30px"
+                                     onclick="PF('imagen').capture()"/>
+                </h:panelGrid>
+            </p:dialog>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

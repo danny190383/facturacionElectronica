@@ -1,0 +1,490 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.proveedor}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevoProveedor">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+          
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoProveedorBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoProveedorBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset  id="pnlProveedor">
+                <h:panelGrid columns="2"
+                             width="80%">
+                    <p:selectOneMenu value="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion}"
+                                     style="width: 100px"
+                                     converter="omnifaces.SelectItemsConverter">
+                       <f:selectItems value="#{nuevoProveedorBean.listaTipoIdentificacion}" 
+                                      var="tipoId"
+                                      itemLabel="#{tipoId.nombre}"
+                                      itemValue="#{tipoId}"/>
+                       <p:ajax update="pnlCedula"/>
+                   </p:selectOneMenu>
+                   <h:panelGrid columns="2" id="pnlCedula">
+                       <p:inputText value="#{nuevoProveedorBean.proveedor.persona.cedula}"
+                                    maxlength="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion.tipoValidacion.longitud}"
+                                    size="35"
+                                    required="true"
+                                    style="background-color: khaki "
+                                    rendered="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion.tipoValidacion.nombre eq 'CEDULA - RUC'}"
+                                    validator="com.jvc.factunet.validador.ValidarCedulaRuc">
+                           <p:keyFilter regEx="/[\d]/" 
+                                        preventPaste="false"/>
+                       </p:inputText> 
+
+                       <p:inputText value="#{nuevoProveedorBean.proveedor.persona.cedula}"
+                                    maxlength="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion.tipoValidacion.longitud}"
+                                    size="35"
+                                    required="true"
+                                    rendered="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion.tipoValidacion.nombre ne 'CEDULA - RUC'}"
+                                    style="background-color: khaki ">
+                           <p:keyFilter regEx="#{nuevoProveedorBean.proveedor.persona.tipoIdentificacion.tipoValidacion.valor}" 
+                                        preventPaste="false"/>
+                       </p:inputText> 
+
+                       <p:commandButton actionListener="#{nuevoProveedorBean.verificarPersona()}"
+                                        icon="ui-icon-search"
+                                        title="#{msg.buscar}" 
+                                        update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:pnlProveedor"
+                                        partialSubmit="true"
+                                        process="pnlCedula"/>
+                   </h:panelGrid>
+                    <h:outputLabel value="#{msg.nombres}" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevoProveedorBean.proveedor.persona.nombres}"
+                                 maxlength="50"
+                                 size="100"
+                                 required="true"
+                                 style="background-color: khaki "/>
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+
+                    <h:panelGrid columns="4"
+                                 style="margin-bottom:10px" cellpadding="5">
+
+                        <h:outputLabel value="#{msg.apellidos}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevoProveedorBean.proveedor.persona.apellidos}"
+                                     maxlength="50"
+                                     size="35"/>
+
+                        <h:outputLabel value="#{msg.direccion}"
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="2" cols="30" 
+                                         autoResize="false" 
+                                         required="true"
+                                         style="background-color: khaki "
+                                         value="#{nuevoProveedorBean.proveedor.persona.direccion}"/>
+
+                        <h:outputLabel value="#{msg.ciudad}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid id="pnlCiudad"
+                                     columns="2">
+                            <p:selectOneMenu value="#{nuevoProveedorBean.proveedor.persona.ciudad}"
+                                             style="width: 147px"
+                                             id="slcCiudad"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             filter="true" filterMatchMode="startsWith">
+                                <f:selectItems value="#{nuevoProveedorBean.listaCiudad}" 
+                                               var="ciudad"
+                                               itemLabel="#{ciudad.nombre}"
+                                               itemValue="#{ciudad}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton actionListener="#{nuevoProveedorBean.refreshCiudad()}"
+                                             icon="ui-icon-arrowrefresh-1-w"
+                                             title="#{msg.recargar}" 
+                                             update="slcCiudad"
+                                             partialSubmit="true"
+                                             process="pnlCiudad"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.descripcion}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="2" cols="30"
+                                         autoResize="false" 
+                                         value="#{nuevoProveedorBean.proveedor.detalle}"/>
+                        
+                        <h:outputLabel value="#{msg.telefono}" />
+                        <p:inputText value="#{nuevoProveedorBean.proveedor.persona.telefono}"
+                                     maxlength="10"
+                                     size="35"
+                                     required="true"
+                                     style="background-color: khaki ">
+                            <p:keyFilter regEx="/[\d]/"/>
+                        </p:inputText>
+
+                        <h:outputLabel value="#{msg.correo}"
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevoProveedorBean.proveedor.persona.email}"
+                                     size="35"
+                                     maxlength="50"
+                                     required="true"
+                                     style="background-color: khaki "
+                                     validatorMessage="#{msg.emailInvalido}">
+                             <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail" />
+                        </p:inputText>
+
+                        <h:outputLabel value="#{msg.capacidadCredito}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoProveedorBean.proveedor.capacidadCredito}"
+                                         size="5"
+                                         maxlength="7">
+                                <f:validateDoubleRange minimum="0.0"/>
+                            </p:inputText> 
+                            <h:outputLabel value="$" 
+                                           styleClass="texto_etiquetas"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.descuento}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoProveedorBean.proveedor.descuento}"
+                                         size="5"
+                                         maxlength="7">
+                                <f:validateDoubleRange minimum="0.0"/>
+                            </p:inputText> 
+                            <h:outputLabel value="%"
+                                           styleClass="texto_etiquetas"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.interesMora}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoProveedorBean.proveedor.interesMora}"
+                                         size="4"
+                                         maxlength="5">
+                                <f:validateDoubleRange minimum="0" maximum="100000000.0" /> 
+                            </p:inputText> 
+                            <h:outputLabel value="% #{msg.mensual}" 
+                                           styleClass="texto_etiquetas"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.tiempoMaxCredito}"
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoProveedorBean.proveedor.tiempoMaxCredito}"
+                                        size="4"
+                                        maxlength="5">
+                                <p:keyFilter regEx="/[\d]/" />
+                            </p:inputText>
+                            <h:outputLabel value="#{msg.dias}" 
+                                           styleClass="texto_etiquetas"/>
+                        </h:panelGrid>
+                        <h:outputLabel value="#{msg.estado}"
+                                       styleClass="texto_etiquetas"/>
+                        <p:selectBooleanButton onLabel="#{msg.activo}" 
+                                               offLabel="#{msg.inactivo}" 
+                                               style="width:60px" 
+                                               onIcon="ui-icon-check" offIcon="ui-icon-close"
+                                               value="#{nuevoProveedorBean.proveedor.estado}"/>
+                        
+                        <h:outputLabel value="Obligado Contabilidad"/> 
+                        <p:selectOneRadio value="#{nuevoProveedorBean.proveedor.persona.obligadoContabilidad}">
+                          <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                          <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <h:outputLabel value="#{msg.foto}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoProveedorBean.urlLogo}"
+                                        width="150px"
+                                        height="150px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <h:panelGrid columns="2">
+                            <p:fileUpload  mode="advanced" 
+                                           skinSimple="true"
+                                           sizeLimit="1000000"  
+                                           label="#{msg.seleccionar}"
+                                           auto="true"
+                                           listener="#{nuevoProveedorBean.subirLogo}"
+                                           allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                           cancelLabel="#{msg.cancelar}" 
+                                           update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:logo"/>
+
+                            <p:commandButton onclick="PF('dlgCamara').show();"
+                                             icon="fa fa-fw fa-camera"
+                                             style="width: 35px;height: 30px"
+                                             title="#{msg.camara}"
+                                             rendered="#{login.empleado.cuenta.camara ne 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGrid>
+
+                <p:tabView id="tabDatos">
+                    <p:tab title="#{msg.listaContactos}">
+                        <p:dataTable value="#{nuevoProveedorBean.proveedor.contactoPersonaList}"
+                                     id="tablaContactos" 
+                                     emptyMessage="#{msg.tablaVacia}"
+                                     var="contacto">
+
+                            <f:facet name="header">
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                 actionListener="#{nuevoProveedorBean.verContacto(null)}" 
+                                                 icon="ui-icon-comment" 
+                                                 update=":frmNuevoProveedor:grMensajes">
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{nuevoProveedorBean.onContactoSelect}"
+                                            update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactos"/>
+                                </p:commandButton>
+
+                                <p:commandButton value="#{msg.buscar}"  
+                                                 immediate="true"
+                                                 icon="ui-icon-search"
+                                                 actionListener="#{nuevoProveedorBean.verBusquedaPersonas}" >
+                                  <p:ajax event="dialogReturn" 
+                                          listener="#{nuevoProveedorBean.onPersonaSelect}" 
+                                          update="tablaContactos" />
+                                </p:commandButton>
+                            </f:facet>
+
+                            <p:column headerText="#{msg.cedula}"
+                                      width="100">
+                                <h:outputLabel value="#{contacto.persona.cedula}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.nombres}">
+                                <h:outputLabel value="#{contacto.persona.nombres} #{contacto.persona.apellidos}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.direccion}">
+                                <h:outputLabel value="#{contacto.persona.direccion}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.opcion}" 
+                                      width="70"
+                                      style="text-align: center">
+
+                                <p:commandButton  icon="ui-icon-close" 
+                                                  update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactos" 
+                                                  actionListener="#{nuevoProveedorBean.eliminarContacto(contacto)}"
+                                                  immediate="true"
+                                                  title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:commandButton icon="ui-icon-pencil" 
+                                                 title="#{msg.editar}"
+                                                 action="#{nuevoProveedorBean.verContacto(contacto)}">
+                                    <p:ajax event="dialogReturn" 
+                                            update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactos"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="#{msg.mediosContactar}">
+                        <p:dataTable value="#{nuevoProveedorBean.proveedor.contactarPersonaList}"
+                                     id="tablaContactosWeb" 
+                                     emptyMessage="#{msg.tablaVacia}"
+                                     var="contactoWeb">
+
+                            <f:facet name="header">
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                 actionListener="#{nuevoProveedorBean.verContactar(null)}" 
+                                                 update=":frmNuevoProveedor:grMensajes"
+                                                 icon="ui-icon-comment" >
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{nuevoProveedorBean.onContactarSelect}"
+                                            update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactosWeb"/>
+                               </p:commandButton>
+                            </f:facet>
+
+                            <p:column headerText="#{msg.nombre}">
+                                <h:outputLabel value="#{contactoWeb.tipoContacto.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.descripcion}">
+                                <h:outputLabel value="#{contactoWeb.descripcion}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.valor}">
+                                <h:outputLabel value="#{contactoWeb.valor}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.opcion}" 
+                                      width="70"
+                                      style="text-align: center">
+
+                                <p:commandButton  icon="ui-icon-close" 
+                                                  update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactosWeb" 
+                                                  actionListener="#{nuevoProveedorBean.eliminarContactoWeb(contactoWeb)}"
+                                                  immediate="true"
+                                                  title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:commandButton icon="ui-icon-pencil" 
+                                                 title="#{msg.editar}"
+                                                 action="#{nuevoProveedorBean.verContactar(contactoWeb)}">
+                                   <p:ajax event="dialogReturn" 
+                                           update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaContactosWeb"/>
+                               </p:commandButton>   
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="#{msg.bancos}">
+                        <p:dataTable value="#{nuevoProveedorBean.proveedor.bancoPersonaList}"
+                                     id="tablaBancos" 
+                                     emptyMessage="#{msg.tablaVacia}"
+                                     var="bancos">
+
+                            <f:facet name="header">
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                 actionListener="#{nuevoProveedorBean.verBancos(null)}" 
+                                                 update=":frmNuevoProveedor:grMensajes"
+                                                 icon="ui-icon-comment" >
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{nuevoProveedorBean.onBancosSelect}"
+                                            update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaBancos"/>
+                               </p:commandButton>
+                            </f:facet>
+
+                            <p:column headerText="#{msg.banco}">
+                                <h:outputLabel value="#{bancos.banco.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.tipoCuenta}">
+                                <h:outputLabel value="#{bancos.tipoCuenta.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.numeroCuenta}">
+                                <h:outputLabel value="#{bancos.numeroCuenta}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.observacion}">
+                                <h:outputLabel value="#{bancos.observacion}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.opcion}" 
+                                      width="70"
+                                      style="text-align: center">
+
+                                <p:commandButton  icon="ui-icon-close" 
+                                                  update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaBancos" 
+                                                  actionListener="#{nuevoProveedorBean.eliminarBanco(bancos)}"
+                                                  immediate="true"
+                                                  title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:commandButton icon="ui-icon-pencil" 
+                                                 title="#{msg.editar}"
+                                                 action="#{nuevoProveedorBean.verBancos(bancos)}">
+                                   <p:ajax event="dialogReturn" 
+                                           update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaBancos"/>
+                               </p:commandButton>   
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="#{msg.retencion}"
+                           rendered="false">
+                        <p:dataTable value="#{nuevoProveedorBean.proveedor.persona.retencionPersonaList}"
+                                     id="tablaRetencion" 
+                                     emptyMessage="#{msg.tablaVacia}"
+                                     var="retencion">
+
+                            <f:facet name="header">
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                 actionListener="#{nuevoProveedorBean.verRetencion(null)}" 
+                                                 update=":frmNuevoProveedor:grMensajes"
+                                                 icon="ui-icon-comment" >
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{nuevoProveedorBean.onRetencionSelect}"
+                                            update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaRetencion"/>
+                               </p:commandButton>
+                            </f:facet>
+
+                            <p:column headerText="#{msg.tiporetencion}">
+                                <h:outputLabel value="#{retencion.tipoRetencion.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.codigodeimpuesto}">
+                                <h:outputLabel value="#{retencion.tipoRetencion.codigoImpuesto}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.observacion}">
+                                <h:outputLabel value="#{retencion.observacion}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg.opcion}" 
+                                      width="70"
+                                      style="text-align: center">
+
+                                <p:commandButton  icon="ui-icon-close" 
+                                                  update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaRetencion" 
+                                                  actionListener="#{nuevoProveedorBean.eliminarRetencion(retencion)}"
+                                                  immediate="true"
+                                                  title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:commandButton icon="ui-icon-pencil" 
+                                                 title="#{msg.editar}"
+                                                 action="#{nuevoProveedorBean.verRetencion(retencion)}">
+                                   <p:ajax event="dialogReturn" 
+                                           update=":frmNuevoProveedor:grMensajes, :frmNuevoProveedor:tabDatos:tablaRetencion"/>
+                               </p:commandButton>   
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>  
+                <p:dialog header="#{msg.foto}" 
+                          widgetVar="dlgCamara"
+                          minHeight="40"
+                          rendered="#{login.empleado.cuenta.camara ne 1}">
+                  <h:panelGrid columns="1" cellpadding="5">
+                      <p:photoCam widgetVar="imagen" 
+                                  listener="#{nuevoProveedorBean.onCapture}" 
+                                  update=":frmNuevoProveedor:logo" />
+                      <p:commandButton type="button" 
+                                       icon="fa fa-fw fa-camera"
+                                       title="#{msg.capturar}"
+                                       style="width: 35px;height: 30px" 
+                                       onclick="PF('imagen').capture()"/>
+                  </h:panelGrid>
+               </p:dialog>
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

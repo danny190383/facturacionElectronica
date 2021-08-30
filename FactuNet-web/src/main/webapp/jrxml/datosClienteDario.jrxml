@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="datosCliente" pageWidth="200" pageHeight="55" whenNoDataType="AllSectionsNoDetail" columnWidth="200" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e2b0710c-48f6-431f-a84d-69c5e84ff5dd">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="codigo" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT persona.nombres, persona.apellidos, persona.cedula, persona.direccion, persona.email, persona.telefono from cliente inner join tipo_persona on
+tipo_persona.codigo = cliente.codigo inner join persona on
+tipo_persona.persona = persona.codigo where
+cliente.codigo = $P{codigo}]]>
+	</queryString>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="apellidos" class="java.lang.String"/>
+	<field name="cedula" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String">
+		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
+	</field>
+	<field name="telefono" class="java.lang.String"/>
+	<columnHeader>
+		<band height="55">
+			<textField>
+				<reportElement x="1" y="14" width="195" height="12" uuid="b05a91a8-840a-45a6-b729-14b5142a3f93"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="28" width="195" height="12" uuid="7cf1c09e-4b87-41c5-bdd6-f792003866bc"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="0" width="195" height="12" uuid="90244fb7-f833-4ea3-aa13-be3712fc8cdc"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres} +" "+ ($F{apellidos} == null ? " " : $F{apellidos})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="42" width="195" height="12" uuid="51d952eb-40dc-4b26-a4d7-8b35484242a3"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefono} == null ? " " : $F{telefono}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+</jasperReport>

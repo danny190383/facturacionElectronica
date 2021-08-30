@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.mascotas}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevaMascota">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevaMascotaBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevaMascotaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 90%">
+                    <h:panelGrid columns="2" 
+                                 style="width: 100%">
+
+                        <h:outputLabel value="#{msg.nombres}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevaMascotaBean.mascota.nombre}"
+                                     maxlength="50"
+                                     size="35"
+                                     required="true"
+                                     style="background-color: khaki "/>
+
+                        <h:outputLabel value="#{msg.nacimiento} :" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:calendar value="#{nuevaMascotaBean.mascota.fechaNacimiento}" 
+                                    navigator="true" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    size="15"/>
+
+                        <h:outputLabel value="#{msg.chip}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevaMascotaBean.mascota.chip}"
+                                     maxlength="50"
+                                     size="30"/>
+
+                        <h:outputLabel value="#{msg.especie}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid id="pnlEspecie"
+                                     columns="2">
+                            <p:selectOneMenu value="#{nuevaMascotaBean.mascota.especie}"
+                                             style="width: 147px"
+                                             id="slcEspecie"
+                                             filter="true" 
+                                             filterMatchMode="startsWith"
+                                             converter="omnifaces.SelectItemsConverter">
+                                <f:selectItems value="#{nuevaMascotaBean.listaEspecies}" 
+                                               var="especie"
+                                               itemLabel="#{especie.nombre}"
+                                               itemValue="#{especie}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton actionListener="#{nuevaMascotaBean.refreshEspecie()}"
+                                             icon="ui-icon-arrowrefresh-1-w"
+                                             title="#{msg.recargar}" 
+                                             update="slcEspecie"
+                                             partialSubmit="true"
+                                             process="pnlEspecie"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.raza}" 
+                                       styleClass="texto_etiquetas"/>
+                        <h:panelGrid id="pnlRaza"
+                                     columns="2">
+                            <p:selectOneMenu value="#{nuevaMascotaBean.mascota.raza}"
+                                             style="width: 147px"
+                                             id="slcRaza"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             filter="true" 
+                                             filterMatchMode="startsWith">
+                                <f:selectItems value="#{nuevaMascotaBean.listaRaza}" 
+                                               var="raza"
+                                               itemLabel="#{raza.nombre}"
+                                               itemValue="#{raza}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton actionListener="#{nuevaMascotaBean.refreshRaza()}"
+                                             icon="ui-icon-arrowrefresh-1-w"
+                                             title="#{msg.recargar}" 
+                                             update="slcRaza"
+                                             partialSubmit="true"
+                                             process="pnlRaza"/>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.sexo}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:selectOneMenu value="#{nuevaMascotaBean.mascota.sexo}"
+                                         style="width: 147px"
+                                         converter="omnifaces.SelectItemsConverter">
+                            <f:selectItems value="#{nuevaMascotaBean.listaSexo}" 
+                                           var="sexo"
+                                           itemLabel="#{sexo.nombre}"
+                                           itemValue="#{sexo}"/>
+                            <p:ajax update="lblReproductor"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputLabel value="#{nuevaMascotaBean.mascota.sexo.codigo eq 387 ? msg.reproductor : msg.cachorros}" 
+                                       styleClass="texto_etiquetas"
+                                       id="lblReproductor"/>
+                        <p:selectOneRadio value="#{nuevaMascotaBean.mascota.reproductor}" 
+                                          unselectable="true"
+                                          required="true">
+                            <f:selectItem itemLabel="SI" itemValue="true"/>
+                            <f:selectItem itemLabel="NO" itemValue="false"/>
+                        </p:selectOneRadio>
+
+                        <h:outputLabel value="#{msg.color}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevaMascotaBean.mascota.color}"
+                                     maxlength="50"
+                                     size="30"/>
+
+                        <h:outputLabel value="#{msg.descripcion}"
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="8" cols="40" 
+                                         value="#{nuevaMascotaBean.mascota.descripcion}"/>
+
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1"
+                                 style="text-align: center">
+
+                        <h:outputLabel value="#{msg.foto}" />
+                        <p:graphicImage id="logo"
+                                      url="#{nuevaMascotaBean.urlLogo}"
+                                      width="150px"
+                                      height="150px"
+                                      style="border: solid 1px"
+                                      cache="false" />
+                        <h:panelGrid columns="2">
+
+                            <p:fileUpload  mode="advanced" 
+                                           skinSimple="true"
+                                           sizeLimit="1000000"  
+                                           label="Seleccionar"
+                                           auto="true"
+                                           listener="#{nuevaMascotaBean.subirLogo}"
+                                           allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                           cancelLabel="Cancelar" 
+                                           update=":frmNuevaMascota:grMensajes, :frmNuevaMascota:logo"/>
+
+                            <p:commandButton onclick="PF('dlgCamara').show();"
+                                             icon="fa fa-fw fa-camera"
+                                             style="width: 35px;height: 30px"
+                                             title="#{msg.camara}"
+                                             rendered="#{login.empleado.cuenta.camara ne 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </p:fieldset> 
+            <p:dialog header="#{msg.foto}" 
+                      widgetVar="dlgCamara"
+                      minHeight="40"
+                      rendered="#{login.empleado.cuenta.camara ne 1}">
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:photoCam widgetVar="imagen" 
+                                listener="#{nuevaMascotaBean.onCapture}" 
+                                update=":frmNuevaMascota:logo" />
+                    <p:commandButton type="button" 
+                                     icon="fa fa-fw fa-camera"
+                                     title="#{msg.capturar}"
+                                     style="width: 35px;height: 30px" 
+                                     onclick="PF('imagen').capture()"/>
+                </h:panelGrid>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</html>

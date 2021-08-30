@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            
+                            <p:commandButton value="#{msg.guardar}" 
+                                             icon="ui-icon-disk"
+                                             actionListener="#{notaEntregaBean.guardar}"
+                                             update=":frmCabecera:grMensajes"
+                                             rendered="#{notaEntregaBean.facturaVenta.codigo ne null}"/>  
+                            
+                            <p:commandButton value="#{msg.facturaVenta}"  
+                                             icon="ui-icon-search"
+                                             actionListener="#{notaEntregaBean.verBusquedaFacturas}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{notaEntregaBean.onFacturaSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                            <h:commandLink target="_blank" 
+                                           actionListener="#{notaEntregaBean.generarReportePDF()}"
+                                           disabled="#{notaEntregaBean.facturaVenta.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print"/>
+                            </h:commandLink>
+                                
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{notaEntregaBean.facturaVenta.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{notaEntregaBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{notaEntregaBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{notaEntregaBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.notaEntrega}"
+                         id="pnlPrincipal">
+                    <p:tabView>
+                        <p:tab title="#{msg.datosGenerales}">
+                            <h:panelGrid columns="2">
+                                <p:fieldset legend="#{msg.datosGenerales}"
+                                             style="height: 140px">
+                                    <h:panelGrid columns="4">
+
+                                        <h:outputLabel value="#{msg.numero} :" 
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{notaEntregaBean.facturaVenta.numero}" 
+                                                       styleClass="texto_etiquetas"
+                                                       style="color: #e9322d;font-size: 13px"/>
+
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msg.descripcion}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 50px;width: 200px"
+                                                     autoResize="false" 
+                                                     maxlength="800"
+                                                     value="#{notaEntregaBean.facturaVenta.descripcion}"
+                                                     readonly="true"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                <p:fieldset legend="#{msg.cliente}"
+                                            style="height: 140px;width: 280px">
+
+                                    <h:panelGrid columns="2"
+                                                 id="pnlCliente">
+                                        
+                                        <h:outputLabel value="#{msg.cedula}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{notaEntregaBean.cliente.persona.cedula}"
+                                                       styleClass="texto_etiquetas" />
+                                   
+                                        <h:outputLabel value="#{msg.cliente}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{notaEntregaBean.cliente.persona.nombres} #{notaEntregaBean.cliente.persona.apellidos}"
+                                                       styleClass="texto_etiquetas"/>
+
+                                    </h:panelGrid>
+                                </p:fieldset>
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="#{msg.guia} #{msg.remision}">
+                            
+                            <p:dataTable var="guia"
+                                         value="#{notaEntregaBean.facturaVenta.guiaRemisionList}"
+                                         id="tablaGuia"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         scrollable="true" scrollHeight="90">
+
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true"
+                                                rendered="#{notaEntregaBean.facturaVenta.codigo ne null}">
+                                        <p:commandButton value="#{msg.nuevo} #{msg.guia}"  
+                                                         actionListener="#{notaEntregaBean.verGuia(null)}" 
+                                                         update=":frmCabecera:grMensajes"
+                                                         icon="ui-icon-comment">
+                                           <p:ajax event="dialogReturn" 
+                                                   listener="#{notaEntregaBean.onGuiaSelect}"
+                                                   update=":frmCabecera:grMensajes, tablaGuia"/>
+                                        </p:commandButton>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column headerText="#{msg.secuencia}"
+                                          width="50"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.secuencia}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.motivo}"
+                                          width="100">
+                                    <h:outputLabel value="#{guia.motivo.nombre}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.salida}"
+                                          width="70">
+                                    <h:outputLabel value="#{guia.fechaEnvio}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.recepcion}"
+                                          width="70">
+                                    <h:outputLabel value="#{guia.fechaRecepcion}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.transportistas}">
+                                    <h:outputLabel value="#{guia.transportista.persona.nombres}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.valor}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.valor}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="50"
+                                          style="text-align: center">
+                                    
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{notaEntregaBean.generarReportePDF(guia.codigo)}"
+                                                   rendered="#{notaEntregaBean.facturaVenta.codigo ne null}">
+                                         <p:commandButton type="button" icon="ui-icon-print"/>
+                                    </h:commandLink>
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, tablaGuia" 
+                                                      actionListener="#{notaEntregaBean.eliminarGuia(guia)}"
+                                                      title="#{msg.eliminar}"
+                                                      rendered="#{notaEntregaBean.facturaVenta.estado eq 1}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, tablaGuia" 
+                                                      actionListener="#{notaEntregaBean.actualizarGuia(guia)}"
+                                                      title="#{msg.anular}"
+                                                      rendered="#{guia.codigo ne null}"
+                                                      disabled="#{guia.estado eq 2}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.anular}" 
+                                                     icon="ui-icon-trash" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{notaEntregaBean.verGuia(guia)}"
+                                                     disabled="#{guia.estado eq 2}">
+                                          <p:ajax event="dialogReturn" 
+                                                  update=":frmCabecera:grMensajes, tablaGuia"
+                                                  listener="#{notaEntregaBean.calcularTransporte}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column footerText="#{msg.total} #{msg.transporte}" 
+                                                  colspan="2" 
+                                                  style="text-align:right"/>
+                                        <p:column footerText="#{notaEntregaBean.totalTransporte}" 
+                                                  style="text-align:right"/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    <p:dataTable var="items" 
+                                 id="tablaFacturaVenta"
+                                 value="#{notaEntregaBean.facturaVenta.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <p:column style="width:16px">
+                            <p:rowToggler rendered="#{items.isPaquete}"/>
+                        </p:column>
+                        
+                        <p:rowExpansion>
+                            <p:dataTable var="paqueteP"
+                                         value="#{items.detallePaqueteList}"
+                                         rows="10"
+                                         paginator="true"
+                                         rendered="#{notaEntregaBean.facturaVenta.estado ne 1}"
+                                         id="tablaDetalleProductosPaquete">
+
+                                <p:column headerText="#{msg.bodega}"
+                                          width="40"
+                                          style="text-align:center">
+                                    <h:outputLabel value="#{paqueteP.bodega.siglas}"
+                                                   title="#{paqueteP.bodega.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.codigoBarras}"
+                                          width="130">
+                                    <h:outputLabel value="#{paqueteP.productoServicio.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.productoServicio.nombre}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{paqueteP.cantidad}" />
+                                </p:column> 
+                                
+                                <p:column headerText="#{msg.total}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{paqueteP.subtotalConDescuento}" />
+                                </p:column> 
+                            </p:dataTable>
+                        </p:rowExpansion>
+                        
+                        <p:column headerText="#{msg.bodega}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.bodega.siglas}"
+                                           title="#{items.bodega.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="Cant."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.cantidad}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                        </p:column>
+
+                        <p:column headerText="% Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.descuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.valorDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario} Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total} Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="50"
+                                  style="text-align: center"
+                                  rendered="#{notaEntregaBean.facturaVenta.codigo ne null}">
+                            
+                            <p:commandButton  icon="ui-icon-folder-open"
+                                              title="#{msg.kardex}"
+                                              actionListener="#{notaEntregaBean.verKardex(items.productoServicio)}"/>
+                            
+                            <p:commandButton  icon="ui-icon-comment" 
+                                              title="#{msg.series}"
+                                              actionListener="#{notaEntregaBean.verRegistroSeries(items)}" 
+                                              update=":frmCabecera:grMensajes">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{notaEntregaBean.onRegistroSeriesSelect}"
+                                        update="tablaFacturaVenta, :frmCabecera:grMensajes"/>
+                            </p:commandButton> 
+                        </p:column>
+                        
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="7"
+                                          colspan="7">
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="2"/>
+                                <p:column footerText="#{notaEntregaBean.facturaVenta.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="2"/>
+                                <p:column footerText="#{notaEntregaBean.facturaVenta.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{notaEntregaBean.facturaVenta.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="2"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="2"/>
+                                <p:column footerText="#{notaEntregaBean.facturaVenta.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="2"/>
+                                <p:column footerText="#{notaEntregaBean.facturaVenta.total}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

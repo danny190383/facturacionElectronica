@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <h:outputStylesheet name="css/default.css"/>
+        <title>#{msg.tituloAplicacion}</title>
+        <h:outputScript name="calendario.js" library="js"/>
+        <script language="javascript" type="text/javascript">
+            function stopRKey(evt) {
+                if (evt.keyCode === 13) {
+                    evt.preventDefault();
+                    return false;
+                }
+            }
+            document.onkeypress = stopRKey;
+        </script>
+         <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCUmbh1CLsnQfkSVtFctPwxNx3j8xD6xT0"></script>
+    </h:head>
+
+    <h:body>
+            <script type="text/javascript" src = "../resources/js/script.js"/>
+           
+            <p:ajaxStatus id="ajxStatus01" 
+                          onstart="PF('statusDialog').show();" 
+                          onsuccess="PF('statusDialog').hide();"/> 
+            <p:dialog id="dlgForm01" modal="true" 
+                      widgetVar="statusDialog" header="#{msg.procesando}"   
+                      minimizable="false" 
+                      draggable="false" closable="false" maximizable="false" width="120">  
+                <h:graphicImage id="gimFomr01" 
+                                value="/resources/imagenes/progressBarLong.gif" />  
+            </p:dialog> 
+            <p:idleMonitor onactive="PF('sessionTimeOutDialog').show();" 
+                           timeout="#{session.maxInactiveInterval * 1000}" />
+            <p:dialog header="#{msg.sesionCaducada}" 
+                      widgetVar="sessionTimeOutDialog"
+                      modal="true"  closable="false" 
+                      width="400" visible="false">
+
+                <br/>
+                <br/>
+                <h:outputLabel value="#{msg.sessionCaducadaTexto}" 
+                               styleClass="texto_etiquetas"/>
+                <br/>
+                <br/>
+                <br/>
+                <input id="confirmBackToLogin" 
+                       type="button" value="#{msg.volverAplicacion}"
+                       onclick="window.location = '#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/faces/login.xhtml';" />
+                <br/>
+                <br/>
+                <br/>
+            </p:dialog>
+            
+            <p:layout id="lyPrincipal"
+                      fullPage="true">
+               
+                <p:layoutUnit position="west" 
+                              size="17%"
+                              header="#{login.empleado.empresa.nombreAbreviado}" 
+                              resizable="true" 
+                              collapsible="true">
+                    <center>
+                    <h:panelGrid columns="2"
+                                 width="90%">
+                        
+                        <h:panelGrid columns="1">
+                            <h:graphicImage url="#{login.urlLogo}"
+                                            width="100%"
+                                            height="50px"/> 
+                            <h:form>
+                                <h:commandLink actionListener="#{login.logout}" 
+                                               value="#{msg.cerrarCesion}"
+                                               styleClass="texto_login"
+                                               immediate="true"/>
+                            </h:form>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1">
+
+                            <h:graphicImage width="100%"
+                                            height="50px"
+                                            url="#{login.urlFotoLogin}"/>
+
+                                <h:form>
+                                    <h:panelGroup>
+                                        <a href="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/faces/seguridades/miPerfilAdmin.xhtml" class="texto_login">#{msg.miPerfin}</a>
+                                    </h:panelGroup>
+                                </h:form>
+                        </h:panelGrid>
+                    </h:panelGrid> 
+                        </center>
+                    <h:form id="frmMenu">
+                        <p:menu model="#{login.menuModel}"
+                                style="width:96%;"/>
+                    </h:form>
+                </p:layoutUnit>
+                <p:layoutUnit position="center"
+                              style="background: ##{request.getParameter('color')}; border:none"
+                              id="ldDerecha">
+                    <p:spacer width="60"/>
+                    <div id="content">
+                        <h:form id="frmCabecera">
+                             <p:growl id="grMensajes" 
+                                      widgetVar="grMensajes" 
+                                      showDetail="false"
+                                      life="3000"/>
+                            <ui:insert name="botones">
+                            </ui:insert>
+                            <ui:insert name="content" >
+                            </ui:insert>
+                        </h:form>
+                    </div>
+                </p:layoutUnit>
+            </p:layout>
+            
+            <h:form>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="explode"  >
+                    <table width="200" align="center" border="0">
+                        <tr>
+                            <td align="center"> 
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="#{msg.si}"  
+                                                     styleClass="ui-confirmdialog-yes" 
+                                                     icon="ui-icon-check"/>
+                                    <p:commandButton value="#{msg.no}" 
+                                                     type="button" 
+                                                     styleClass="ui-confirmdialog-no" 
+                                                     icon="ui-icon-close" />
+                                </h:panelGrid>
+                            </td>
+                        </tr>
+                    </table>
+                </p:confirmDialog>
+            </h:form>
+    </h:body>
+</html>

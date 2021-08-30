@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ficha-general-persona" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
+			<style backcolor="#CCCCCC"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="persona" class="java.lang.Integer"/>
+	<parameter name="nombreReporte" class="java.lang.String"/>
+	<parameter name="empresa" class="java.lang.Integer"/>
+	<parameter name="tipo" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<group name="1">
+		<groupExpression><![CDATA[$V{PAGE_NUMBER}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<printWhenExpression><![CDATA[$P{tipo} == 2]]></printWhenExpression>
+				<subreport>
+					<reportElement x="1" y="0" width="553" height="20" uuid="db6bbf18-8c39-4115-9329-127a93824ff4">
+						<printWhenExpression><![CDATA[$P{tipo} == 2]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SUBREPORT_DIR"/>
+					<subreportParameter name="persona">
+						<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosBancos.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="2">
+		<groupExpression><![CDATA[$V{PAGE_NUMBER}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<printWhenExpression><![CDATA[$P{tipo} == 1 || $P{tipo} == 2]]></printWhenExpression>
+				<subreport>
+					<reportElement x="1" y="0" width="553" height="20" uuid="802cb276-6594-4b09-ae46-a77596537a94"/>
+					<subreportParameter name="SUBREPORT_DIR"/>
+					<subreportParameter name="persona">
+						<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosRetencion.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<title>
+		<band height="10">
+			<subreport>
+				<reportElement x="1" y="0" width="553" height="10" isRemoveLineWhenBlank="true" uuid="bfddea9b-b3ec-4177-a327-f3dbe6384857"/>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cabecera.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="154">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="554" height="16" backcolor="#9DB1B8" uuid="49a0d759-2933-4e84-a710-24b35c83309d"/>
+				<textField>
+					<reportElement x="5" y="0" width="549" height="16" uuid="87cbcdfe-4e0c-4dca-83d5-834e38598135"/>
+					<textElement verticalAlignment="Middle">
+						<font isUnderline="false" isStrikeThrough="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{nombreReporte}.toUpperCase()]]></textFieldExpression>
+				</textField>
+			</frame>
+			<subreport>
+				<reportElement x="1" y="16" width="553" height="107" uuid="dbdc5dc3-cfa9-4502-b6de-31042b16ee40">
+					<printWhenExpression><![CDATA[$P{tipo} == 1]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="codigo">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosCliente.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="1" y="123" width="553" height="20" uuid="0ce3f39a-a1c9-4080-93c4-8aa4c2f26f41"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<subreportParameter name="persona">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosContactos.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="1" y="16" width="200" height="100" uuid="b3bdd5bb-3c01-4409-8b25-79be9e40bbb0">
+					<printWhenExpression><![CDATA[$P{tipo} == 2]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="codigo">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosProveedor.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="1" y="16" width="200" height="100" uuid="a9feb8bf-e924-4268-88c0-2d99ffb1aa1b">
+					<printWhenExpression><![CDATA[$P{tipo} == 3]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="codigo">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosTransportista.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="1" y="16" width="200" height="100" uuid="f5e8da78-e422-491b-b276-b4ed23406610">
+					<printWhenExpression><![CDATA[$P{tipo} == 4]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="codigo">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosEmpleado.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30">
+			<subreport>
+				<reportElement x="1" y="0" width="553" height="20" uuid="d35c0c8e-b274-4724-8b58-6e1cf08e0ec1"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<subreportParameter name="persona">
+					<subreportParameterExpression><![CDATA[$P{persona}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "fichaDatosContactar.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="13">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="0" width="595" height="13" backcolor="#9DB1B8" uuid="a8b4542b-3745-4618-bb57-7b6b79377aeb"/>
+				<textField>
+					<reportElement mode="Transparent" x="361" y="0" width="194" height="13" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="218542f6-e181-4a91-8302-e22cfc62b658"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField pattern="EEEEE, dd  MMMMM yyyy HH:mm:ss">
+					<reportElement x="21" y="0" width="210" height="13" forecolor="#FFFFFF" uuid="5dcb7ee5-1bc0-4fd0-86a8-f579f50458b0"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.notaMedica}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="nota" 
+                         id="tablaDetalles"
+                         value="#{buscarNotaMedicaBean.listaNotasMedicas}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         selection="#{buscarNotaMedicaBean.listaNotasMedicasSelect}" 
+                         rowKey="#{nota}">
+                
+                <!--
+                <f:facet name="header">
+                    <p:commandButton value="#{msg.enviarCorreo}"  
+                                     icon="ui-icon-disk"
+                                     actionListener="#{buscarNotaMedicaBean.envioNotificacionCita}"
+                                     update=":frmBusquedaDetalles:grMensajes" />
+                </f:facet>
+                -->
+                
+                <p:column selectionMode="multiple"
+                          style="width:16px;text-align:center"
+                          rendered="false"/>
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="60"
+                          filterBy="#{nota.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarNotaMedicaBean.fecha}" effect="fold" 
+                                    size="6">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{nota.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="detalle"
+                                 value="#{nota.pedido.facturaDetalleList}"
+                                 rows="10"
+                                 paginator="true">
+                        
+                        <p:column headerText="#{msg.codigoBarras}"
+                                  width="110">
+                            <h:outputLabel value="#{detalle.productoServicio.codigoBarras}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{detalle.productoServicio.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.cantidad}"
+                                  width="50">
+                            <h:outputLabel value="#{detalle.cantidad}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+                
+                <p:column headerText="#{msg.cedula}"
+                          filterBy="#{nota.pedido.cliente.persona.cedula}"
+                          width="90">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotaMedicaBean.ruc}"
+                                     size="10"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{nota.pedido.cliente.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}"
+                          filterBy="#{nota.pedido.cliente.persona.nombres}"
+                          width="150">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotaMedicaBean.nombre}"
+                                     size="18"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{nota.pedido.cliente.persona.nombres} #{nota.pedido.cliente.persona.apellidos}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.mascota}"
+                          filterBy="#{nota.mascota.nombre}"
+                          width="100">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarNotaMedicaBean.mascota}"
+                                     size="10"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{nota.mascota.nombre}"/><br/>
+                    <h:outputLabel value="#{nota.mascota.raza.nombre}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.signos}"
+                          width="45">
+                    <h:outputText value="P:" style="color: red"/> <h:outputText value="#{nota.peso}" /><br/>
+                    <h:outputText value="T:" style="color: red"/> <h:outputText value="#{nota.temperatura}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.atencion}">
+                    <h:outputText value="D:" style="color: red"/> <h:outputText value="#{nota.diagnostico}" /><br/>
+                    <h:outputText value="O:" style="color: red"/> <h:outputText value="#{nota.observacion}" /><br/>
+                    <h:outputText value="T:" style="color: red"/> <h:outputText value="#{nota.tratamiento}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cita}"
+                          width="60"
+                          filterBy="#{nota.fechaProxima}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarNotaMedicaBean.fechaCita}" effect="fold" 
+                                    size="6">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarNotaMedicaBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{nota.fechaProxima}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column style="text-align: center"
+                          width="20" 
+                          rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}">
+                    <p:commandButton title="#{msg.notaMedica}"  
+                                     icon="ui-icon-comment"
+                                     actionListener="#{buscarNotaMedicaBean.verNotaMedica(nota.pedido)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

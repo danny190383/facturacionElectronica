@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.clientes}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaClientes">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="clie" 
+                         id="tablaClientes"
+                         value="#{buscarClientesPedidosBean.lazyModel}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         lazy="true">
+                
+                <p:column headerText="#{msg.cedula}" sortBy="#{clie.cedula}" filterBy="#{clie.cedula}"
+                          width="100">
+                    <h:outputLabel value="#{clie.cedula}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.nombres}" sortBy="#{clie.nombres}" filterBy="#{clie.nombres}">
+                    <h:commandLink actionListener="#{buscarClientesPedidosBean.generarReportePDF(clie.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{clie.nombres} #{clie.apellidos}" 
+                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.mascotas}"
+                          rendered="false">
+                    <p:dataScroller value="#{clie.mascotaPersonaList}" 
+                                    var="mascota">
+                        <h:outputText value="#{msg.nombre}: "
+                                      styleClass="texto_negrita"/>
+                        <h:outputText value="#{mascota.nombre}"/>
+                        <h:outputText value="#{msg.raza}: "
+                                      styleClass="texto_negrita"/>
+                        <h:outputText value="#{mascota.raza.nombre}"/>
+                    </p:dataScroller>
+                </p:column>
+                
+                <p:column headerText="#{msg.direccion}">
+                    <h:outputLabel value="#{clie.direccion}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.contactar}"
+                          width="110"
+                          style="text-align: center">
+                    <h:outputText value="#{clie.telefono}"
+                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                    <p:dataScroller value="#{clie.contactarPersonaList}" 
+                                    var="contactar"
+                                    rendered="#{clie.contactarPersonaList.size()>0}">
+                        <h:outputText value="#{contactar.valor}"/>
+                    </p:dataScroller>
+                </p:column>
+                
+                <p:column style="text-align: center"
+                          width="40">
+                    
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmBusquedaClientes:grMensajes, :frmBusquedaClientes:tablaClientes" 
+                                      actionListener="#{buscarClientesPedidosBean.eliminar(clie)}"
+                                      title="#{msg.eliminar}"
+                                      rendered="false">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                    
+                    <p:commandButton  actionListener="#{buscarClientesPedidosBean.seleccionar(clie)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check"
+                                      update=":frmBusquedaClientes:grMensajes, :frmBusquedaClientes:dlgRestriccionID" 
+                                      style="font-size: 14px"/>
+                </p:column>
+                
+            </p:dataTable>
+             
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+            
+            <p:dialog header="#{msg.cuenta} #{msg.cobro}" 
+                      widgetVar="dlgRestriccion" 
+                      height="100"
+                      id="dlgRestriccionID">
+                
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.cuenta}"/>
+                    <h:outputLabel value="#{buscarClientesPedidosBean.cliente.totalDeuda}"
+                                   style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                    <p:commandButton value="#{msg.aceptar}" 
+                                     actionListener="#{buscarClientesPedidosBean.cerrarSeleccionar()}"
+                                     onclick="PF('dlgRestriccion').hide();" />
+
+                    <p:commandButton value="#{msg.cancelar}" 
+                                     onclick="PF('dlgRestriccion').hide();" />
+                </h:panelGrid>
+            </p:dialog> 
+             
+        </h:form>
+    </h:body>
+    
+</html>

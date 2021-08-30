@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.ingreso}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarIngresosBean.listaIngresos}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         lazy="true" 
+                         rowsPerPageTemplate="10,15,20">
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="detalle"
+                                 value="#{pedido.garantiaDetalleList}"
+                                 rows="10"
+                                 paginator="true">
+                        
+                        <p:column headerText="#{msg.series}"
+                                  width="110">
+                            <h:outputLabel value="#{detalle.codigoBarras}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{detalle.productoRecepcion}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.costo}"
+                                  width="50">
+                            <h:outputLabel value="#{detalle.costo}" />
+                        </p:column> 
+                        
+                        <p:column headerText="#{msg.estado}"
+                                  width="50">
+                            <h:outputLabel value="#{msg.ingresada}" rendered="#{detalle.estado eq 1}" />
+                            <h:outputLabel value="#{msg.enviado}" rendered="#{detalle.estado eq 2}" />
+                            <h:outputLabel value="#{msg.reingreso}" rendered="#{detalle.estado eq 3}" />
+                            <h:outputLabel value="#{msg.entregado}" rendered="#{detalle.estado eq 4}" />
+                        </p:column> 
+                    </p:dataTable>
+                </p:rowExpansion>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="70"
+                          filterBy="#{pedido.numero}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarIngresosBean.numero}"
+                                     size="5"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarIngresosBean.generarReportePDF(pedido.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{pedido.numero}" />
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.fechaIngreso}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarIngresosBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.fechaIngreso}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.cedula}"
+                          filterBy="#{pedido.cliente.persona.cedula}"
+                          width="110">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarIngresosBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}"
+                          filterBy="#{pedido.cliente.persona.nombres}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarIngresosBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.nombres} #{pedido.cliente.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.responsable}"
+                          width="100"
+                          rendered="false">
+                    <h:outputLabel value="#{pedido.empleado.persona.nombres} #{pedido.empleado.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.descripcion}"
+                          width="150">
+                    <h:outputLabel value="#{pedido.descripcion}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.estado}"
+                          width="110"
+                          filterBy="#{pedido.estado}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu value="#{buscarIngresosBean.estado}" 
+                                         style="width:5px"
+                                         panelStyle="width:5px">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue='0' />
+                            <f:selectItem itemLabel="#{msg.ingresada}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.entregado}" itemValue="2" />
+                            <f:selectItem itemLabel="#{msg.anulada}" itemValue="3" />
+                            <p:ajax listener="#{buscarIngresosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputLabel value="#{msg.ingresada}" rendered="#{pedido.estado eq 1}" />
+                    <h:outputLabel value="#{msg.entregado}" rendered="#{pedido.estado eq 2}" />
+                    <h:outputLabel value="#{msg.anulada}" rendered="#{pedido.estado eq 3}" />
+                </p:column>
+                
+                <p:column style="text-align: center"
+                          width="30">
+                    
+                    <p:commandButton  actionListener="#{buscarIngresosBean.seleccionar(pedido)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

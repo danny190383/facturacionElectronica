@@ -1,0 +1,402 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.tarjeta}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevoTarjeta">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoTarjetaEmpresaBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoTarjetaEmpresaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="4">
+                    <h:outputLabel value="#{msg.banco}" />
+                    <p:selectOneMenu value="#{nuevoTarjetaEmpresaBean.bancoSlc}"
+                                    style="width: 150px"
+                                    panelStyle="width:150px"
+                                    filter="true" 
+                                    filterMatchMode="startsWith">
+                        <f:selectItems value="#{nuevoTarjetaEmpresaBean.listaBancos}" 
+                                      var="banco"
+                                      itemLabel="#{banco.nombre}"
+                                      itemValue="#{banco.codigo}"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.estado}" />
+                    <p:selectBooleanButton onLabel="#{msg.activo}" 
+                                           offLabel="#{msg.inactivo}" 
+                                           style="width:60px" 
+                                           onIcon="ui-icon-check" offIcon="ui-icon-close"
+                                           value="#{nuevoTarjetaEmpresaBean.estado}"/>
+                    
+                    <h:outputLabel value="#{msg.tipoTarjeta} :" />
+                    <p:selectOneMenu value="#{nuevoTarjetaEmpresaBean.tipoTarjetaSlc}"
+                                     style="width: 150px">
+                        <f:selectItems value="#{nuevoTarjetaEmpresaBean.listaTipoTarjeta}" 
+                                       var="tipoTarjeta"
+                                       itemLabel="#{tipoTarjeta.nombre}"
+                                       itemValue="#{tipoTarjeta.codigo}"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.dias} #{msg.pago} :"/>
+                    <p:inputText value="#{nuevoTarjetaEmpresaBean.tarjetaEmpresa.diasCobro}"     
+                                 style="background-color: khaki;text-align: right"
+                                 size="5"
+                                 maxlength="4">
+                         <p:keyFilter regEx="/[\d\.]/"/>
+                         <f:validateDoubleRange minimum="0" /> 
+                     </p:inputText> 
+                    
+                    <h:outputLabel value="#{msg.detalle}: "/>
+                    <p:inputTextarea rows="3" cols="30" 
+                                     value="#{nuevoTarjetaEmpresaBean.tarjetaEmpresa.detalle}"/>
+                    
+                </h:panelGrid>
+            </p:fieldset>
+            <p:tabView id="tabPrincipal">
+                <p:tab title="#{msg.comision}">
+                    <p:dataTable var="comision" 
+                                 value="#{nuevoTarjetaEmpresaBean.tarjetaEmpresa.comisionTarjetaList}"
+                                 style="width: 75%"
+                                 id="tablaComision">
+                        
+                        <f:facet name="header">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             icon="ui-icon-comment"
+                                             update=":frmNuevoTarjeta:dlgComision001"
+                                             actionListener="#{nuevoTarjetaEmpresaBean.inicializarComision}"
+                                             oncomplete="PF('dlgComision').show();" />
+                        </f:facet>
+                        
+                        <p:column headerText="#{msg.nombre}">
+                            <h:outputLabel value="#{comision.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.formaPago}">
+                            <h:outputLabel value="#{comision.formaPago.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.comision}">
+                            <h:outputLabel value="#{comision.valor}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.observacion}">
+                            <h:outputLabel value="#{comision.observacion}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="50"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                              update=":frmNuevoTarjeta:grMensajes, tablaComision" 
+                                              actionListener="#{nuevoTarjetaEmpresaBean.eliminarComision(comision)}"
+                                              immediate="true"
+                                              title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             update=":frmNuevoTarjeta:dlgComision001"
+                                             oncomplete="PF('dlgComision').show();"
+                                             action="#{nuevoTarjetaEmpresaBean.seleccionarComision(comision)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="#{msg.retencion}">
+                    <p:dataTable var="retencion" 
+                                 value="#{nuevoTarjetaEmpresaBean.tarjetaEmpresa.retencionTarjetaList}"
+                                 style="width: 75%"
+                                 id="tablaRetencion">
+                        
+                        <f:facet name="header">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             icon="ui-icon-comment"
+                                             update=":frmNuevoTarjeta:dlgRetencion001"
+                                             actionListener="#{nuevoTarjetaEmpresaBean.inicializarRetencion}"
+                                             oncomplete="PF('dlgRetencion').show();" />
+                        </f:facet>
+
+                        <p:column headerText="#{msg.retencion}"
+                                  width="250">
+                            <h:outputLabel value="#{retencion.tipoRetencion.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.detalle}">
+                            <h:outputLabel value="#{retencion.observacion}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="50"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                              update=":frmNuevoTarjeta:grMensajes, tablaRetencion" 
+                                              actionListener="#{nuevoTarjetaEmpresaBean.eliminarRetencion(retencion)}"
+                                              immediate="true"
+                                              title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             update=":frmNuevoTarjeta:dlgRetencion001"
+                                             oncomplete="PF('dlgRetencion').show();"
+                                             action="#{nuevoTarjetaEmpresaBean.seleccionarRetencion(retencion)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="#{msg.factor}">
+                    
+                    <p:dataTable var="factor" 
+                                 value="#{nuevoTarjetaEmpresaBean.tarjetaEmpresa.factorPlazoTarjetaList}"
+                                 style="width: 75%"
+                                 id="tablaFactor">
+                        
+                        <f:facet name="header">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             icon="ui-icon-comment"
+                                             update=":frmNuevoTarjeta:dlgFactor001"
+                                             actionListener="#{nuevoTarjetaEmpresaBean.inicializarFactor}"
+                                             oncomplete="PF('dlgFactor').show();" />
+                        </f:facet>
+
+                        <p:column headerText="#{msg.plazo}"
+                                  width="70">
+                            <h:outputLabel value="#{factor.plazo}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.factor}"
+                                  width="70">
+                            <h:outputLabel value="#{factor.factor}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.detalle}">
+                            <h:outputLabel value="#{factor.observacion}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="50"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                              update=":frmNuevoTarjeta:grMensajes, tablaFactor" 
+                                              actionListener="#{nuevoTarjetaEmpresaBean.eliminarFactor(factor)}"
+                                              immediate="true"
+                                              title="#{msg.eliminar}">
+                                    <p:confirm header="#{msg.confirmacion}" 
+                                               message="#{msg.eliminar}" 
+                                               icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             update=":frmNuevoTarjeta:dlgFactor001"
+                                             oncomplete="PF('dlgFactor').show();"
+                                             action="#{nuevoTarjetaEmpresaBean.seleccionarFactor(factor)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView> 
+            <p:dialog header="#{msg.comision}" 
+                      widgetVar="dlgComision" 
+                      modal="true"
+                      resizable="false"
+                      id="dlgComision001">
+                <h:form id="frmComision">
+                    <h:panelGrid columns="2"
+                                 id="pnlComision">
+
+                        <h:outputLabel value="#{msg.formaPago} #{msg.tarjeta} :" />
+                        <p:selectOneMenu value="#{nuevoTarjetaEmpresaBean.formaTarjetaSlc}"
+                                         style="width: 150px" >
+                            <p:ajax update="pnlComision"/>
+                            <f:selectItems value="#{nuevoTarjetaEmpresaBean.listaFormaPagoTarjeta}" 
+                                           var="formaTarjeta"
+                                           itemLabel="#{formaTarjeta.nombre}"
+                                           itemValue="#{formaTarjeta.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputLabel value="#{msg.meses} :" 
+                                       rendered="#{nuevoTarjetaEmpresaBean.formaTarjetaSlc ne 157}"/>
+                        <p:inputText value="#{nuevoTarjetaEmpresaBean.comisionTarjeta.meses}"
+                                     size="5"
+                                     style="background-color: khaki"
+                                     maxlength="2"
+                                     rendered="#{nuevoTarjetaEmpresaBean.formaTarjetaSlc ne 157}">
+                             <p:keyFilter regEx="/[\d\.]/"/>
+                        </p:inputText>
+                        
+                        <h:outputLabel value="#{msg.interes} :" 
+                                       rendered="#{nuevoTarjetaEmpresaBean.formaTarjetaSlc ne 157}"/>
+                        <p:selectOneRadio value="#{nuevoTarjetaEmpresaBean.comisionTarjeta.interes}"
+                                          rendered="#{nuevoTarjetaEmpresaBean.formaTarjetaSlc ne 157}">
+                             <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                             <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                         </p:selectOneRadio>
+
+                        <h:outputLabel value="#{msg.comision} :"/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoTarjetaEmpresaBean.comisionTarjeta.valor}"
+                                         style="background-color: khaki;text-align: right"
+                                         size="5"
+                                         transient="true"
+                                         maxlength="4">
+                               <p:keyFilter regEx="/[\d\.]/"/>
+                               <f:validateDoubleRange minimum="0" maximum="100.0" /> 
+                            </p:inputText>
+                            <h:outputLabel value="%" />
+                        </h:panelGrid>
+                        <h:outputLabel value="#{msg.detalle}: "/>
+                        <p:inputTextarea rows="3" cols="30" 
+                                         transient="true"
+                                         value="#{nuevoTarjetaEmpresaBean.comisionTarjeta.observacion}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{msg.agregar}" 
+                                         actionListener="#{nuevoTarjetaEmpresaBean.agregarComision()}"
+                                         icon="ui-icon-check"
+                                         process="@form"
+                                         update=":frmNuevoTarjeta:grMensajes, :frmNuevoTarjeta:tabPrincipal:tablaComision"/>
+
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         onclick="PF('dlgComision').close();"
+                                         immediate="true"
+                                         icon="ui-icon-cancel" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog> 
+            <p:dialog header="#{msg.retencion}" 
+                      widgetVar="dlgRetencion" 
+                      modal="true"
+                      resizable="false"
+                      id="dlgRetencion001">
+                
+                <h:form id="frmRetencion">
+                    <h:panelGrid columns="2" >
+                        <h:outputLabel value="#{msg.tiporetencion}" />
+                        <p:selectOneMenu value="#{nuevoTarjetaEmpresaBean.retencionSlc}"
+                                         style="width: 147px" 
+                                         disabled="#{nuevoTarjetaEmpresaBean.editar}">
+                            <f:selectItems value="#{nuevoTarjetaEmpresaBean.listaTipoRetencion}" 
+                                          var="retencion"
+                                          itemLabel="#{retencion.nombre}"
+                                          itemValue="#{retencion.codigo}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.detalle}: "/>
+                        <p:inputTextarea rows="3" cols="30" 
+                                         value="#{nuevoTarjetaEmpresaBean.retencionTarjeta.observacion}"/>
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{msg.agregar}" 
+                                         actionListener="#{nuevoTarjetaEmpresaBean.agregarRetencion()}"
+                                         icon="ui-icon-check"
+                                         process="@form"
+                                         update=":frmNuevoTarjeta:grMensajes, :frmNuevoTarjeta:tabPrincipal:tablaRetencion"/>
+
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         onclick="PF('dlgRetencion').close();"
+                                         immediate="true"
+                                         icon="ui-icon-cancel" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog> 
+            <p:dialog header="#{msg.factor}" 
+                      widgetVar="dlgFactor" 
+                      modal="true"
+                      resizable="false"
+                      id="dlgFactor001">
+                
+                <h:form id="frmFactor">
+                    <h:panelGrid columns="2" >
+                        <h:outputLabel value="#{msg.plazo}: "/>
+                        <p:inputText value="#{nuevoTarjetaEmpresaBean.factorPlazoTarjeta.plazo}"       
+                                     style="background-color: khaki;text-align: right"
+                                     size="5"
+                                     maxlength="4">
+                           <p:keyFilter regEx="/[\d\.]/"/>
+                           <f:validateDoubleRange minimum="0" /> 
+                        </p:inputText> 
+                        
+                        <h:outputLabel value="#{msg.factor}: "/>
+                        <p:inputText value="#{nuevoTarjetaEmpresaBean.factorPlazoTarjeta.factor}"
+                                     style="background-color: khaki;text-align: right"
+                                     size="5"
+                                     maxlength="4">
+                           <p:keyFilter regEx="/[\d\.]/"/>
+                           <f:validateDoubleRange minimum="0" maximum="100000000.0" /> 
+                        </p:inputText>
+                        
+                        <h:outputLabel value="#{msg.detalle}: "/>
+                        <p:inputTextarea rows="3" cols="30" 
+                                         value="#{nuevoTarjetaEmpresaBean.factorPlazoTarjeta.observacion}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{msg.agregar}" 
+                                         actionListener="#{nuevoTarjetaEmpresaBean.agregarFactor()}"
+                                         icon="ui-icon-check"
+                                         process="@form"
+                                         update=":frmNuevoTarjeta:grMensajes, :frmNuevoTarjeta:tabPrincipal:tablaFactor"/>
+
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         onclick="PF('dlgRetencion').close();"
+                                         immediate="true"
+                                         icon="ui-icon-cancel" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog> 
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

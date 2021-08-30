@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.servicio}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoServicioBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoServicioBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="3" 
+                             width="90%">
+                    
+                    <h:outputLabel value="#{msg.nombre} #{msg.producto}: "/>
+                    <p:inputText value="#{nuevoServicioBean.productoServicio.nombre}"
+                                 size="80"
+                                 maxlength="100"
+                                 required="true"
+                                 styleClass="texto_obligatorio"/>    
+                    <p:barcode value="#{nuevoServicioBean.productoServicio.codigoBarras}" 
+                               type="code128"
+                               format="png"
+                               width="90"
+                               height="40"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2" 
+                             width="90%">
+                                 
+                    <h:panelGrid columns="4" 
+                                 style="width: 100%">
+
+                        <h:outputLabel value="#{msg.codigoBarras}: "/>
+                        <h:panelGrid columns="2">
+                            <p:inputText value="#{nuevoServicioBean.productoServicio.codigoBarras}"
+                                         size="35"
+                                         maxlength="100"
+                                         id="txtCodigoBarras"
+                                         readonly="#{nuevoServicioBean.autogenerar}"/>
+                            <p:selectBooleanCheckbox value="#{nuevoServicioBean.autogenerar}"
+                                                     title="#{msg.autogenerar}">
+                                <p:ajax update="txtCodigoBarras"/>
+                            </p:selectBooleanCheckbox>
+                        </h:panelGrid>
+
+                        <h:outputLabel value="#{msg.descripcion}: "/>
+                        <p:inputTextarea rows="2" cols="30" 
+                                         autoResize="false" 
+                                         maxlength="500"
+                                         value="#{nuevoServicioBean.productoServicio.descripcion}"/>
+
+                        <h:outputLabel value="#{msg.costo}: "/> 
+                        <p:inputNumber value="#{nuevoServicioBean.productoServicio.precioUltimaCompra}" 
+                                       decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                       minValue="0"
+                                       required="true"
+                                       id="txtCosto"
+                                       inputStyle="width: 70px;background-color: khaki;text-align: right;font-size: 14px;font-weight: bold;color: red;">
+                             <p:ajax event="change" listener="#{nuevoServicioBean.editUtilidad}"
+                                   update=":frmNuevo:txtPVP"/>
+                        </p:inputNumber> 
+
+                        <h:outputLabel value="#{msg.utilidad}: "/> 
+                        <p:inputNumber value="#{nuevoServicioBean.productoServicio.utilidad}" 
+                                        decimalPlaces="2" symbol="%" 
+                                        symbolPosition="s" emptyValue="zero"
+                                        minValue="0"
+                                        id="txtUtilidad"
+                                        inputStyle="width: 70px;background-color: khaki;text-align: right;font-size: 14px;font-weight: bold;color: red;">
+                            <p:ajax event="change" listener="#{nuevoServicioBean.editUtilidad}"
+                                   update=":frmNuevo:txtPVP"/>
+                        </p:inputNumber> 
+
+                        <h:outputLabel value="#{msg.pvp}: "/> 
+                        <p:inputNumber value="#{nuevoServicioBean.productoServicio.pvp}" 
+                                       decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                       minValue="0"
+                                       required="true"
+                                       id="txtPVP"
+                                       inputStyle="width: 70px;background-color: khaki;text-align: right;font-size: 14px;font-weight: bold;color: red;">
+                            <p:ajax event="change" listener="#{nuevoServicioBean.editPVP}"
+                                   update=":frmNuevo:txtUtilidad"/>
+                        </p:inputNumber> 
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <h:outputLabel value="#{msg.foto}" />
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoServicioBean.urlLogo}"
+                                        width="150px"
+                                        height="150px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <h:panelGrid columns="2">
+                            <p:fileUpload  mode="advanced" 
+                                           skinSimple="true"
+                                           sizeLimit="1000000"  
+                                           label="Seleccionar"
+                                           auto="true"
+                                           listener="#{nuevoServicioBean.subirLogo}"
+                                           allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                           cancelLabel="Cancelar" 
+                                           update=":frmNuevo:grMensajes, :frmNuevo:logo"/>
+                            <p:commandButton onclick="PF('dlgCamara').show();"
+                                             icon="fa fa-fw fa-camera"
+                                             style="width: 35px;height: 30px"
+                                             title="#{msg.camara}"
+                                             rendered="#{login.empleado.cuenta.camara ne 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGrid> 
+                
+                <p:dataTable var="impuesto" 
+                             value="#{nuevoServicioBean.productoServicio.productoImpuestoTarifaList}"
+                             style="width: 90%"
+                             id="tablaImpuestos"
+                             emptyMessage="#{msg.tablaVacia}">
+
+                    <f:facet name="header">
+                        <p:commandButton value="#{msg.nuevo}"  
+                                         oncomplete="PF('dialogoImpuestoTarifa').show()"
+                                         actionListener="#{nuevoServicioBean.nuevoImpuesto()}" 
+                                         immediate="true"
+                                         update="dlgImpuestoTarifa"
+                                         icon="ui-icon-comment" />
+                    </f:facet>
+
+                    <p:column headerText="#{msg.impuesto}">
+                        <h:outputText value="#{impuesto.impuestoTarifa.impuesto.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="#{msg.tarifa}">
+                        <h:outputText value="#{impuesto.impuestoTarifa.descripcion} / #{impuesto.impuestoTarifa.porcentaje}" />
+                    </p:column>
+
+                    <p:column headerText="#{msg.valor} Fijo">
+                        <h:outputText value="#{impuesto.valor}" />
+                    </p:column>
+
+                    <p:column headerText="#{msg.opcion}" 
+                              width="40"
+                              style="text-align: center">
+
+                          <p:commandButton  icon="ui-icon-close" 
+                                            update="tablaImpuestos" 
+                                            actionListener="#{nuevoServicioBean.eliminar(impuesto)}"
+                                            immediate="true"
+                                            title="#{msg.eliminar}"/>
+                    </p:column>
+                </p:dataTable>
+                <br/>
+                <p:dataTable value="#{nuevoServicioBean.productoServicio.retencionServicioList}"
+                             id="tablaRetencion" 
+                             style="width: 90%"
+                             emptyMessage="#{msg.tablaVacia}"
+                             var="retencion">
+
+                   <f:facet name="header">
+                       <p:commandButton value="#{msg.nuevo}"  
+                                        actionListener="#{nuevoServicioBean.verRetencion(null)}" 
+                                        update=":frmNuevo:grMensajes"
+                                        icon="ui-icon-comment" >
+                           <p:ajax event="dialogReturn" 
+                                   listener="#{nuevoServicioBean.onRetencionSelect}"
+                                   update=":frmNuevo:grMensajes, :frmNuevo:tablaRetencion"/>
+                      </p:commandButton>
+                   </f:facet>
+
+                   <p:column headerText="#{msg.tiporetencion}">
+                       <h:outputLabel value="#{retencion.tipoRetencion.nombre}"/>
+                   </p:column>
+
+                   <p:column headerText="#{msg.codigodeimpuesto}">
+                       <h:outputLabel value="#{retencion.tipoRetencion.codigoImpuesto}"/>
+                   </p:column>
+
+                   <p:column headerText="#{msg.observacion}">
+                       <h:outputLabel value="#{retencion.observacion}"/>
+                   </p:column>
+
+                   <p:column headerText="#{msg.opcion}" 
+                             width="70"
+                             style="text-align: center">
+
+                       <p:commandButton  icon="ui-icon-close" 
+                                         update=":frmNuevo:grMensajes, :frmNuevo:tablaRetencion" 
+                                         actionListener="#{nuevoServicioBean.eliminarRetencion(retencion)}"
+                                         title="#{msg.eliminar}"/>
+
+                       <p:commandButton icon="ui-icon-pencil" 
+                                        title="#{msg.editar}"
+                                        action="#{nuevoServicioBean.verRetencion(retencion)}">
+                          <p:ajax event="dialogReturn" 
+                                  update=":frmNuevo:grMensajes, :frmNuevo:tablaRetencion"/>
+                      </p:commandButton>   
+                   </p:column>
+                </p:dataTable>
+            </p:fieldset>
+            <p:dialog header="#{msg.foto}" 
+                        widgetVar="dlgCamara"
+                        minHeight="40"
+                        rendered="#{login.empleado.cuenta.camara ne 1}">
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:photoCam widgetVar="imagen" 
+                                listener="#{nuevoServicioBean.onCapture}" 
+                                update=":frmNuevo:logo" />
+                    <p:commandButton type="button" 
+                                     icon="fa fa-fw fa-camera"
+                                     title="#{msg.capturar}"
+                                     style="width: 35px;height: 30px"
+                                     onclick="PF('imagen').capture()"/>
+                </h:panelGrid>
+            </p:dialog>
+        </h:form>
+        <p:dialog header="#{msg.impuesto}" 
+                widgetVar="dialogoImpuestoTarifa" 
+                resizable="false"
+                modal="true"
+                id="dlgImpuestoTarifa"
+                width="40%">
+            <h:form>
+                <h:panelGrid columns="2"
+                             id="pnlDatosImpuesto">
+                    <h:outputLabel value="#{msg.impuesto}: "/>
+                    <p:selectOneMenu value="#{nuevoServicioBean.impuestoSlc}"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     required="true">
+
+                        <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                        <f:selectItems value="#{nuevoServicioBean.listaImpuestos}" 
+                                       var="imp"
+                                       itemLabel="#{imp.nombre}"
+                                       itemValue="#{imp}"/>
+                        <p:ajax update="slcTarifa"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.tarifa}: "/>
+                    <p:selectOneMenu value="#{nuevoServicioBean.impuestoTarifa.impuestoTarifa}"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     id="slcTarifa"
+                                     required="true">
+
+                        <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                        <f:selectItems value="#{nuevoServicioBean.impuestoSlc.impuestoTarifaList}" 
+                                       var="impT"
+                                       itemLabel="#{impT.descripcion}"
+                                       itemValue="#{impT}"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.valor} Fijo: : "/>
+                    <p:inputNumber value="#{nuevoServicioBean.impuestoTarifa.valor}" 
+                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                   minValue="0"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2" style="margin: 0 auto;">    
+                    <p:commandButton value="#{msg.guardar}"  
+                                     process="@form"
+                                     actionListener="#{nuevoServicioBean.agregarImpuesto}"
+                                     icon="ui-icon-disk" 
+                                     update="@form, pnlDatosImpuesto, :frmNuevo:grMensajes, :frmNuevo:tablaImpuestos"/>
+                    <p:commandButton value="#{msg.cancelar}" 
+                                     immediate="true"
+                                     icon=" ui-icon-closethick"
+                                     process="pnlDatosImpuesto"
+                                     oncomplete="PF('dialogoImpuestoTarifa').hide()"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.transportistas}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaTransportistas">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="trans" 
+                         id="tablaTransportistas"
+                         value="#{buscarTransportistasBean.lazyModel}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         lazy="true" 
+                         paginatorTemplate="{Exporters}">
+                
+                <f:facet name="{Exporters}">
+                    <h:commandLink target="_blank" actionListener="#{buscarTransportistasBean.generarReportePDF()}">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="20"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{buscarTransportistasBean.generarReporteXlS()}">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="20"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{buscarTransportistasBean.generarReporteHTML()}">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="20"/>
+                    </h:commandLink>
+                </f:facet>
+                
+                <p:column headerText="#{msg.ruc}" sortBy="#{trans.persona.cedula}" filterBy="#{trans.persona.cedula}">
+                    <h:outputLabel value="#{trans.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.nombre}" sortBy="#{trans.persona.nombres}" filterBy="#{trans.persona.nombres}">
+                    <h:commandLink actionListener="#{buscarTransportistasBean.generarReportePDF(trans.persona.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{trans.persona.nombres}" />
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.ciudad}" sortBy="#{trans.persona.ciudad.nombre}" filterBy="#{trans.persona.ciudad.nombre}">
+                    <h:outputLabel value="#{trans.persona.ciudad.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}"
+                          style="text-align: center"
+                          width="60">
+                    
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmBusquedaTransportistas:grMensajes, :frmBusquedaTransportistas:tablaTransportistas" 
+                                      actionListener="#{buscarTransportistasBean.eliminar(trans)}"
+                                      title="#{msg.eliminar}">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                    
+                    <p:commandButton  actionListener="#{buscarTransportistasBean.seleccionar(trans)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check"/>
+                </p:column>
+                
+            </p:dataTable>
+            
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+            
+        </h:form>
+    </h:body>
+    
+</html>

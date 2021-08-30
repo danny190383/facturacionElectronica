@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+         <ui:composition template="./../../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:fieldset legend="#{msg.criterioBusqueda}">
+                    <h:panelGrid columns="2"
+                                 id="pnlFiltros">
+                        <h:outputLabel value="#{msg.reporte}: "/>
+                        <p:selectOneMenu value="#{reportesCuentasBean.reporteSeleccionado}" 
+                                         style="width: 250px">
+                            <f:selectItems value="#{reportesCuentasBean.listaReportes}"
+                                           var="repo"
+                                           itemLabel="#{repo.descripcion}"
+                                           itemValue="#{repo.codigo}"/>
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.usuario}: "/>
+                        <p:selectOneMenu value="#{reportesCuentasBean.usuarioSelec}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesCuentasBean.listaCuenta}"
+                                           var="user"
+                                           itemLabel="#{user.empleado.persona.nombres} #{user.empleado.persona.apellidos}"
+                                           itemValue="#{user.empleado.persona.cedula}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.cliente}: "
+                                      rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.3'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosCliente"
+                                     rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.3'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesCuentasBean.verBusquedaClientes}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesCuentasBean.onClienteSelect}" 
+                                        update="pnlDatosCliente" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosCliente"
+                                             actionListener="#{reportesCuentasBean.iniciarCliente}" />
+                            <h:outputText value="#{reportesCuentasBean.cliente.persona.nombres} #{reportesCuentasBean.cliente.persona.apellidos}"
+                                          rendered="#{reportesCuentasBean.cliente.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.proveedor}: "
+                                      rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.2' || reportesCuentasBean.reporteSeleccionado eq '5.4'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosProveedor"
+                                     rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.2' || reportesCuentasBean.reporteSeleccionado eq '5.4'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesCuentasBean.verBusquedaProveedores}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesCuentasBean.onPRoveedorSelect}" 
+                                        update="pnlDatosProveedor" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosProveedor"
+                                             actionListener="#{reportesCuentasBean.iniciarProveedor}" />
+                            <h:outputText value="#{reportesCuentasBean.proveedor.persona.nombres} #{reportesCuentasBean.proveedor.persona.apellidos}"
+                                          rendered="#{reportesCuentasBean.proveedor.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.desde}: " 
+                                      rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.2'}"/>
+                        <p:calendar value="#{reportesCuentasBean.fechaInicio}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true"  showOn="button" 
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.2'}"/>
+                        
+                        <h:outputText value="#{msg.hasta}: "
+                                      rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.2'}"/>
+                        <p:calendar value="#{reportesCuentasBean.fechaFin}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true" showOn="button" 
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesCuentasBean.reporteSeleccionado eq '5.1' || reportesCuentasBean.reporteSeleccionado eq '5.2'}"/>
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" cellspacing="5" >
+                        <h:commandLink target="_blank" actionListener="#{reportesCuentasBean.generarReportePDF()}">
+                            <p:graphicImage url="/resources/imagenes/pdf.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesCuentasBean.generarReporteXlS()}">
+                            <p:graphicImage url="/resources/imagenes/excel.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesCuentasBean.generarReporteHTML()}">
+                            <p:graphicImage url="/resources/imagenes/html.png"
+                                            width="27"/>
+                        </h:commandLink>
+                    </h:panelGrid>
+                </p:fieldset>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

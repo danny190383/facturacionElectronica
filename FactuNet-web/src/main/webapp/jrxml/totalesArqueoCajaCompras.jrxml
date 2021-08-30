@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="totalesArqueoCaja" pageWidth="200" pageHeight="15" whenNoDataType="AllSectionsNoDetail" columnWidth="200" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e2b0710c-48f6-431f-a84d-69c5e84ff5dd">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/> 
+	<parameter name="puntoventa" class="java.lang.String"/>
+	<parameter name="usuario" class="java.lang.String"/>
+	<parameter name="ad_ffin" class="java.sql.Timestamp"/>
+	<parameter name="ad_fini" class="java.util.Date"/>
+	<parameter name="nombre_forma" class="java.lang.String"/>
+	<parameter name="forma" class="java.lang.String"/>
+	<parameter name="cliente" class="java.lang.String"/>
+	<parameter name="documento" class="java.lang.String"/>
+	<parameter name="discriminador" class="java.lang.Integer"/>
+	<parameter name="estado" class="java.lang.String"/>
+	<parameter name="empresa" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT sum(factura_pago.valor)
+from  factura_pago inner join factura on
+factura.codigo = factura_pago.factura inner join empleado on
+factura.empleado = empleado.codigo inner join tipo_persona as tipo_empleado on
+tipo_empleado.codigo = empleado.codigo inner join persona as persona_empleado on
+tipo_empleado.persona = persona_empleado.codigo
+where factura.discriminador = $P{discriminador} and factura.estado = $P{estado} and
+persona_empleado.cedula like $P{usuario} and factura.proveedor::text like $P{cliente} and
+factura.fecha between $P{ad_fini}  and  $P{ad_ffin} and factura_pago.forma_pago::text like $P{forma} and
+factura.empresa = $P{empresa}]]>
+	</queryString>
+	<field name="sum" class="java.math.BigDecimal"/>
+	<columnHeader>
+		<band height="15">
+			<textField isBlankWhenNull="true">
+				<reportElement x="140" y="0" width="60" height="15" uuid="5088e42e-bf20-4746-947e-2756f2a4a388"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="140" height="15" uuid="dbd89e01-54cf-4e13-b2c6-5a170f5a015e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nombre_forma}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+</jasperReport>

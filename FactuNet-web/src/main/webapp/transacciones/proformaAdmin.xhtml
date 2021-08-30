@@ -1,0 +1,429 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             actionListener="#{proformaAdminBean.inicializar()}"
+                                             update=":frmCabecera:pnlPrincipal, pnlBotones" 
+                                             icon="ui-icon-document"/>  
+
+                            <p:commandButton value="#{msg.guardar}" 
+                                             icon="ui-icon-disk"
+                                             actionListener="#{proformaAdminBean.guardar}"
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, pnlBotones"/>  
+
+                             <p:commandButton value="#{msg.proforma}"  
+                                              icon="ui-icon-search"
+                                              actionListener="#{proformaAdminBean.verBusquedaProformas}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{proformaAdminBean.onProformaSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                            
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           actionListener="#{proformaAdminBean.generarReportePDF()}"
+                                           disabled="#{proformaAdminBean.proforma.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print" />
+                            </h:commandLink>
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{proformaAdminBean.proforma.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{proformaAdminBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{proformaAdminBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{proformaAdminBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.proforma}"
+                         id="pnlPrincipal">
+                    <h:panelGrid columns="3">
+                        <p:fieldset legend="#{msg.datosGenerales}"
+                                     style="height: 150px">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msg.fecha} :" 
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{proformaAdminBean.proforma.fecha}">
+                                     <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                        pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                </h:outputLabel>
+                                <h:outputLabel value="#{msg.descripcion}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputTextarea rows="2" cols="40" 
+                                             style="height: 50px;width: 250px"
+                                             autoResize="false" 
+                                             maxlength="800"
+                                             value="#{proformaAdminBean.proforma.descripcion}"
+                                             readonly="#{proformaAdminBean.proforma.estado ne 1}"/>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.cliente}"
+                                    style="height: 150px;width: 320px">
+                            
+                            <h:panelGrid columns="2"
+                                         id="pnlCliente">
+                                <h:outputLabel value="#{msg.cedula}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{proformaAdminBean.cliente.persona.cedula}"
+                                               styleClass="texto_etiquetas"
+                                               rendered="#{proformaAdminBean.proforma.estado ne 1}"/>
+                                <h:panelGrid columns="2"
+                                             rendered="#{proformaAdminBean.proforma.estado eq 1}">
+                                    <p:fragment autoUpdate="true">
+                                        <p:inputText value="#{proformaAdminBean.cliente.persona.cedula}"
+                                                     maxlength="13"
+                                                     size="20"
+                                                     validator="com.jvc.factunet.validador.ValidarCedulaRucNulo">
+                                           <p:keyFilter regEx="/[\d]/" 
+                                                        preventPaste="false"/>
+                                       </p:inputText> 
+                                        <p:commandButton actionListener="#{proformaAdminBean.buscarCliente}"
+                                                         icon="ui-icon-search"
+                                                         title="#{msg.buscar}" 
+                                                         update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma"/>
+                                    </p:fragment>
+                                </h:panelGrid>
+                                
+                                <h:outputLabel value="#{msg.cliente}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{proformaAdminBean.cliente.persona.nombres} #{proformaAdminBean.cliente.persona.apellidos}"
+                                               styleClass="texto_etiquetas"/>
+                                
+                                <h:outputLabel value="#{msg.descuento}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputNumber value="#{proformaAdminBean.descuento}" 
+                                               decimalPlaces="2" symbol="%" 
+                                               symbolPosition="s" emptyValue="zero"
+                                               minValue="0" maxValue="100"
+                                               required="true"
+                                               inputStyle="width: 35px;background-color: khaki;text-align: right">
+                                    <p:ajax listener="#{proformaAdminBean.generalDescuento}"
+                                               update=":frmCabecera:tablaProforma"/>
+                                </p:inputNumber> 
+                            </h:panelGrid>
+                            <h:panelGrid columns="2"
+                                         rendered="#{proformaAdminBean.proforma.estado eq 1}">
+                                <p:fragment autoUpdate="true">
+                                    <p:commandButton value="#{msg.buscar}"  
+                                                    icon="ui-icon-search"
+                                                    actionListener="#{proformaAdminBean.verBusquedaClientes}"
+                                                    rendered="#{proformaAdminBean.proforma.estado ne 3}">
+                                     <p:ajax event="dialogReturn" 
+                                             listener="#{proformaAdminBean.onClienteSelect}" 
+                                             update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{proformaAdminBean.verNuevoCliente}" 
+                                                     icon="ui-icon-comment"
+                                                     update=":frmCabecera:grMensajes"
+                                                     rendered="#{proformaAdminBean.proforma.estado ne 3}">
+                                          <p:ajax event="dialogReturn" 
+                                                  listener="#{proformaAdminBean.onClienteSelect}"
+                                                  update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma"/>
+                                   </p:commandButton>
+                               </p:fragment>
+                            </h:panelGrid>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <p:dataTable var="items" 
+                                 id="tablaProforma"
+                                 value="#{proformaAdminBean.proforma.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <f:facet name="header">
+                            <p:fragment autoUpdate="true">
+                                <p:focus id="focus"
+                                         for="txtCodigoBarras"/>
+                                <p:inputText value="#{proformaAdminBean.codigoBarras}"
+                                            id="txtCodigoBarras"
+                                            size="35"
+                                            autocomplete="off"
+                                            placeholder="#{msg.codigoBarras} / #{msg.series}"
+                                            onkeypress="if(event.keyCode==13){onchange();return false;}">
+                                   <p:ajax event="change" 
+                                           listener="#{proformaAdminBean.buscarProductoBarras}"
+                                           update="tablaProforma,:frmCabecera:grMensajes,@this,focus"/>
+                                </p:inputText>
+
+                                <p:commandButton value="#{msg.buscar}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{proformaAdminBean.verBusquedaProductosStock(null)}">
+                                 <p:ajax event="dialogReturn" 
+                                         listener="#{proformaAdminBean.onProductoSelect}" 
+                                         update="tablaProforma, :frmCabecera:grMensajes" />
+                                </p:commandButton>
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column style="width:16px">
+                            <p:rowToggler rendered="#{items.isPaquete}"/>
+                        </p:column>
+                        
+                        <p:rowExpansion>
+                            <p:dataTable var="paqueteP"
+                                         value="#{items.productoServicio.paqueteVentaList}"
+                                         rows="10"
+                                         paginator="true"
+                                         id="tablaProductosPaquete"
+                                         rendered="#{items.isPaquete}">
+
+                                <p:column headerText="#{msg.codigoBarras}"
+                                          width="130">
+                                    <h:outputLabel value="#{paqueteP.producto.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.producto.nombre}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40">
+                                    <h:outputLabel value="#{paqueteP.cantidad}" />
+                                </p:column> 
+                            </p:dataTable>
+                        </p:rowExpansion>   
+                        
+                        <p:column headerText="#{msg.iva}"
+                                  width="60"
+                                  style="text-align:center">
+                            <p:selectOneMenu value="#{items.impuestoTarifa}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             style="width: 40px">
+                               <f:selectItems value="#{proformaAdminBean.listaTarifas}" 
+                                              var="impT"
+                                              itemLabel="#{impT.descripcion}"
+                                              itemValue="#{impT}"/>
+                               <p:ajax update="tablaProforma" 
+                                       listener="#{proformaAdminBean.calcularTodo}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.stock}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.stock}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.bodega}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.bodega.siglas}"
+                                           title="#{items.bodega.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Cant."
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.cantidad}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.cantidad}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                        <p:ajax update="tablaProforma, :frmCabecera:grMensajes"
+                                                listener="#{proformaAdminBean.onCellEditCantidad(items)}"/>
+                                    </p:inputNumber>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitario}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                        <p:ajax update="tablaProforma, :frmCabecera:grMensajes"
+                                                listener="#{proformaAdminBean.onCellEditValorUnitario(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.descuento} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.descuento}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaProforma, :frmCabecera:grMensajes"
+                                                listener="#{proformaAdminBean.onCellEditDescuento(items, true)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorDescuento}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorDescuento}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaProforma, :frmCabecera:grMensajes"
+                                                listener="#{proformaAdminBean.onCellEditValorDescuento(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="60"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
+                                            actionListener="#{proformaAdminBean.eliminar(items)}"
+                                            title="#{msg.eliminar}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton  icon="ui-icon-folder-open"
+                                              title="#{msg.kardex}"
+                                              actionListener="#{proformaAdminBean.verKardex(items.productoServicio)}"/>
+                            
+                        </p:column>
+                        
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="9"
+                                          colspan="7">
+                                    
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{proformaAdminBean.proforma.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{proformaAdminBean.proforma.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{proformaAdminBean.proforma.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="4"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{proformaAdminBean.proforma.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{proformaAdminBean.proforma.total}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

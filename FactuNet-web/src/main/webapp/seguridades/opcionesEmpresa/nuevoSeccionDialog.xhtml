@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.seccion}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevaSeccion">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoSeccionBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     process="@form"
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoSeccionBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset id="flsDatosSeccion">
+                <h:panelGrid columns="2" 
+                             style="width: 100%">
+
+                    <h:outputLabel value="#{msg.seccion}: "/>
+                    <p:inputText value="#{nuevoSeccionBean.seccion.nombre}"
+                                 required="true"
+                                 style="background-color: khaki"/>
+                    
+                    <h:outputLabel value="#{msg.columnas}"/>
+                    <p:spinner value="#{nuevoSeccionBean.seccion.columnas}" 
+                               min="1" max="100" 
+                               size="10"/>
+                    
+                    <h:outputLabel value="#{msg.orden}: "/>
+                    <p:spinner value="#{nuevoSeccionBean.seccion.orden}" 
+                               min="1" max="100" 
+                               size="10"/>
+
+                    <h:outputLabel value="#{msg.descripcion}"/>
+                    <p:inputTextarea rows="3" cols="40" 
+                                     value="#{nuevoSeccionBean.seccion.detalle}"/>
+                </h:panelGrid>
+                <p:dataTable var="mesa" 
+                             value="#{nuevoSeccionBean.seccion.mesaList}"
+                             style="width: 75%"
+                             id="tablaMesas"
+                             paginator="true"
+                             rows="7">
+
+                       <f:facet name="header">
+                           <p:commandButton value="#{msg.nuevo}" 
+                                            icon="ui-icon-comment"
+                                            update="dlgMesa001"
+                                            actionListener="#{nuevoSeccionBean.inicializarMesa}"
+                                            oncomplete="PF('dlgMesa').show();" />
+                       </f:facet>
+
+                       <p:column headerText="#{msg.contenedor}"
+                                 width="100">
+                           <h:outputLabel value="#{mesa.nombre}" />
+                       </p:column>
+                    
+                       <p:column headerText="#{msg.orden}"
+                                 width="50">
+                           <h:outputLabel value="#{mesa.orden}" />
+                       </p:column>
+                    
+                       <p:column headerText="#{msg.detalle}">
+                           <h:outputLabel value="#{mesa.detalle}" />
+                       </p:column>
+                    
+                       <p:column headerText="#{msg.capacidad}"
+                                 width="50">
+                           <h:outputLabel value="#{mesa.sillas}" />
+                       </p:column>
+
+                       <p:column headerText="#{msg.opcion}" 
+                                 width="50"
+                                 style="text-align: center">
+                           <p:fragment autoUpdate="true">
+                                <p:commandButton  icon="ui-icon-close" 
+                                                  update=":frmNuevaSeccion:grMensajes, tablaMesas" 
+                                                  actionListener="#{nuevoSeccionBean.eliminarMesa(mesa)}"
+                                                  immediate="true"
+                                                  title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:commandButton icon="ui-icon-pencil" 
+                                                 title="#{msg.editar}"
+                                                 update="dlgMesa001"
+                                                 oncomplete="PF('dlgMesa').show();"
+                                                 action="#{nuevoSeccionBean.seleccionarMesa(mesa)}"/>
+                           </p:fragment>
+                       </p:column>
+                   </p:dataTable>
+            </p:fieldset>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+        <p:dialog header="#{msg.mesa}" 
+                      widgetVar="dlgMesa" 
+                      modal="true"
+                      resizable="false"
+                      id="dlgMesa001">
+                
+                <h:form id="frmMesa">
+                    <h:panelGrid columns="2" >
+                        
+                        <h:outputLabel value="#{msg.nombre}: "/>
+                        <p:inputText value="#{nuevoSeccionBean.mesa.nombre}"
+                                     style="background-color: khaki"
+                                     size="20"
+                                     maxlength="50"/>
+                        
+                        <h:outputLabel value="#{msg.orden}: "/>
+                        <p:spinner value="#{nuevoSeccionBean.mesa.orden}" 
+                                   min="1" max="100" 
+                                   size="10"/>
+                        
+                        <h:outputLabel value="#{msg.capacidad}: "/>
+                        <p:spinner value="#{nuevoSeccionBean.mesa.sillas}" 
+                                   min="1" max="100" 
+                                   size="10"/>
+                        
+                        <h:outputLabel value="#{msg.detalle}: "/>
+                        <p:inputTextarea rows="3" cols="30" 
+                                         value="#{nuevoSeccionBean.mesa.detalle}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{msg.agregar}" 
+                                         actionListener="#{nuevoSeccionBean.agregarMesa}"
+                                         icon="ui-icon-check"
+                                         process="@form"
+                                         update=":frmNuevaSeccion:grMensajes, :frmNuevaSeccion:tablaMesas"/>
+
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         onclick="PF('dlgMesa').close();"
+                                         immediate="true"
+                                         icon="ui-icon-cancel" />
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog> 
+    </h:body>
+</html>

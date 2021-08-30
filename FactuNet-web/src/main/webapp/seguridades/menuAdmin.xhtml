@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:panel header="#{msg.adminOpcionesMenu}">
+                    <h:panelGrid columns="2"
+                                 style="margin-bottom:10px" cellpadding="5">
+                        <p:fieldset id="flsMenu0001" 
+                                    style="width:250px;height:450px;" 
+                                    legend="#{msg.menu}">
+                                    
+                                <p:commandButton value="#{msg.nuevo}" 
+                                                 actionListener="#{menuBean.nuevoMenuPadre()}" 
+                                                 update=":frmCabecera:flsMenu0002,:frmCabecera:grMensajes"/>
+                                <p:scrollPanel style="height:400px;">
+                                    <p:tree value="#{menuBean.root}" 
+                                            var="node" id="menuTree"  
+                                            dynamic="true" selectionMode="single"
+                                            style="width: 100%">  
+
+                                         <p:ajax event="select" 
+                                                 update=":frmCabecera:flsMenu0002" 
+                                                 listener="#{menuBean.onNodeSelect}" />
+
+                                        <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                                    collapsedIcon="ui-icon-folder-collapsed">  
+                                            <h:outputLabel value="#{node.nombre}" />  
+                                        </p:treeNode>  
+
+                                    </p:tree> 
+                                </p:scrollPanel>
+                                <p:contextMenu for="menuTree">
+                                    <p:menuitem value="#{msg.eliminar}" 
+                                                update="menuTree, :frmCabecera:grMensajes, :frmCabecera:flsMenu0002" 
+                                                actionListener="#{menuBean.deleteNode()}" 
+                                                icon="ui-icon-close"
+                                                immediate="true"/>
+                                </p:contextMenu>
+                        </p:fieldset>
+                        
+                        <p:fieldset id="flsMenu0002" 
+                                    style="width:650px;height:450px;" 
+                                    legend="#{msg.opciones}">
+                            
+                            <h:panelGrid columns="2">
+                                
+                                <h:outputLabel value="#{msg.padre}:"/>
+                                <h:outputLabel value="#{menuBean.padre.nombre} " />
+                                
+                                <h:outputLabel value="#{msg.nombre}: " />
+                                <p:inputText value="#{menuBean.opcionMenu.nombre}" 
+                                            maxlength="110" 
+                                            required="true" 
+                                            id="txtNombre001" 
+                                            transient="true"
+                                            style="background-color: khaki "/>
+
+                                <h:outputLabel value="#{msg.pagina}: " />
+                                <p:inputText value="#{menuBean.opcionMenu.url}" 
+                                             size="50"
+                                             maxlength="110" />
+                                
+                                <h:outputLabel value="#{msg.tipo}" />
+                                <p:selectOneMenu value="#{menuBean.opcionMenu.tipo}"
+                                                 style="width:125px">
+                                    <f:selectItem itemLabel="#{msg.menu}" itemValue="1" />
+                                    <f:selectItem itemLabel="#{msg.dialog}" itemValue="2" />
+                                </p:selectOneMenu>
+                                
+                                <h:outputLabel value="#{msg.orden}" />
+                                <p:spinner value="#{menuBean.opcionMenu.orden}" 
+                                           min="1" max="100" 
+                                           size="10"/>
+                                
+                                <h:outputLabel value="#{msg.color}" />
+                                <p:colorPicker value="#{menuBean.opcionMenu.color}"/> 
+
+                                <p:commandButton value="#{msg.guardar}"  
+                                                 actionListener="#{menuBean.guardar()}" 
+                                                 disabled="#{menuBean.padre eq null}"
+                                                 update=":frmCabecera:flsMenu0002, :frmCabecera:grMensajes, :frmCabecera:flsMenu0001"
+                                                 icon="ui-icon-disk"/>
+                                
+                                <p:commandButton value="#{msg.nuevo}" 
+                                                 actionListener="#{menuBean.nuevoMenuHijo()}" 
+                                                 update=":frmCabecera:flsMenu0002, :frmCabecera:grMensajes, txtNombre001"
+                                                 icon="ui-icon-comment"/>
+                                
+                            </h:panelGrid>
+                        </p:fieldset>    
+                    </h:panelGrid>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

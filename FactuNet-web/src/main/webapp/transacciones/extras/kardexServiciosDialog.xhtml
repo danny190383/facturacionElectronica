@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{kardexServiciosBean.producto.nombre}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmKardex">
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <p:dataTable var="items" 
+                         id="tablaKardex"
+                         emptyMessage="#{msg.tablaVacia}"
+                         value="#{kardexServiciosBean.listaKardex}"
+                         paginator="true"
+                         rows="15">
+
+                <p:column headerText="#{msg.fecha}"
+                          width="120">
+                    <h:outputLabel value="#{items[0]}" >
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                           pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.tipo}"
+                          width="100">
+                    <h:outputLabel value="#{msg.facturaVenta}" rendered="#{items[1] eq 5}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="50">
+                    <h:outputLabel value="#{items[7]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.tipo}"
+                          width="30">
+                    <h:outputLabel value="#{items[9]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cantidad}"
+                          width="50">
+                    <h:outputLabel value="#{items[3]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.costo}"
+                          width="50">
+                    <h:outputLabel value="#{items[10]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.valor}"
+                          width="50">
+                    <h:outputLabel value="#{items[8]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.aQuien}">
+                    <h:outputLabel value="#{items[5]} #{items[6]}" />
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,939 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"> 
+
+    <body>
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             process="@this"
+                                             actionListener="#{facturaCompraBean.inicializar()}"
+                                             update=":frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" 
+                                             icon="ui-icon-document"/>  
+                            
+                            <p:commandButton value="#{msg.guardar}" 
+                                             icon="ui-icon-disk"
+                                             rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
+                                             actionListener="#{facturaCompraBean.verPago}" 
+                                             update=":frmCabecera:grMensajes" >
+                               <p:ajax event="dialogReturn" 
+                                       oncomplete="document.getElementById('frmCabecera:btnPrint').click();"
+                                       listener="#{facturaCompraBean.onPagoSelect}"
+                                       update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones"/>
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.actualizar}" 
+                                             rendered="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                             actionListener="#{facturaCompraBean.verPagoRetencionVentana(facturaCompraBean.facturaCompra)}"
+                                             update=":frmCabecera:grMensajes" 
+                                             icon="ui-icon-disk">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.actualizar}" 
+                                           icon="ui-icon-alert" />
+                                <p:ajax event="dialogReturn" 
+                                        update=":frmCabecera:pnlPrincipal, pnlBotones, :frmCabecera:grMensajes" 
+                                        listener="#{facturaCompraBean.onPagoRetencionSelect}" />
+                            </p:commandButton> 
+                            
+                            <p:commandButton value="#{msg.pedidoCompra}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             actionListener="#{facturaCompraBean.verBusquedaPedidos}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{facturaCompraBean.onPedidoSelect}" 
+                                       update=":frmCabecera:pnlPrincipal" />
+                            </p:commandButton>
+                            
+                             <p:commandButton value="#{msg.facturaCompra}"  
+                                              icon="ui-icon-search"
+                                              process="@this"
+                                              actionListener="#{facturaCompraBean.verBusquedaFacturas}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{facturaCompraBean.onFacturaSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" />
+                             </p:commandButton>
+                            
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <p:commandButton value="#{msg.archivo}" ajax="false"
+                                             icon="ui-icon-arrowthick-1-s"
+                                             title="#{msg.archivo} #{msg.muestra}">
+                                <p:fileDownload value="#{facturaCompraBean.file}" />
+                            </p:commandButton>
+                                
+                            <h:commandLink target="_blank" 
+                                           actionListener="#{facturaCompraBean.generarReportePOIXLS()}">
+                                <p:commandButton type="button" icon="ui-icon-arrowthick-1-s" 
+                                                 title="#{msg.cargaArchivo}"/>
+                            </h:commandLink>
+                                
+                            <h:commandLink target="_blank" 
+                                           id="btnPrint"
+                                           actionListener="#{facturaCompraBean.generarReportePDF()}"
+                                           disabled="#{facturaCompraBean.facturaCompra.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print" 
+                                                 title="#{msg.imprimir} #{msg.facturaCompra}"/>
+                            </h:commandLink>
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{facturaCompraBean.facturaCompra.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{facturaCompraBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{facturaCompraBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{facturaCompraBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.facturaCompra}"
+                         id="pnlPrincipal">
+                    <p:tabView id="tabPrincipalDatos">
+                        <p:tab title="#{msg.datosGenerales}">
+                            <h:panelGrid columns="2" width="90%">
+                                <p:fieldset legend="#{msg.datosGenerales}"
+                                            style="height: 200px">
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="#{msg.fecha}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:panelGrid columns="2">
+                                            <p:calendar value="#{facturaCompraBean.facturaCompra.fecha}" 
+                                                        navigator="true"
+                                                        timeZone="#{parametrosApplication.timeZone}"
+                                                        locale="#{parametrosApplication.local}" 
+                                                        pattern="#{parametrosApplication.formatoFecha}"
+                                                        size="10"
+                                                        required="true"
+                                                        disabled="#{facturaCompraBean.facturaCompra.estado eq 3}"/>
+                                        <p:fileUpload  mode="advanced" 
+                                                       skinSimple="true"
+                                                       sizeLimit="10000000"  
+                                                       disabled="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                                       label="#{msg.archivo}"
+                                                       auto="true"
+                                                       listener="#{facturaCompraBean.subirLogo}"
+                                                       allowTypes="/(\.|\/)(xlsx|xls)$/" 
+                                                       cancelLabel="Cancelar" 
+                                                       update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra"/>
+                                        </h:panelGrid>
+                                        <h:outputLabel value="#{msg.numero} :" 
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:panelGrid columns="2">
+                                            <p:inputMask value="#{facturaCompraBean.facturaCompra.observacion}" 
+                                                         mask="999-999"
+                                                         validateMask="true"
+                                                         maxlength="7"
+                                                         size="6"
+                                                         style="background-color: khaki "
+                                                         readonly="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                                         required="true">
+                                                <p:keyFilter regEx="/[\d]/" />
+                                            </p:inputMask>
+                                            <p:inputText value="#{facturaCompraBean.facturaCompra.numero}"
+                                                         required="true"
+                                                         size="8"
+                                                         maxlength="9"
+                                                         style="background-color: khaki "
+                                                         readonly="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                                <p:keyFilter regEx="/[\d]/" />
+                                            </p:inputText>
+                                        </h:panelGrid>
+                                        
+                                        <h:outputLabel value="#{msg.bodega}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:selectOneMenu style="width: 180px"
+                                                         value="#{facturaCompraBean.bodegaSelect}"
+                                                         disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                           <p:ajax listener="#{facturaCompraBean.setBodegaDetalle}"/>
+                                           <f:selectItems value="#{facturaCompraBean.listaBodegas}" 
+                                                          var="bodega" 
+                                                          itemLabel="#{bodega.nombre}" 
+                                                          itemValue="#{bodega.codigo}" />
+                                        </p:selectOneMenu>
+
+                                        <h:outputLabel value="#{msg.descripcion}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 30px;width: 80%"
+                                                     autoResize="false" 
+                                                     maxlength="800"
+                                                     value="#{facturaCompraBean.facturaCompra.descripcion}"
+                                                     readonly="#{facturaCompraBean.facturaCompra.estado eq 3}"/>
+                                        
+                                        
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                <p:fieldset legend="#{msg.proveedor}"
+                                            style="height: 200px"
+                                            id="pnlProveedor">
+                                    <h:panelGrid columns="2" >
+                                        <h:outputLabel value="#{msg.proveedor}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:selectOneMenu value="#{facturaCompraBean.facturaCompra.proveedor}"
+                                                         filter="true" filterMatchMode="startsWith"
+                                                         style="width:280px"
+                                                         panelStyle="width:280px"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         disabled="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                                         required="true">
+                                            <p:ajax listener="#{facturaCompraBean.onProveedorSelect}"
+                                                    update="pnlProveedor, :frmCabecera:tablaPedidoCompra"/>
+                                            <f:selectItems value="#{facturaCompraBean.listaProveedores}" 
+                                                           var="proveedor"
+                                                           itemLabel="#{proveedor.persona.nombres}"
+                                                           itemValue="#{proveedor}"/>
+
+                                        </p:selectOneMenu>
+
+                                        <h:outputLabel value="#{msg.contacto}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:selectOneMenu value="#{facturaCompraBean.facturaCompra.contactoProveedor}"
+                                                        panelStyle="width:280px"
+                                                        style="width:280px"
+                                                        id="slcContatoProveedor"
+                                                        required="true"
+                                                        converter="omnifaces.SelectItemsConverter"
+                                                        disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                            <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                                            <f:selectItems value="#{facturaCompraBean.facturaCompra.proveedor.contactoPersonaList}" 
+                                                           var="contacto"
+                                                           itemLabel="#{contacto.persona.nombres} #{contacto.persona.apellidos}"
+                                                           itemValue="#{contacto}"/>
+                                        </p:selectOneMenu>  
+                                    </h:panelGrid>    
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{facturaCompraBean.verNuevoProveedor}" 
+                                                     icon="ui-icon-comment"
+                                                     update=":frmCabecera:grMensajes"
+                                                     process="@this"
+                                                     disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{facturaCompraBean.onProveedorNuevoSelect}"
+                                                update=":frmCabecera:grMensajes, pnlProveedor"/>
+                                    </p:commandButton>
+                                    <h:panelGrid columns="4">
+                                        <h:outputLabel value="#{msg.credito}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="#{facturaCompraBean.facturaCompra.proveedor.tiempoMaxCredito} "/>
+                                            <h:outputLabel value="#{msg.dias}"/>
+                                        </h:panelGrid>
+
+                                        <h:outputLabel value="#{msg.descuento}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:inputNumber value="#{facturaCompraBean.descuento}" 
+                                                        decimalPlaces="2" symbol="%" 
+                                                        symbolPosition="s" emptyValue="zero"
+                                                        minValue="0" maxValue="100"
+                                                        size="5"
+                                                        inputStyle="width: 50px;background-color: khaki;text-align: right">
+                                            <p:ajax listener="#{facturaCompraBean.generalDescuento}"
+                                                   update=":frmCabecera:tablaPedidoCompra"/>
+                                        </p:inputNumber> 
+                                    </h:panelGrid>
+                                </p:fieldset>
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="#{msg.retencion}"
+                               rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                            <p:dataTable var="documento" 
+                                         id="tablaDocRetencion"
+                                         value="#{facturaCompraBean.facturaCompra.documentoRetencion}" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         expandedRow="#{true}"
+                                         editable="true" 
+                                         editMode="cell">
+                                <f:facet name="header" >
+                                    <p:commandButton actionListener="#{facturaCompraBean.crearDocumentoRetencion(facturaCompraBean.facturaCompra)}"
+                                                     icon="ui-icon-check" 
+                                                     value="#{msg.crear} #{msg.retencion}"
+                                                     update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaDocRetencion"/>
+                                </f:facet>
+                                <p:column headerText="#{msg.numero}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{documento.numero}"/>
+                                </p:column>
+                                <p:column headerText="#{msg.fecha}"
+                                         width="65">
+                                    <h:outputLabel value="#{documento.fecha}"
+                                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold">
+                                         <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                             pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="#{msg.observacion}">
+                                     <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{documento.observacion}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText size="130" value="#{documento.observacion}" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{msg.total}"
+                                          width="65"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{documento.totalRetencion}"/>
+                                </p:column>
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="80"
+                                          style="text-align: center">
+                                    <h:commandLink actionListener="#{facturaCompraBean.generarReporteRetencionPDF(documento.codigo)}"
+                                                    target="_blank" >
+                                        <p:commandButton type="button" icon="ui-icon-print" 
+                                                         title="#{msg.imprimir} #{msg.retencion}"/>
+                                    </h:commandLink>
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaPedidoCompra" 
+                                                      actionListener="#{facturaCompraBean.eliminarDocumento(facturaCompraBean.facturaCompra ,documento)}"
+                                                      title="#{msg.eliminar}"
+                                                      disabled="#{documento.numero ne null}">
+                                            <p:confirm header="#{msg.confirmacion}" 
+                                                       message="#{msg.eliminar}" 
+                                                       icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+                                <p:rowExpansion>
+                                    <p:dataTable var="retencion" 
+                                                 value="#{documento.retencionList}"
+                                                 style="width: 90%"
+                                                 emptyMessage="#{msg.tablaVacia}">
+                                        
+                                        <f:facet name="header" >
+                                            <h:panelGrid columns="2"
+                                                         rendered="#{documento.numero eq null}">
+                                                    <p:selectOneMenu value="#{facturaCompraBean.retencionSlc}"
+                                                                    style="width: 300px">
+                                                        <f:selectItems value="#{facturaCompraBean.listaTipoRetencion}" 
+                                                                        var="retencion"
+                                                                        itemLabel="#{retencion.codigoImpuesto} #{retencion.nombre}"
+                                                                        itemValue="#{retencion.codigo}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:commandButton actionListener="#{facturaCompraBean.agregarRetencion(documento)}"
+                                                                    icon="ui-icon-check" 
+                                                                    value="#{msg.agregar}"
+                                                                    update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaPedidoCompra"/>
+
+                                            </h:panelGrid>
+                                        </f:facet>
+                                                    
+                                       <p:column headerText="#{msg.retencion}"
+                                                 style="text-align: left">
+                                           <h:outputText value="#{retencion.tipoRetencion.codigoImpuesto} #{retencion.tipoRetencion.nombre}" />
+                                       </p:column>
+
+                                       <p:column headerText="%"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.tipoRetencion.valor}"/>
+                                       </p:column>
+                                        
+                                        <p:column headerText="#{msg.base}"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.baseImponible}"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.valor}"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.valor}"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.opcion}" 
+                                               width="50"
+                                               style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaPedidoCompra" 
+                                                              actionListener="#{facturaCompraBean.eliminarRetencion(documento,retencion)}"
+                                                              title="#{msg.eliminar}"
+                                                              disabled="#{documento.numero ne null}">
+                                                  <p:confirm header="#{msg.confirmacion}" 
+                                                             message="#{msg.eliminar}" 
+                                                             icon="ui-icon-alert" />
+                                            </p:commandButton>
+                                        </p:column>
+                                   </p:dataTable>
+                                </p:rowExpansion>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.guia} #{msg.transporte}">
+                            <p:dataTable var="guia"
+                                         value="#{facturaCompraBean.facturaCompra.guiaRemisionList}"
+                                         style="width: 80%"
+                                         id="tablaGuia"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         scrollable="true" scrollHeight="100">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo} #{msg.guia}"  
+                                                     actionListener="#{facturaCompraBean.verGuia(null)}" 
+                                                     update=":frmCabecera:grMensajes"
+                                                     icon="ui-icon-comment"
+                                                     immediate="true"
+                                                     disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                       <p:ajax event="dialogReturn" 
+                                               listener="#{facturaCompraBean.onGuiaSelect}"
+                                               update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaGuia"/>
+                                    </p:commandButton>
+                                </f:facet>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="80">
+                                    <h:outputLabel value="#{guia.fechaEnvio}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.transportista}">
+                                    <h:outputLabel value="#{guia.transportista.persona.nombres}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.valor}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.valor}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="60"
+                                          style="text-align: center"
+                                          rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaGuia" 
+                                                      actionListener="#{facturaCompraBean.eliminarGuia(guia)}"
+                                                      title="#{msg.eliminar}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{facturaCompraBean.verGuia(guia)}">
+                                          <p:ajax event="dialogReturn" 
+                                                  update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaGuia"
+                                                  listener="#{facturaCompraBean.calcularTransporte}"/>
+                                    </p:commandButton>
+                                </p:column>
+
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column footerText="#{msg.transporte}" 
+                                                  colspan="2" 
+                                                  style="text-align:right"/>
+                                        <p:column footerText="#{facturaCompraBean.totalTransporte}" 
+                                                  style="text-align:right"/>
+                                        <p:column>
+                                            <f:facet name="footer" >
+                                                    <p:commandButton icon="ui-icon-refresh" 
+                                                                     title="#{msg.prorrateo}"
+                                                                     rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
+                                                                     actionListener="#{facturaCompraBean.prorratear}"
+                                                                     update=":frmCabecera:tablaPedidoCompra, :frmCabecera:tabPrincipalDatos:tablaGuia"/>
+                                            </f:facet>
+                                        </p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column footerText="#{msg.prorrateo}" 
+                                                  colspan="2" 
+                                                  style="text-align:right"/>
+                                        <p:column footerText="#{facturaCompraBean.totalProrrateo}" 
+                                                  style="text-align:right"/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    
+                    <p:dataTable var="items" 
+                                 id="tablaPedidoCompra"
+                                 value="#{facturaCompraBean.facturaCompra.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <f:facet name="header" >
+                            <p:fragment autoUpdate="true"
+                                        rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                                <p:focus id="focus"
+                                         for="txtCodigoBarras"/>
+                                <p:inputText value="#{facturaCompraBean.codigoBarras}"
+                                             size="35"
+                                             id="txtCodigoBarras"
+                                             placeholder="#{msg.codigoBarras}"
+                                             autocomplete="off">
+                                   <p:ajax event="change" 
+                                           listener="#{facturaCompraBean.buscarProductoBarras}"
+                                           update="tablaPedidoCompra,:frmCabecera:grMensajes,@this,focus"/>
+                                </p:inputText>
+
+                                <p:commandButton value="#{msg.buscar}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{facturaCompraBean.verBusquedaProductos}">
+                                 <p:ajax event="dialogReturn" 
+                                         listener="#{facturaCompraBean.onProductoSelect}" 
+                                         update="tablaPedidoCompra, :frmCabecera:grMensajes, focus" />
+                                </p:commandButton>
+                            
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                actionListener="#{facturaCompraBean.verNuevoProducto}" 
+                                                icon="ui-icon-comment"
+                                                update=":frmCabecera:grMensajes">
+                                      <p:ajax event="dialogReturn" 
+                                              listener="#{facturaCompraBean.onProductoNuevoSelect}"
+                                              update="tablaPedidoCompra, :frmCabecera:grMensajes, focus"/>
+                               </p:commandButton>
+                                
+                                <p:commandButton id="toggler" type="button" 
+                                             style="float:right" 
+                                             icon="ui-icon-calculator" />
+                                <p:columnToggler datasource="tablaPedidoCompra" 
+                                                 trigger="toggler" />
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column headerText="#{msg.iva}"
+                                  width="60"
+                                  style="text-align:center">
+                            
+                            <p:selectOneMenu value="#{items.impuestoTarifa}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             style="width: 40px"
+                                             disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                               <f:selectItems value="#{facturaCompraBean.listaTarifas}" 
+                                              var="impT"
+                                              itemLabel="#{impT.descripcion}"
+                                              itemValue="#{impT}"/>
+                               <p:ajax update="tablaPedidoCompra" 
+                                       listener="#{facturaCompraBean.calcularTotales}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.stock}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.stock}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.fecha} #{msg.caducidad}"
+                                  width="35"
+                                  visible="false"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                            <h:outputLabel value="#{items.fechaCaducidad}">
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="#{msg.fecha} #{msg.caducidad}"
+                                  width="35"
+                                  style="text-align:right"
+                                  visible="false"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.fechaCaducidad}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:calendar value="#{items.fechaCaducidad}" 
+                                                navigator="true"
+                                                timeZone="#{parametrosApplication.timeZone}"
+                                                locale="#{parametrosApplication.local}" 
+                                                pattern="#{parametrosApplication.formatoFecha}"
+                                                size="10"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="Cant."
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                            <h:outputLabel value="#{items.cantidad}"/>
+                        </p:column>
+
+                        <p:column headerText="Cant."
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.cantidad}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.cantidad}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   size="5"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaGuia"
+                                                listener="#{facturaCompraBean.onCellEditCantidad(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitario}"
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitario}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0" 
+                                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaGuia"
+                                                listener="#{facturaCompraBean.onCellEditValorUnitario(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado eq  3}">
+                            <h:outputLabel value="#{items.descuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.descuento} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.descuento}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{facturaCompraBean.onCellEditDescuento(items, true)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  visible="false"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                            <h:outputLabel value="#{items.valorDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorDescuento}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorDescuento}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{facturaCompraBean.onCellEditValorDescuento(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.valor} #{msg.transporte}"
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorProrrateo}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorProrrateo}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:tabPrincipalDatos:tablaGuia"
+                                                listener="#{facturaCompraBean.onCellEditValorProrrateo(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.valor} #{msg.unitario} + #{msg.transporte}"
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitarioTransporte}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitarioTransporte}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:tabPrincipalDatos:tablaGuia"
+                                                listener="#{facturaCompraBean.onCellEditProrrateo(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% #{msg.utilidad}"
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.utilidad} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.utilidad}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra"
+                                                listener="#{facturaCompraBean.onCellEditUtilidad(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp} SIN #{msg.iva}"
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.pvp}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.pvp}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right "
+                                                   readonly="#{items.productoServicio.ivaB}">
+                                        <p:ajax update="tablaPedidoCompra"
+                                                listener="#{facturaCompraBean.onCellEditPVP(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.si}"
+                                  width="5"
+                                  visible="false">
+                            <h:outputLabel value="#{items.productoServicio.ivaB}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp} #{msg.con} #{msg.iva}"
+                                  width="35"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.pvpIva}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.pvpIva}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right "
+                                                   readonly="#{not items.productoServicio.ivaB}">
+                                        <p:ajax update="tablaPedidoCompra"
+                                                listener="#{facturaCompraBean.onCellEditPVPIVA(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="80"
+                                  style="text-align: center">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
+                                            actionListener="#{facturaCompraBean.eliminar(items)}"
+                                            title="#{msg.eliminar}"
+                                            rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton  icon="ui-icon-folder-open" 
+                                              title="#{msg.kardex}"
+                                              actionListener="#{facturaCompraBean.verKardex(items.productoServicio)}"/>
+                            
+                            <p:commandButton  icon="ui-icon-comment" 
+                                              title="#{msg.series}"
+                                              actionListener="#{facturaCompraBean.verRegistroSeries(items)}" 
+                                              update=":frmCabecera:grMensajes" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{facturaCompraBean.onRegistroSeriesSelect}"
+                                        update="tablaPedidoCompra, :frmCabecera:grMensajes"/>
+                            </p:commandButton>  
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="11"
+                                          colspan="6">
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{facturaCompraBean.facturaCompra.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="3"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.total}" style="text-align:right"/>
+                            </p:row>
+                            <p:row rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                <p:column footerText="#{msg.retencion}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.totalRetencion}" style="text-align:right"/>
+                            </p:row>
+                            <p:row rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                <p:column footerText="#{msg.valorPagar} - #{msg.retencion}" style="text-align:right"
+                                          colspan="3"/>
+                                <p:column footerText="#{facturaCompraBean.facturaCompra.totalPagar}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+                
+                <p:confirmDialog widgetVar="loadFile" 
+                                 header="#{msg.cargaArchivo}"
+                                 message="#{msg.cargaArchivo} #{msg.productos}"
+                                 global="true">
+                    <p:fileUpload  mode="advanced" 
+                                   skinSimple="true"
+                                   sizeLimit="1000000"  
+                                   label="Seleccionar"
+                                   auto="true"
+                                   oncomplete="PF('loadFile').hide();" 
+                                   listener="#{facturaCompraBean.cargarArchivo}"
+                                   allowTypes="/(\.|\/)(xlsx|xls)$/" 
+                                   cancelLabel="Cancelar" 
+                                   update=":frmCabecera:grMensajes"/>
+                </p:confirmDialog>
+                
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

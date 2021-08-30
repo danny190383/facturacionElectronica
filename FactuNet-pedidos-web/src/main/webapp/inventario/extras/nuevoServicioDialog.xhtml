@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.servicio}</title>
+        <h:outputStylesheet name="css/theme.css"/>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="true" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoServicioPedidosBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoServicioPedidosBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 100%">
+                    
+                    <h:outputLabel value="#{msg.nombre} #{msg.producto}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevoServicioPedidosBean.productoServicio.nombre}"
+                                 size="80"
+                                 maxlength="100"
+                                 required="true"
+                                 styleClass="texto_obligatorio"/>    
+                          
+                    <h:outputLabel value="#{msg.descripcion}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     style="width: 415px"
+                                     autoResize="false" 
+                                     maxlength="500"
+                                     value="#{nuevoServicioPedidosBean.productoServicio.descripcion}"/>
+
+                    <h:outputLabel value="#{msg.pvp}: "
+                                   styleClass="texto_etiquetas"/> 
+                    <p:inputNumber value="#{nuevoServicioPedidosBean.productoServicio.pvp}" 
+                                   decimalPlaces="#{login.cuenta.empleado.persona.empresa.decimales}"
+                                   minValue="0"
+                                   required="true"
+                                   id="txtPVP"
+                                   inputStyle="width: 70px;background-color: khaki;text-align: right;font-size: 14px;font-weight: bold;color: red;"/>
+                        
+                    <h:outputLabel value="#{msg.foto}"
+                                   styleClass="texto_etiquetas"/>
+                    <h:panelGrid columns="1" 
+                                 style="text-align: center">
+                        <p:graphicImage id="logo"
+                                        url="#{nuevoServicioPedidosBean.urlLogo}"
+                                        width="150px"
+                                        height="150px"
+                                        style="border: solid 1px"
+                                        cache="false" />
+                        <p:fileUpload  mode="advanced" 
+                                       skinSimple="true"
+                                       sizeLimit="1000000"  
+                                       label="Seleccionar"
+                                       auto="true"
+                                       fileUploadListener="#{nuevoServicioPedidosBean.subirLogo}"
+                                       allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                       cancelLabel="Cancelar" 
+                                       update=":frmNuevo:grMensajes, :frmNuevo:logo"/>
+                    </h:panelGrid>
+                </h:panelGrid> 
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

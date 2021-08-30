@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd"
+    version="2.1">
+    <application>
+        <locale-config>
+            <default-locale>es</default-locale>
+            <supported-locale>es</supported-locale>
+        </locale-config>
+        <message-bundle>com.jvc.factunet.recursos.mensajesPersonalizados</message-bundle>
+        <resource-bundle>
+            <base-name>com.jvc.factunet.recursos.messages</base-name>
+            <var>msg</var>
+        </resource-bundle>
+        <converter>
+            <converter-id>projectConverter</converter-id>
+            <converter-class>com.jvc.factunet.converter.ProjectConverter</converter-class>
+        </converter>
+    </application>
+    <application>
+        <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+        <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+        <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+    </application>  
+    <render-kit> 
+        <renderer> 
+            <component-family> org.primefaces.component </component-family> 
+            <renderer-type> org.primefaces.component.FileUploadRenderer </renderer-type> 
+            <renderer-class> com.jvc.factunet.fileupload.FileUploadRenderer </renderer-class> 
+        </renderer> 
+    </render-kit>
+    <navigation-rule>
+        <from-view-id>/login.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>usuario</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <!--<to-view-id>/transacciones/facturaVenta.xhtml</to-view-id>-->
+        </navigation-case>
+    </navigation-rule>
+</faces-config>
+

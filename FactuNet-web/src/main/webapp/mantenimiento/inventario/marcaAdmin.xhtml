@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <p:panel style="width: 100%" 
+                 id="pnlMarca">
+            <h:panelGrid columns="2">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.buscar} #{msg.marca} "/>
+                    <p:inputText value="#{marcaBean.buscarMarca}" size="50"> 
+                       <p:ajax event="keyup" update=":frmCabecera:tabMasterInventario:tablaMarca" 
+                                listener="#{marcaBean.buscar()}"/>                                                       
+                    </p:inputText>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{marcaBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{marcaBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{marcaBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+            <p:dataTable var="marca"  
+                         value="#{marcaBean.lista}"
+                         id="tablaMarca" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         paginator="true"
+                         rows="15">  
+                
+             <f:facet name="header">
+                    <p:commandButton value="#{msg.nuevo}"  
+                                     oncomplete="PF('dialog005').show()"
+                                     actionListener="#{marcaBean.nuevo()}"
+                                     immediate="true"
+                                     update=":frmCabecera:tabMasterInventario:dlgMarca"
+                                     icon="ui-icon-comment"/>
+             </f:facet>   
+              
+                <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                    <h:outputLabel value="#{marca.codigo}" />
+                </p:column>
+
+                <p:column headerText="#{msg.marca}">
+                    <h:outputLabel value="#{marca.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.empresa}">
+                    <h:outputLabel value="#{marca.empresa.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.orden}"
+                          width="50">
+                    <h:outputLabel value="#{marca.orden}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}" 
+                          width="70"
+                          style="text-align: center">
+
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmCabecera:grMensajes, :frmCabecera:tabMasterInventario:tablaMarca" 
+                                      actionListener="#{marcaBean.eliminar(marca)}"
+                                      immediate="true"
+                                      title="#{msg.eliminar}">
+                          <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                     <p:commandButton icon="ui-icon-pencil" 
+                                      title="#{msg.editar}"
+                                      process="tablaMarca"
+                                      update=":frmCabecera:tabMasterInventario:dlgMarca"
+                                      oncomplete="PF('dialog005').show()"
+                                      action="#{marcaBean.seleccionar(marca)}"/>
+                  </p:column>
+             </p:dataTable>  
+        </p:panel>     
+
+        <p:dialog header="#{msg.marca}" 
+                  widgetVar="dialog005" 
+                  resizable="false"
+                  id="dlgMarca">
+
+          <h:form id="frm002">
+              <h:panelGrid columns="2">
+                  
+                  <h:outputLabel value="#{msg.marca}: "/>
+                  <p:inputText value="#{marcaBean.marca.nombre}"
+                               required="true"
+                               size="40" maxlength="100" 
+                               style="background-color: khaki "/>
+                  
+                  <h:outputLabel value="#{msg.orden}" />
+                  <p:spinner value="#{marcaBean.marca.orden}" 
+                             min="1" max="100" 
+                             size="10"/>
+
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{marcaBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                  update=":frmCabecera:tabMasterInventario:tablaMarca, :frmCabecera:grMensajes" />
+                
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialog005').hide()"/>
+                </h:panelGrid> 
+            </h:form>
+        </p:dialog>
+    </body>
+</html>

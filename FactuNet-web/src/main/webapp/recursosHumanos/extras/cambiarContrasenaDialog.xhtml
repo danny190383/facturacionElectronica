@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.cambiarContraseña}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                            style="width: 100%"
+                            id="pnlDatosContacto">
+
+                    <h:outputLabel for="pwd1" value="#{msg.clave}" />
+                    <p:password id="pwd1" value="#{cambiarContrasenaBean.cuenta.clave}" match="pwd2" label="Password 1" />
+
+                    <h:outputLabel for="pwd2" value="#{msg.clave}" />
+                    <p:password id="pwd2" value="#{cambiarContrasenaBean.cuenta.clave}" label="Password 2" />
+
+                </h:panelGrid>
+            </p:fieldset>
+           <h:panelGrid columns="2">
+               <p:commandButton value="#{msg.guardar}" 
+                                actionListener="#{cambiarContrasenaBean.agregar()}"
+                                icon="ui-icon-check" 
+                                update="grMensajes, @form"/>
+
+               <p:commandButton value="#{msg.cancelar}" 
+                                actionListener="#{cambiarContrasenaBean.cerrar()}"
+                                immediate="true"
+                                icon="ui-icon-cancel" />
+           </h:panelGrid>
+            
+        </h:form>
+    </h:body>
+</html>

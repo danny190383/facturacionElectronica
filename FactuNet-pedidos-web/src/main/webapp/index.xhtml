@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./plantilla/main-plantilla.xhtml">
+            <ui:define name="content">
+                <h:panelGrid columns="1"
+                            width="100%">
+                    <h:panelGrid columns="4"
+                                id="pnlDatosPCP">
+                       <h:panelGroup>
+                           <div id="envoltura">
+                               <div id="contenedor" >
+                                   <h:panelGrid columns="1">
+                                       <p:outputLabel value="Provincia:" for="cmbProvincia"/>
+                                       <p:selectOneMenu id="cmbProvincia"
+                                                       style="width: 170px"
+                                                       value="#{loginBean.provincia}"
+                                                       filter="true" filterMatchMode="startsWith"
+                                                       converter="omnifaces.SelectItemsConverter">
+                                          <f:selectItem itemLabel="--Todas--" itemValue="" noSelectionOption="true"/>
+                                          <f:selectItems value="#{loginBean.listaProvincias}" 
+                                                         var="prov" 
+                                                         itemLabel="#{prov.descripcion}" itemValue="#{prov}" />
+                                          <p:ajax event="change" 
+                                                  listener="#{loginBean.actualizarProvincia}" 
+                                                  update="@this, cmbCanton, cmbParroquia, panelMapa  "/>
+                                      </p:selectOneMenu>
+                                   </h:panelGrid>
+                               </div>
+                           </div>
+                       </h:panelGroup>
+                       <h:panelGroup>
+                           <div id="envoltura">
+                               <div id="contenedor" >
+                                   <h:panelGrid columns="1">
+                                       <p:outputLabel value="Canton:" for="cmbCanton"/>
+                                       <p:selectOneMenu id="cmbCanton" style="width: 170px"
+                                                       filter="true" filterMatchMode="startsWith"
+                                                       value="#{loginBean.canton}"
+                                                       converter="omnifaces.SelectItemsConverter">
+                                          <f:selectItem itemLabel="--Todas--" itemValue="" noSelectionOption="true"/>
+                                          <f:selectItems value="#{loginBean.listaCantones}" var="can" itemLabel="#{can.descripcion}" itemValue="#{can}"/>
+                                          <p:ajax event="change" listener="#{loginBean.actualizarCanton}" 
+                                                  update="@this, cmbParroquia, panelMapa"/>
+                                      </p:selectOneMenu>
+                                   </h:panelGrid>
+                               </div>
+                           </div>
+                       </h:panelGroup>
+
+                       <h:panelGroup>
+                           <div id="envoltura">
+                               <div id="contenedor" >
+                                   <h:panelGrid columns="1">
+                                       <p:outputLabel value="Parroquia:" for="cmbParroquia"/>
+                                       <p:selectOneMenu id="cmbParroquia"
+                                                       value="#{loginBean.parroquia}"
+                                                       styleClass="campoSeleccion" style="width: 170px"
+                                                       filter="true" filterMatchMode="startsWith"
+                                                       converter="omnifaces.SelectItemsConverter">
+                                          <f:selectItem itemLabel="--Todas--" itemValue="" noSelectionOption="true"/>
+                                          <f:selectItems value="#{loginBean.listaParroquias}" var="parr" itemLabel="#{parr.descripcion}" itemValue="#{parr}"/>
+                                          <p:ajax event="change" listener="#{loginBean.actualizarParroquia}" update="@this, panelMapa"/>
+                                      </p:selectOneMenu>
+                                   </h:panelGrid>
+                               </div>
+                           </div>
+                       </h:panelGroup>
+                        <h:panelGroup>
+                           <div id="envoltura">
+                               <div id="contenedor" >
+                                   <h:panelGrid columns="1">
+                                       <p:outputLabel value="Empresa: #{loginBean.tipoEmpresa.nombre}" />
+                                       <p:selectOneMenu value="#{loginBean.empresaSlc}"
+                                                        styleClass="campoSeleccion" style="width: 170px"
+                                                        filter="true" filterMatchMode="contains"
+                                                        converter="omnifaces.SelectItemsConverter">
+                                                <f:selectItem itemLabel="--Seleccionar--" itemValue="" noSelectionOption="true"/>
+                                                <f:selectItems value="#{loginBean.listaHospitales}" 
+                                                               var="empresaSlc" 
+                                                               itemLabel="#{empresaSlc.tipoEmpresaWeb.nombre} #{empresaSlc.nombre}" 
+                                                               itemValue="#{empresaSlc}"/>
+                                           <p:ajax event="change" 
+                                                   listener="#{loginBean.verEmpresaGmap}" 
+                                                   update="@this, panelMapa, pnlDatosPCP"/>
+                                        </p:selectOneMenu>
+                                   </h:panelGrid>
+                               </div>
+                           </div>
+                       </h:panelGroup>
+                    </h:panelGrid>
+
+                    <h:panelGrid id="panelMapa" style="width: 100%" >
+                       <p:gmap center="#{loginBean.coordenadaLatitud},#{loginBean.coordenadaLongitud}" 
+                               zoom="#{loginBean.zoom}" 
+                               streetView="true"
+                               widgetVar="gmap"
+                               type="ROADMAP" 
+                               style="width:100%;height:600px;opacity: 0.8" 
+                               model="#{loginBean.simpleModel}" >
+
+                           <p:ajax event="overlaySelect" listener="#{loginBean.onMarkerSelect}"
+                                   update="imgMarker"/>
+
+                           <p:gmapInfoWindow id="infoWindow">
+                               <p:outputPanel style="text-align: center; display: block; margin: auto">
+                                   <h:graphicImage url="#{loginBean.marker.cursor}"
+                                               width="150px"
+                                               height="150px"
+                                               id="imgMarker"
+                                               transient="true"/>
+                                   <br/>
+                                   <h:outputText value="#{loginBean.marker.title}" />
+                               </p:outputPanel>
+                           </p:gmapInfoWindow>
+                       </p:gmap>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

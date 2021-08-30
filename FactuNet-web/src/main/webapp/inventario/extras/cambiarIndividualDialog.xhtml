@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.producto}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.guardar}" 
+                                     actionListener="#{cambiarIndividualBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{cambiarIndividualBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2">
+                    
+                    <h:outputLabel value="#{msg.codigoBarras}: "/>
+                    <p:barcode value="#{cambiarIndividualBean.productoStock.productoBodega.codigoBarras}" 
+                               type="code128"
+                               format="png"
+                               width="90"
+                               height="40"/>
+
+                    <h:outputLabel value="#{msg.producto}: "/>
+                    <h:outputLabel value="#{cambiarIndividualBean.productoStock.productoBodega.nombre}"/>
+                    
+                    <h:outputLabel value="#{msg.cantidad} #{msg.empaque}: "/>
+                    <h:outputLabel value="#{cambiarIndividualBean.productoStock.productoBodega.cantidadEmpaque}"/>
+                    
+                    <h:outputLabel value="#{msg.unidadmedida}: "/>
+                    <h:outputLabel value="#{cambiarIndividualBean.productoStock.productoBodega.unidadMedida.nombre}"/>
+                    
+                    <h:outputLabel value="#{msg.stock} #{msg.actual}: "/>
+                    <h:outputLabel value="#{cambiarIndividualBean.productoStock.stock}"/>
+                    
+                    <h:outputLabel value="#{msg.cantidad}: "/>
+                    <p:inputText value="#{cambiarIndividualBean.cantidad}"
+                                style="width: 70px;background-color: khaki;text-align: right;font-size: 14px;font-weight: bold;color: red;"
+                                required="true">
+                       <p:keyFilter regEx="/[\d\.]/"/>
+                       <f:validateDoubleRange minimum="0" maximum="100000000.0" /> 
+                    </p:inputText>
+                    
+                    <h:outputLabel value="#{msg.asignar} A: "/>
+                    <p:selectOneMenu value="#{cambiarIndividualBean.productoIndividualSlc}"
+                                     style="width:200px"
+                                     panelStyle="width:200px">
+                        <f:selectItems value="#{cambiarIndividualBean.productoStock.productoBodega.pacaProductoList}" 
+                                       var="pro"
+                                       itemLabel="#{pro.nombre}"
+                                       itemValue="#{pro.codigo}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </p:fieldset>   
+        </h:form>
+    </h:body>
+</html>

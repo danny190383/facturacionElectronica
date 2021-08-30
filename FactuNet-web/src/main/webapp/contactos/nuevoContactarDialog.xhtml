@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.contactar}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{contactarBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{contactarBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                            style="width: 100%">
+
+                   <h:outputLabel value="#{msg.tipoContacto}: "/>
+                   <p:selectOneMenu value="#{contactarBean.tipoSelect}">
+                       <f:selectItems value="#{contactarBean.listaTipoContacto}" 
+                                      var="tipoContacto"
+                                      itemLabel="#{tipoContacto.nombre}"
+                                      itemValue="#{tipoContacto.codigo}"/>
+                       <p:ajax update="txtValor"
+                               listener="#{contactarBean.cambiarValidacion()}"/>
+                   </p:selectOneMenu>
+
+                   <h:outputLabel value="#{msg.valor}: "/>
+                   <h:panelGroup id="txtValor">
+                        <p:inputText value="#{contactarBean.contactar.valor}"
+                                     size="50"
+                                     maxlength="#{contactarBean.contactar.tipoContacto.tipoValidacion.longitud}"
+                                     required="true"
+                                     styleClass="texto_obligatorio"
+                                     rendered="#{contactarBean.contactar.tipoContacto.tipoValidacion.nombre ne 'Correo'}">
+                            <p:keyFilter regEx="#{contactarBean.contactar.tipoContacto.tipoValidacion.valor}" />
+                        </p:inputText>
+
+                        <p:inputText value="#{contactarBean.contactar.valor}"
+                                     size="50"
+                                     maxlength="#{contactarBean.contactar.tipoContacto.tipoValidacion.longitud}"
+                                     required="true"
+                                     styleClass="texto_obligatorio"
+                                     rendered="#{contactarBean.contactar.tipoContacto.tipoValidacion.nombre eq 'Correo'}">
+                            <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail"/>
+                        </p:inputText>
+                   </h:panelGroup>
+
+                   <h:outputLabel value="#{msg.descripcion}" />
+                   <p:inputTextarea rows="3" cols="55" 
+                                    value="#{contactarBean.contactar.descripcion}"/>
+               </h:panelGrid>
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

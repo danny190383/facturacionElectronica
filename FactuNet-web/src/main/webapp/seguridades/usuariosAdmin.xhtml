@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:panel style="width: 100%" 
+                         id="pnlCuentas"
+                         header="#{msg.administracion} #{msg.cuentas}">
+                    <p:dataTable var="cuenta" 
+                                 value="#{usuariosBean.listaCuentas}" 
+                                 id="tablaCuenta" 
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 rowIndexVar="index"
+                                 editable="true"
+                                 editMode="cell" 
+                                 widgetVar="cellTablaCuenta">
+
+                        <p:column headerText="#{msg.identificador}" width="100">
+                            <h:outputLabel value="#{cuenta.identificador}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.empleados}">
+                            <h:outputLabel value="#{cuenta.empleado.persona.nombres} #{cuenta.empleado.persona.apellidos}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}" width="80" style="text-align: center">
+                            <h:outputLabel value="#{cuenta.empleado.estado ? msg.activo : msg.inactivo}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                 width="70"
+                                 style="text-align: center">
+                            <p:commandButton action="#{usuariosBean.retetClave(cuenta)}"
+                                             icon="ui-icon-refresh" 
+                                             process="tablaCuenta"
+                                             update="tablaCuenta, :frmCabecera:grMensajes">
+                                 <p:confirm message="¿Está seguro de resetear la clave?"/>
+                            </p:commandButton>
+                            
+                        </p:column>
+                    </p:dataTable>         
+                </p:panel>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

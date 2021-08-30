@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"  >
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:tabView id="tabMasterPersonas"
+                           dynamic="true" cache="true">
+                    <p:tab title="#{msg.sexo}">
+                        <ui:include src="/mantenimiento/personas/sexoAdmin.xhtml" />
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.ciudad}">
+                        <ui:include src="/mantenimiento/personas/ciudadAdmin.xhtml" />
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.estadocivil}">
+                        <ui:include src="/mantenimiento/personas/estadocivilAdmin.xhtml" />
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.cargo}">
+                        <ui:include src="/mantenimiento/personas/cargoAdmin.xhtml" />
+                    </p:tab>
+       
+                    <p:tab title="#{msg.tipocliente}">
+                        <ui:include src="/mantenimiento/personas/tipoclienteAdmin.xhtml" />
+                    </p:tab>
+                </p:tabView>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+         <ui:composition template="./../../plantilla/main-template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="#{msg.criterioBusqueda}">
+                    <h:panelGrid columns="2"
+                                 id="pnlFiltros">
+                        <h:outputLabel value="#{msg.reporte}: "/>
+                        <p:selectOneMenu value="#{reportesInventarioBean.reporteSeleccionado}" 
+                                         style="width: 250px">
+                            <f:selectItems value="#{reportesInventarioBean.listaReportes}"
+                                           var="repo"
+                                           itemLabel="#{repo.descripcion}"
+                                           itemValue="#{repo.codigo}"/>
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel value="#{msg.bodega}"/>
+                        <p:selectOneMenu id="bodegas" 
+                                         value="#{reportesInventarioBean.bodegaSelc}" 
+                                         panelStyle="width:190px"
+                                         style="width:190px" >
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1" />
+                            <f:selectItems value="#{reportesInventarioBean.listaBodegas}" 
+                                           var="bodega" 
+                                           itemLabel="#{bodega.nombre}" 
+                                           itemValue="#{bodega.codigo}" />
+                        </p:selectOneMenu>
+                        <h:outputText value="#{msg.todos} los Grupos:" />
+                        <p:selectBooleanCheckbox value="#{reportesInventarioBean.todosGrupos}" >
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputLabel value="#{msg.grupo}: "
+                                       rendered="#{reportesInventarioBean.todosGrupos eq false}"/>
+                        <p:scrollPanel style="width:300px;height:100px"
+                                       rendered="#{reportesInventarioBean.todosGrupos eq false}">
+                            <p:tree value="#{reportesInventarioBean.root}" 
+                                    var="node" id="grupoTree"  
+                                    dynamic="true" 
+                                    selection="#{reportesInventarioBean.selectedNode}"
+                                    selectionMode="single"
+                                    style="width: 100%">  
+                                <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                            collapsedIcon="ui-icon-folder-collapsed">  
+                                    <h:outputLabel value="#{node.codigo} #{node.nombre}" />  
+                                </p:treeNode>  
+                            </p:tree> 
+                        </p:scrollPanel>
+                        <h:outputText value="#{msg.stock}:" 
+                                      rendered="#{reportesInventarioBean.reporteSeleccionado eq 2.2}"/>
+                        <p:selectOneRadio value="#{reportesInventarioBean.stockReporte}"
+                                          rendered="#{reportesInventarioBean.reporteSeleccionado eq 2.2}">
+                            <f:selectItem itemLabel="Todos" itemValue="4"/>
+                            <f:selectItem itemLabel="Mayor de cero" itemValue="1"/>
+                            <f:selectItem itemLabel="Menor de cero" itemValue="2"/>
+                            <f:selectItem itemLabel="Igual a cero" itemValue="3"/>
+                        </p:selectOneRadio>
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" cellspacing="5">
+                        <h:commandLink target="_blank" actionListener="#{reportesInventarioBean.generarReportePDF()}">
+                            <p:graphicImage url="/resources/imagenes/pdf.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesInventarioBean.generarReporteXlS()}">
+                            <p:graphicImage url="/resources/imagenes/excel.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesInventarioBean.generarReporteHTML()}">
+                            <p:graphicImage url="/resources/imagenes/html.png"
+                                            width="27"/>
+                        </h:commandLink>
+                    </h:panelGrid>
+                </p:fieldset>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

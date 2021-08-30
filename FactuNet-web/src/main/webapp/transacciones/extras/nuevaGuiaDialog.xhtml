@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.guia}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmCabecera">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevaGuiaBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevaGuiaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 100%"
+                             id="pnlDatosGuia">
+                    
+                    <h:outputLabel value="#{msg.motivo} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:selectOneMenu value="#{nuevaGuiaBean.guiaRemision.motivo}"
+                                    style="width: 200px" 
+                                    filter="true" 
+                                    converter="omnifaces.SelectItemsConverter"
+                                    filterMatchMode="startsWith"
+                                    required="true">
+                        <f:selectItem itemLabel="-- Seleccionar --" itemValue=""/>
+                        <f:selectItems value="#{nuevaGuiaBean.listaMotivo}" 
+                                      var="motivo"
+                                      itemLabel="#{motivo.nombre}"
+                                      itemValue="#{motivo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.transportistas} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:selectOneMenu value="#{nuevaGuiaBean.guiaRemision.transportista}"
+                                    style="width: 200px" 
+                                    filter="true" 
+                                    required="true"
+                                    converter="omnifaces.SelectItemsConverter"
+                                    filterMatchMode="startsWith">
+                        <f:selectItem itemLabel="-- Seleccionar --" itemValue=""/>
+                        <f:selectItems value="#{nuevaGuiaBean.listaTransportistas}" 
+                                      var="transportista"
+                                      itemLabel="#{transportista.persona.nombres}"
+                                      itemValue="#{transportista}"/>
+                        <p:ajax listener="#{nuevaGuiaBean.cambiarTransportista}"
+                                update="txtDireccionOrigen"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.direccion} de Origen: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="60" 
+                                     autoResize="false"
+                                     maxlength="200"
+                                     id="txtDireccionOrigen"
+                                     style="background-color: khaki "
+                                     required="true"
+                                     value="#{nuevaGuiaBean.guiaRemision.direccionOrigen}"/>
+                    
+                    <h:outputLabel value="#{msg.destinatario}: "
+                                   styleClass="texto_etiquetas"/>
+                    <h:panelGrid columns="2"
+                                 width="100%">
+                        <h:panelGrid columns="2"
+                                     id="pnlCliente">
+                            <h:outputLabel value="#{msg.cedula}: "
+                                            styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="#{nuevaGuiaBean.guiaRemision.destinatario.persona.cedula}"
+                                           styleClass="texto_etiquetas"/>
+
+                            <h:outputLabel value="#{msg.cliente}: "
+                                           styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="#{nuevaGuiaBean.guiaRemision.destinatario.persona.nombres} #{nuevaGuiaBean.guiaRemision.destinatario.persona.apellidos}"
+                                           styleClass="texto_etiquetas"/>
+
+                            <h:outputLabel value="#{msg.direccion}: "
+                                           styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="#{nuevaGuiaBean.guiaRemision.destinatario.persona.direccion}"
+                                           styleClass="texto_etiquetas"/>
+                            
+                            <h:outputLabel value="#{msg.telefono}: "
+                                           styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="#{nuevaGuiaBean.guiaRemision.destinatario.persona.telefono}"
+                                           styleClass="texto_etiquetas"/>
+                        </h:panelGrid>
+                        <p:fragment autoUpdate="true">
+                            <p:commandButton value="#{msg.buscar}"  
+                                            icon="ui-icon-search"
+                                            actionListener="#{nuevaGuiaBean.verBusquedaClientes}">
+                             <p:ajax event="dialogReturn" 
+                                     listener="#{nuevaGuiaBean.onClienteSelect}" 
+                                     update="pnlCliente, :frmCabecera:grMensajes" />
+                            </p:commandButton>
+
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             actionListener="#{nuevaGuiaBean.verNuevoCliente}" 
+                                             icon="ui-icon-comment">
+                                  <p:ajax event="dialogReturn" 
+                                          listener="#{nuevaGuiaBean.onClienteSelect}"
+                                          update="pnlCliente, :frmCabecera:grMensajes"/>
+                           </p:commandButton>
+                       </p:fragment>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.numero} #{msg.guia} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevaGuiaBean.guiaRemision.numero}"
+                                 maxlength="20"
+                                 size="25">
+                        <p:keyFilter regEx="/[\d]/" />
+                    </p:inputText>
+
+                    <h:outputLabel value="#{msg.fechaSalida} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:calendar value="#{nuevaGuiaBean.guiaRemision.fechaEnvio}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"
+                                style="background-color: khaki "
+                                required="true"/>
+                    
+                    <h:outputLabel value="#{msg.fechaRecepcion} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:calendar value="#{nuevaGuiaBean.guiaRemision.fechaRecepcion}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"
+                                style="background-color: khaki "
+                                required="true"/>
+                    
+                    <h:outputLabel value="#{msg.placa}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevaGuiaBean.guiaRemision.placa}"
+                                 maxlength="7"
+                                 size="25"
+                                 style="background-color: khaki "
+                                 required="true"/>
+                    
+                    <h:outputLabel value="#{msg.cartones}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevaGuiaBean.guiaRemision.cartones}" 
+                                 style="text-align: right "
+                                 maxlength="2"
+                                 size="10">
+                       <p:keyFilter regEx="/[\d]/" />
+                       <f:validateDoubleRange minimum="1" /> 
+                    </p:inputText>
+
+                    <h:outputLabel value="#{msg.valor}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevaGuiaBean.guiaRemision.valor}"
+                                 style="text-align: right "
+                                 maxlength="4"
+                                 size="10">
+                       <p:keyFilter regEx="/[\d\.]/"/>
+                       <f:validateDoubleRange minimum="0" maximum="1000.0" />
+                    </p:inputText>
+                    
+                    <h:outputLabel value="#{msg.ruta}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="60" 
+                                     autoResize="false"
+                                     maxlength="200"
+                                     style="background-color: khaki "
+                                     required="true"
+                                     value="#{nuevaGuiaBean.guiaRemision.ruta}"/>
+                    
+                    <h:outputLabel value="#{msg.observacion} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="60" 
+                                    autoResize="false"
+                                    value="#{nuevaGuiaBean.guiaRemision.observacion}"/>
+               </h:panelGrid> 
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.transferencia}"  
+                                             icon="ui-icon-search"
+                                             immediate="true"
+                                             actionListener="#{bodegaAdminBean.verBusquedaTransferencias}" />
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.productos}">
+                    <h:panelGrid columns="2"
+                                 style="margin-bottom:10px" cellpadding="5">
+                        <p:fieldset id="flsMenu0001" 
+                                    style="width:250px;height:600px;"
+                                    legend="#{msg.bodegas}">
+                            <p:scrollPanel style="height:200px">
+                                <p:tree value="#{bodegaAdminBean.root}" 
+                                        var="node" 
+                                        id="grupoTree"  
+                                        dynamic="true" 
+                                        selectionMode="single"
+                                        style="width: 100%">  
+
+                                    <p:ajax event="select" 
+                                            update=":frmCabecera:tablaProductos" 
+                                            listener="#{bodegaAdminBean.onNodeSelect}" />
+                                    
+                                    <p:ajax event="contextMenu" 
+                                            update=":frmCabecera:tablaProductos" 
+                                            listener="#{bodegaAdminBean.onNodeSelect}" />
+
+                                    <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                                collapsedIcon="ui-icon-folder-collapsed">  
+                                        <h:outputLabel value="#{node.nombre}" />  
+                                    </p:treeNode>  
+
+                                </p:tree> 
+                                <p:fragment autoUpdate="true">
+                                    <p:contextMenu for="grupoTree">
+                                        <p:menuitem value="#{msg.nuevo}" 
+                                                    icon="ui-icon-comment" 
+                                                    actionListener="#{bodegaAdminBean.nuevoBodega}"
+                                                    update="dlgGrupo,:frmCabecera:grMensajes"/>
+                                        <p:menuitem value="#{msg.editar}" 
+                                                    icon="ui-icon-pencil" 
+                                                    actionListener="#{bodegaAdminBean.editarBodega}"
+                                                    update="dlgGrupo"/>
+                                        <p:menuitem value="#{msg.eliminar}" 
+                                                    update="grupoTree, :frmCabecera:grMensajes" 
+                                                    icon="ui-icon-close"
+                                                    actionListener="#{bodegaAdminBean.eliminarBodega}">
+                                            <p:confirm header="#{msg.confirmacion}" 
+                                                       message="#{msg.eliminar}" 
+                                                       icon="ui-icon-alert" />
+                                        </p:menuitem>
+                                    </p:contextMenu>
+                                </p:fragment>
+                            </p:scrollPanel>
+                        </p:fieldset>
+                        
+                        <p:fieldset id="flsMenu0002" 
+                                    style="width:95%;height:600px;"  
+                                    legend="#{msg.productos}">
+                            
+                            <p:dataTable var="producto" 
+                                        id="tablaProductos"
+                                        value="#{bodegaAdminBean.bodegaSelc.productoStockList}" 
+                                        paginator="true" 
+                                        emptyMessage="#{msg.tablaVacia}"
+                                        rows="15" 
+                                        selection="#{bodegaAdminBean.listaProductosSelct}" 
+                                        rowKey="#{producto.productoBodega.codigo}">
+                                
+                                <f:facet name="header" >
+                                    <p:commandButton process="tablaProductos" 
+                                                     icon="ui-icon-check" 
+                                                     value="#{msg.transferencia}" 
+                                                     action="#{bodegaAdminBean.verBodegas}"
+                                                     update=":frmCabecera:dlgTransferencia"/>
+                                </f:facet>
+                                
+                                <p:column selectionMode="multiple" 
+                                          style="width:16px;text-align:center"/>
+                                
+                                <p:column headerText="#{msg.codigoBarras}" 
+                                          width="120"
+                                          filterBy="#{producto.productoBodega.codigoBarras}">
+                                    <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}"
+                                          filterBy="#{producto.productoBodega.nombre}">
+                                    <h:outputLabel value="#{producto.productoBodega.nombre}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.stock}" 
+                                          width="50">
+                                    <h:outputLabel value="#{producto.stock}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.costo}"
+                                          width="50">
+                                    <h:outputLabel value="#{producto.productoBodega.precioUltimaCompra}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.utilidad}"
+                                          width="50">
+                                    <h:outputLabel value="#{producto.productoBodega.utilidad}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.pvp}"
+                                          width="50">
+                                    <h:outputLabel value="#{producto.productoBodega.pvp}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="40"
+                                          style="text-align: center">
+                                    
+                                    <p:commandButton  icon="ui-icon-folder-open"
+                                                      title="#{msg.kardex}"
+                                                      immediate="true"
+                                                      actionListener="#{bodegaAdminBean.verKardex(producto.productoBodega)}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:panel>
+                <p:dialog header="#{msg.transferencia}" 
+                          widgetVar="dialogTransferencia" 
+                          resizable="false"
+                          id="dlgTransferencia"
+                          height="500"
+                          width="900">
+
+                    <p:fragment autoUpdate="true">
+                        
+                        <h:panelGrid columns="3">
+                            <h:outputLabel value="#{msg.bodega} #{msg.destino}: "/>
+                            <p:selectOneMenu value="#{bodegaAdminBean.bodegaTranf}"
+                                             style="width: 147px">
+                                <f:selectItems value="#{bodegaAdminBean.listaBodegas}" 
+                                                var="bodegaT"
+                                                itemValue="#{bodegaT.codigo}"
+                                                itemLabel="#{bodegaT.nombre}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:commandButton process="tablaTransferencia" 
+                                             icon="ui-icon-check" 
+                                             value="#{msg.transferencia}" 
+                                             action="#{bodegaAdminBean.transferirProductos}"
+                                             update=":frmCabecera:tablaProductos, :frmCabecera:grMensajes"/>
+                        </h:panelGrid>
+                        
+                        <p:dataTable var="productoT" 
+                                     id="tablaTransferencia"
+                                     value="#{bodegaAdminBean.listaProductosSelct}" 
+                                     paginator="true" 
+                                     emptyMessage="#{msg.tablaVacia}"
+                                     rows="15" 
+                                     editable="true" 
+                                     editMode="cell">
+                            
+                            <p:column headerText="Cant."
+                                      width="40"
+                                      style="text-align:right">
+                                  <p:cellEditor>
+                                      <f:facet name="output">
+                                          <h:outputLabel value="#{productoT.cantidad}"/>
+                                      </f:facet>
+                                      <f:facet name="input">
+                                          <p:inputText value="#{productoT.cantidad}" 
+                                                       style="width:80%;text-align: right "
+                                                       maxlength="7">
+                                              <p:keyFilter regEx="/[\d]/" />
+                                              <f:validateDoubleRange minimum="1" /> 
+                                          </p:inputText>
+                                      </f:facet>
+                                  </p:cellEditor>
+                            </p:column>
+                            
+                            <p:column headerText="#{msg.stock}" 
+                                      width="50">
+                                <h:outputLabel value="#{productoT.stock}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.codigoBarras}" 
+                                      width="120"
+                                      filterBy="#{productoT.productoBodega.codigoBarras}">
+                                <h:outputLabel value="#{productoT.productoBodega.codigoBarras}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.producto}"
+                                      filterBy="#{productoT.productoBodega.nombre}">
+                                <h:outputLabel value="#{productoT.productoBodega.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.costo}"
+                                      width="50">
+                                <h:outputLabel value="#{productoT.productoBodega.precioUltimaCompra}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.utilidad}"
+                                      width="50">
+                                <h:outputLabel value="#{productoT.productoBodega.utilidad}" />
+                            </p:column>
+
+                            <p:column headerText="#{msg.pvp}"
+                                      width="50">
+                                <h:outputLabel value="#{productoT.productoBodega.pvp}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{msg.opcion}"
+                                      width="40"
+                                      style="text-align: center">
+                                <p:commandButton  icon="ui-icon-comment" 
+                                                  title="#{msg.series}"
+                                                  actionListener="#{bodegaAdminBean.verRegistroSeries(productoT)}" 
+                                                  update=":frmCabecera:grMensajes">
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{bodegaAdminBean.onRegistroSeriesSelect}"
+                                            update="tablaTransferencia, :frmCabecera:grMensajes"/>
+                                </p:commandButton> 
+                            </p:column>
+                        </p:dataTable>
+                    </p:fragment>
+                </p:dialog>
+                <p:dialog header="#{msg.grupo}" 
+                          widgetVar="dialogWiget" 
+                          resizable="false"
+                          id="dlgGrupo"
+                          height="200"
+                          width="400">
+
+                    <p:fragment autoUpdate="true">
+                        
+                        <h:panelGrid columns="2"
+                                     id="pnlGrupo">
+                            <h:outputLabel value="#{msg.nombre}: "/>
+                            <p:inputText value="#{bodegaAdminBean.bodega.nombre}"
+                                         style="background-color: khaki "
+                                         required="true"/> 
+                            
+                            <h:outputLabel value="#{msg.siglas}: "/>
+                            <p:inputText value="#{bodegaAdminBean.bodega.siglas}"
+                                         style="background-color: khaki "
+                                         required="true"/> 
+
+                            <h:outputLabel value="#{msg.ubicacion}: "/>
+                            <p:inputText value="#{bodegaAdminBean.bodega.ubicacion}"/>
+
+                            <h:outputLabel value="#{msg.ciudad}: "/>
+                            <p:selectOneMenu value="#{bodegaAdminBean.bodega.ciudad.codigo}"
+                                            style="width: 147px"
+                                            filter="true" 
+                                            filterMatchMode="startsWith">
+                               <f:selectItems value="#{bodegaAdminBean.listaCiudad}" 
+                                              var="ciudad"
+                                              itemValue="#{ciudad.codigo}"
+                                              itemLabel="#{ciudad.nombre}"/>
+                             </p:selectOneMenu>
+
+                            <h:outputLabel value="#{msg.descripcion}: "/> 
+                            <p:inputTextarea rows="3" cols="25" 
+                                             value="#{bodegaAdminBean.bodega.descripcion}"/>
+                            
+                            <p:commandButton value="#{msg.guardar}"  
+                                             actionListener="#{bodegaAdminBean.guardarBodega}"
+                                             icon="ui-icon-check" 
+                                             update="pnlGrupo,:frmCabecera:grupoTree, :frmCabecera:grMensajes" />
+
+                            <p:commandButton value="#{msg.cancelar}" 
+                                             immediate="true"
+                                             icon="ui-icon-cancel" 
+                                             oncomplete="PF('dialogWiget').hide()"/>
+                        </h:panelGrid>
+                    </p:fragment>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

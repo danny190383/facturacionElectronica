@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>#{msg.tituloAplicacion}</title>
+        <link href="../resources/imagenes/reemplazo.png" type="image/x-icon" rel="shortcut icon" />
+        <h:outputStylesheet name="css/estiloLogin.css"/>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+    <h:body>
+        <div id="envoltura">
+            <div id="contenedor" >
+                <div id="cabecera" >
+                    <p:graphicImage url="/resources/imagenes/logo2.bmp"
+                                    width="100%"
+                                    height="150px"/> 
+                </div>
+                <div id="cuerpo">
+                    <h:form>
+                        <p:growl id="grMensajes" 
+                                 widgetVar="grMensajes" 
+                                 showDetail="false"/>
+                        <h:panelGrid columns="2"
+                                     id="pnlLogin">
+                            <h:outputLabel value="#{msg.usuario}: " />
+                            <p:inputText value="#{crearSesion.identificador}"
+                                         required="true"/>
+                            <h:outputLabel value="#{msg.clave}: " />
+                            <p:password value="#{crearSesion.clave}"
+                                        required="true"/>
+
+                            <p:commandButton value="Entrar" 
+                                             action="#{crearSesion.validateUsernamePassword}"
+                                             update="pnlLogin,grMensajes"
+                                             ajax="false"/>
+                        </h:panelGrid>
+                        
+                        <p:dialog id="mdlFichaMedicaMilitar" 
+                                  widgetVar="mdlFichaMedicaMilitar" 
+                                  resizable="false"
+                                  modal="true" 
+                                  transient="true"
+                                  header="SEleccione empresaq">
+
+                            <h:form id="frmFichaMedicaMilitar">
+                                
+                            </h:form>
+                        </p:dialog>
+                    </h:form>
+                </div>
+                <div id="pie" >
+                    <h:outputLabel value="#{msg.tipoSistema}"/><br/>
+                    <h:outputLabel value="#{msg.autorizacion}: COMPUNET RIOBAMBA"/>
+                </div>
+            </div>
+              
+        </div>
+    </h:body>
+
+</html>

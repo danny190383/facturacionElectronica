@@ -1,0 +1,562 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             actionListener="#{pedidoCompraBean.inicializar()}"
+                                             process="@this"
+                                             update=":frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" 
+                                             icon="ui-icon-document"/>  
+                        
+                            <p:commandButton value="#{msg.guardar}" 
+                                             actionListener="#{pedidoCompraBean.guardar}"
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" 
+                                             icon="ui-icon-disk"
+                                             oncomplete="document.getElementById('frmCabecera:btnPrint').click();"
+                                             rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}"/>  
+                            
+                            <p:commandButton value="#{msg.pendientes}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}"
+                                             actionListener="#{pedidoCompraBean.verBusquedaPendientes}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{pedidoCompraBean.onPendientesSelect}" 
+                                       update=":frmCabecera:tablaPedidoCompra" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.pedidoCompra}"  
+                                             icon="ui-icon-search"
+                                             process="@this"
+                                             actionListener="#{pedidoCompraBean.verBusquedaPedidos}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{pedidoCompraBean.onPedidoSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" />
+                            </p:commandButton>
+
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           id="btnPrint"
+                                           actionListener="#{pedidoCompraBean.generarReportePDF()}"
+                                           disabled="#{pedidoCompraBean.pedidoCompra.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print" />
+                            </h:commandLink>
+                             
+                            <p:commandButton value="#{msg.cerrar} #{msg.pedido}" 
+                                             actionListener="#{pedidoCompraBean.verPago}" 
+                                             update=":frmCabecera:grMensajes" 
+                                             icon="ui-icon-circle-close"
+                                             rendered="#{(pedidoCompraBean.pedidoCompra.codigo ne null) and (pedidoCompraBean.pedidoCompra.estado eq 1)}">
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{pedidoCompraBean.onPagoSelect}"
+                                       update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones"/>
+                           </p:commandButton>   
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{pedidoCompraBean.pedidoCompra.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{pedidoCompraBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{pedidoCompraBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{pedidoCompraBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.pedidoCompra}"
+                         id="pnlPrincipal">
+                    <h:panelGrid columns="3">
+                        <p:fieldset legend="#{msg.datosGenerales}"
+                                     style="height: 180px">
+                            <h:panelGrid columns="2">
+
+                                <h:outputLabel value="#{msg.fecha}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{pedidoCompraBean.pedidoCompra.fecha}"
+                                               styleClass="texto_etiquetas">
+                                    <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                        pattern="#{parametrosApplication.formatoFecha}"/>
+                                </h:outputLabel>
+                                
+                                <h:outputLabel value="#{msg.numero} :" 
+                                                       styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{pedidoCompraBean.pedidoCompra.numero}" 
+                                               styleClass="texto_etiquetas"
+                                               style="color: #e9322d;font-size: 13px"/>
+                                
+                                <h:outputLabel value="#{msg.bodega}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:selectOneMenu style="width: 180px"
+                                                 value="#{pedidoCompraBean.bodegaSelect}"
+                                                 disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                                    
+                                   <p:ajax listener="#{pedidoCompraBean.setBodegaDetalle}"/> 
+                                   <f:selectItems value="#{pedidoCompraBean.listaBodegas}" 
+                                                  var="bodega" 
+                                                  itemLabel="#{bodega.nombre}" 
+                                                  itemValue="#{bodega.codigo}" />
+                                </p:selectOneMenu>
+
+                                <h:outputLabel value="#{msg.descripcion}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputTextarea rows="2" cols="40" 
+                                             style="height: 30px;width: 85%"
+                                             autoResize="false" 
+                                             maxlength="800"
+                                             value="#{pedidoCompraBean.pedidoCompra.descripcion}"
+                                             readonly="#{pedidoCompraBean.pedidoCompra.estado ne 1}"/>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.proveedor}"
+                                    style="height: 180px"
+                                    id="pnlProveedor">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msg.proveedor}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:selectOneMenu value="#{pedidoCompraBean.pedidoCompra.proveedor}"
+                                                 filter="true" filterMatchMode="startsWith"
+                                                 style="width:200px"
+                                                 panelStyle="width:200px"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}"
+                                                 required="true">
+                                    <p:ajax listener="#{pedidoCompraBean.onProveedorSelect}"
+                                            update="pnlProveedor, :frmCabecera:tablaPedidoCompra"/>
+                                    <f:selectItems value="#{pedidoCompraBean.listaProveedores}" 
+                                                   var="proveedor"
+                                                   itemLabel="#{proveedor.persona.nombres}"
+                                                   itemValue="#{proveedor}"/>
+
+                                </p:selectOneMenu>
+                                
+                                <h:outputLabel value="#{msg.contacto}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:selectOneMenu value="#{pedidoCompraBean.pedidoCompra.contactoProveedor}"
+                                                panelStyle="width:200px"
+                                                style="width:200px"
+                                                id="slcContatoProveedor"
+                                                converter="omnifaces.SelectItemsConverter"
+                                                disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}"
+                                                required="true">
+                                    <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                                    <f:selectItems value="#{pedidoCompraBean.pedidoCompra.proveedor.contactoPersonaList}" 
+                                                 var="contacto"
+                                                 itemLabel="#{contacto.persona.nombres} #{contacto.persona.apellidos}"
+                                                 itemValue="#{contacto}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>    
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             actionListener="#{pedidoCompraBean.verNuevoProveedor}" 
+                                             icon="ui-icon-comment"
+                                             process="@this"
+                                             update=":frmCabecera:grMensajes"
+                                             disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{pedidoCompraBean.onProveedorNuevoSelect}"
+                                        update=":frmCabecera:grMensajes, pnlProveedor"/>
+                            </p:commandButton>
+                            <h:panelGrid columns="4">
+                                <h:outputLabel value="#{msg.credito}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="#{pedidoCompraBean.pedidoCompra.proveedor.tiempoMaxCredito} "
+                                                   styleClass="texto_etiquetas"/>
+                                    <h:outputLabel value="#{msg.dias}"
+                                                   styleClass="texto_etiquetas"/>
+                                </h:panelGrid>
+
+                                <h:outputLabel value="#{msg.descuento}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputNumber value="#{pedidoCompraBean.descuento}" 
+                                                decimalPlaces="2" symbol="%" 
+                                                symbolPosition="s" emptyValue="zero"
+                                                minValue="0"
+                                                readonly="#{pedidoCompraBean.pedidoCompra.estado ne 1}"
+                                                inputStyle="width: 45px;background-color: khaki;text-align: right">
+                                     <p:ajax listener="#{pedidoCompraBean.generalDescuento}"
+                                             update=":frmCabecera:tablaPedidoCompra"/>
+                                </p:inputNumber> 
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.guia} #{msg.transporte}"
+                                    style="height: 180px">
+                            <p:dataTable var="guia"
+                                         value="#{pedidoCompraBean.pedidoCompra.guiaRemisionList}"
+                                         style="width: 350px"
+                                         id="tablaGuia"
+                                         emptyMessage="#{msg.tablaVacia}">
+
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton value="#{msg.nuevo} #{msg.guia}"  
+                                                         actionListener="#{pedidoCompraBean.verGuia(null)}" 
+                                                         update=":frmCabecera:grMensajes"
+                                                         icon="ui-icon-comment"
+                                                         disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                                           <p:ajax event="dialogReturn" 
+                                                   listener="#{pedidoCompraBean.onGuiaSelect}"
+                                                   update=":frmCabecera:grMensajes, :frmCabecera:tablaGuia"/>
+                                        </p:commandButton>
+                                    </p:fragment>
+                                </f:facet>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="50">
+                                    <h:outputLabel value="#{guia.fechaEnvio}" >
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.transportista}">
+                                    <h:outputLabel value="#{guia.transportista.persona.nombres}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.valor}"
+                                          width="30"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.valor}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="60"
+                                          style="text-align: center"
+                                          rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tablaGuia" 
+                                                      actionListener="#{pedidoCompraBean.eliminarGuia(guia)}"
+                                                      title="#{msg.eliminar}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{pedidoCompraBean.verGuia(guia)}">
+                                          <p:ajax event="dialogReturn" 
+                                                  update=":frmCabecera:grMensajes, :frmCabecera:tablaGuia"
+                                                  listener="#{pedidoCompraBean.calcularTransporte}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column footerText="#{msg.total} #{msg.transporte}" 
+                                                  colspan="2" 
+                                                  style="text-align:right"/>
+                                        <p:column footerText="#{pedidoCompraBean.totalTransporte}" 
+                                                  style="text-align:right"/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <p:dataTable var="items" 
+                                 id="tablaPedidoCompra"
+                                 value="#{pedidoCompraBean.pedidoCompra.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <f:facet name="header">
+                            <p:fragment autoUpdate="true"
+                                        rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+                                <p:focus id="focus"
+                                         for="txtCodigoBarras"/>
+                                <p:inputText value="#{pedidoCompraBean.codigoBarras}"
+                                             size="35"
+                                             id="txtCodigoBarras"
+                                             autocomplete="off"
+                                             placeholder="#{msg.codigoBarras}">
+                                   <p:ajax event="change" 
+                                           listener="#{pedidoCompraBean.buscarProductoBarras}"
+                                           update="tablaPedidoCompra,:frmCabecera:grMensajes,@this,focus"/>
+                                </p:inputText>
+
+                                <p:commandButton value="#{msg.buscar}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{pedidoCompraBean.verBusquedaProductos}">
+                                 <p:ajax event="dialogReturn" 
+                                         listener="#{pedidoCompraBean.onProductoSelect}" 
+                                         update="tablaPedidoCompra, :frmCabecera:grMensajes, focus" />
+                                </p:commandButton>
+
+                                <p:commandButton value="#{msg.nuevo}"  
+                                                actionListener="#{pedidoCompraBean.verNuevoProducto()}" 
+                                                icon="ui-icon-comment"
+                                                update=":frmCabecera:grMensajes">
+                                      <p:ajax event="dialogReturn" 
+                                              listener="#{pedidoCompraBean.onProductoNuevoSelect}"
+                                              update="tablaPedidoCompra, :frmCabecera:grMensajes, focus"/>
+                               </p:commandButton>
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column headerText="#{msg.iva}"
+                                  width="60"
+                                  style="text-align:center">
+                            <p:selectOneMenu value="#{items.impuestoTarifa}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             style="width: 40px"
+                                             disabled="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                               <f:selectItems value="#{pedidoCompraBean.listaTarifas}" 
+                                              var="impT"
+                                              itemLabel="#{impT.descripcion}"
+                                              itemValue="#{impT}"/>
+                               <p:ajax update="tablaPedidoCompra" 
+                                       listener="#{pedidoCompraBean.calcularTotales}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.stock}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.stock}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="Cant."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                            <h:outputLabel value="#{items.cantidad}"/>
+                        </p:column>
+
+                        <p:column headerText="Cant."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.cantidad}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.cantidad}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   size="5"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{pedidoCompraBean.onCellEditCantidad(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitario}"
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitario}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   size="5"
+                                                   inputStyle="font-size: 13px;font-style: normal;font-weight: bold">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{pedidoCompraBean.onCellEditValorUnitario(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                            <h:outputLabel value="#{items.descuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.descuento} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.descuento}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    size="5"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{pedidoCompraBean.onCellEditDescuento(items, true)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
+                            <h:outputLabel value="#{items.valorDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="50"
+                                  style="text-align:right"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorDescuento}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorDescuento}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaPedidoCompra, :frmCabecera:grMensajes"
+                                                listener="#{pedidoCompraBean.onCellEditValorDescuento(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="50"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total}"
+                                  width="50"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="50"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="50"
+                                  style="text-align: center"
+                                  rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
+                                            actionListener="#{pedidoCompraBean.eliminar(items)}"
+                                            title="#{msg.eliminar}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton  icon="ui-icon-folder-open"
+                                              title="#{msg.kardex}"
+                                              actionListener="#{pedidoCompraBean.verKardex(items.productoServicio)}"/>
+                        </p:column>
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="9"
+                                          colspan="5">
+                                </p:column>
+                            </p:row>
+                            
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{pedidoCompraBean.pedidoCompra.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{pedidoCompraBean.pedidoCompra.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{pedidoCompraBean.pedidoCompra.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="4"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{pedidoCompraBean.pedidoCompra.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{pedidoCompraBean.pedidoCompra.total}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

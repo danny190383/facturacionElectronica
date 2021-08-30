@@ -1,0 +1,561 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            
+                            <p:commandButton value="#{msg.guardar}"  
+                                             icon="ui-icon-disk"
+                                             actionListener="#{empresaBean.guardar}"
+                                             update=":frmCabecera:grMensajes,:frmCabecera:pnlEmpresaPrincipal" />
+                            
+                            <p:commandButton value="#{msg.enviado}"  
+                                             rendered="false"
+                                             icon="ui-icon-disk"
+                                             actionListener="#{empresaBean.envioPruebaEmail}"
+                                             update=":frmCabecera:grMensajes" />
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+
+            <ui:define name="content">
+                <script type="text/javascript">
+                    function GetAddress() {
+                        var lat = parseFloat(document.getElementById("frmCabecera:tabPrincipal:hidLatitud").value);
+                        var lng = parseFloat(document.getElementById("frmCabecera:tabPrincipal:hidLongitud").value);
+
+                        var latlng = new google.maps.LatLng(lat, lng);
+                        var geocoder = geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({'latLng': latlng}, function (results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                if (results[1]) {
+                                    console.log("Location: " + results[1].formatted_address);
+                                    try {
+                                        document.getElementById("frmCabecera:tabPrincipal:txtDireccion").value = results[1].formatted_address;
+                                        rcDireccion();
+                                    } catch (e) {
+                                        alert(e);
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                </script>
+                <p:panel header="#{msg.adminEmpresa}"
+                         id="pnlEmpresaPrincipal">
+                    <p:remoteCommand name="rcDireccion" update="frmCabecera:tabPrincipal:txtDireccion" process="frmCabecera:tabPrincipal:txtDireccion"/>
+                    <p:tabView id="tabPrincipal">
+                        <p:tab title="Datos Generales">
+                            <h:panelGrid columns="2">
+                                <h:panelGrid columns="4"
+                                             style="margin-bottom:10px" cellpadding="5">
+
+                                    <h:outputLabel value="#{msg.nombre} Comercial: "/>
+                                    <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 50px;width: 200px;background-color: khaki"
+                                                     autoResize="false" 
+                                                     maxlength="200"
+                                                     required="true"
+                                                     value="#{empresaBean.empresa.nombre}"/> 
+
+                                    <h:outputLabel value="Razón Social: "/>
+                                    <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 50px;width: 200px;background-color: khaki"
+                                                     autoResize="false" 
+                                                     maxlength="200"
+                                                     required="true"
+                                                     value="#{empresaBean.empresa.razonSocial}"/> 
+
+                                    <h:outputLabel value="#{msg.descripcion}: "/>
+                                    <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 50px;width: 200px;background-color: khaki"
+                                                     autoResize="false" 
+                                                     maxlength="200"
+                                                     required="true"
+                                                     value="#{empresaBean.empresa.descripcion}"/>
+
+                                    <h:outputLabel value="#{msg.nombreAbreviado}: "/>
+                                    <p:inputText value="#{empresaBean.empresa.nombreAbreviado}"
+                                                 style="background-color: khaki "
+                                                 maxlength="50"
+                                                 required="true"/> 
+
+                                    <h:outputLabel value="#{msg.ruc}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.ruc}"
+                                                 style="background-color: khaki"
+                                                 required="true">
+                                        <p:keyFilter regEx="/[\d\-\.]/" />
+                                    </p:inputText> 
+
+                                    <h:outputLabel value="#{msg.telefono}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.telefono1}">
+                                        <p:keyFilter regEx="/[\d\-\.]/" />
+                                    </p:inputText> 
+
+                                    <h:outputLabel value="#{msg.telefono}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.telefono2}">
+                                        <p:keyFilter regEx="/[\d\-\.]/" />
+                                    </p:inputText> 
+
+                                    <h:outputLabel value="#{msg.correo}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.email}">
+                                        <p:keyFilter regEx="/[a-z0-9_\.\-@]/i" />
+                                    </p:inputText> 
+
+                                    <h:outputLabel value="#{msg.correo} #{msg.clave}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.emailClave}"/>
+
+                                    <h:outputLabel value="#{msg.codigoSRI}"/>   
+                                    <p:inputText value="#{empresaBean.empresa.codigoSri}"
+                                                 style="background-color: khaki "
+                                                 required="true">
+                                        <p:keyFilter regEx="/[\d\-\.]/" />
+                                    </p:inputText> 
+
+                                    <h:outputLabel value="#{msg.ciudad}"/>
+                                    <h:panelGrid id="pnlCiudad"
+                                                 columns="2">
+                                        <p:selectOneMenu value="#{empresaBean.empresa.ciudad}"
+                                                         style="width: 147px"
+                                                         id="slcCiudad"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         filter="true" filterMatchMode="startsWith">
+                                            <f:selectItems value="#{empresaBean.listaCiudad}" 
+                                                           var="ciudad"
+                                                           itemLabel="#{ciudad.nombre}"
+                                                           itemValue="#{ciudad}"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton actionListener="#{empresaBean.refreshCiudad()}"
+                                                         icon="ui-icon-arrowrefresh-1-w"
+                                                         title="#{msg.recargar}" 
+                                                         update=":frmCabecera:tabPrincipal:slcCiudad"
+                                                         partialSubmit="true"
+                                                         process="pnlCiudad"/>
+                                    </h:panelGrid>
+
+                                    <h:outputLabel value="Obligado Contabilidad"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.obligadoContabilidad}"
+                                                      required="true">
+                                      <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                                      <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                                    </p:selectOneRadio>
+
+                                    <h:outputLabel value="#{msg.generarNombreProducto}"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.generarNombreProducto}"
+                                                      required="true">
+                                      <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                                      <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                                    </p:selectOneRadio>
+
+                                    <h:outputLabel value="#{msg.tipo} #{msg.empresa}"/>
+                                    <p:selectOneMenu value="#{empresaBean.empresa.tipoEmpresaWeb}"
+                                                     style="width:180px"
+                                                     converter="omnifaces.SelectItemsConverter">
+                                        <f:selectItems value="#{empresaBean.listaTipoEmpresa}" 
+                                                       var="tipoEm" 
+                                                       itemLabel="#{tipoEm.nombre}" 
+                                                       itemValue="#{tipoEm}" />
+                                    </p:selectOneMenu>
+
+                                    <h:outputLabel value="#{msg.cliente}"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.clienteCompleto}"
+                                                      required="true">
+                                      <f:selectItem itemLabel="#{msg.completo}" itemValue="1" />
+                                      <f:selectItem itemLabel="#{msg.simple}" itemValue="2" />
+                                    </p:selectOneRadio>
+
+                                    <h:outputLabel value="#{msg.tema}" /> 
+                                    <p:themeSwitcher style="width:165px" 
+                                                     effect="fade"
+                                                     value="#{empresaBean.empresa.tema}">
+                                        <f:selectItems value="#{themeService.themes}"
+                                                       itemLabel="#{theme.displayName}" itemValue="#{theme.name}"/>
+                                    </p:themeSwitcher>
+
+                                    <h:outputLabel value="#{msg.factura} #{msg.electronica}"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.facturacionElectronica}"
+                                                      required="true">
+                                        <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                                        <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                                    </p:selectOneRadio>
+
+                                    <h:outputLabel value="#{msg.ambiente}"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.ambienteElectronica}"
+                                                      required="true">
+                                        <f:selectItem itemLabel="#{msg.pruebas}" itemValue="1" />
+                                        <f:selectItem itemLabel="#{msg.produccion}" itemValue="2" />
+                                    </p:selectOneRadio>
+
+                                    <h:outputLabel value="Archivo Firma"/> 
+                                    <p:fileUpload  mode="advanced" 
+                                                   skinSimple="true"
+                                                   sizeLimit="1000000"  
+                                                   label="Seleccionar"
+                                                   auto="true"
+                                                   listener="#{empresaBean.subirFirma}"
+                                                   allowTypes="/(\.|\/)(p12|pfx)$/"    
+                                                   cancelLabel="Cancelar" 
+                                                   update=":frmCabecera:grMensajes"/>
+
+                                    <h:outputLabel value="#{msg.clave} Firma"/>   
+                                    <p:inputText value="#{empresaBean.empresa.claveFirma}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" 
+                                             style="text-align: center;width:300px">
+                                    <h:outputLabel value="#{msg.logo}" />
+                                    <p:graphicImage id="logo"
+                                                        url="#{empresaBean.urlLogo}"
+                                                        width="100px"
+                                                        height="100px"
+                                                        style="border: solid 1px"
+                                                        cache="false" />
+                                    <p:fileUpload  mode="advanced" 
+                                                   skinSimple="true"
+                                                   sizeLimit="1000000"  
+                                                   label="Seleccionar"
+                                                   auto="true"
+                                                   listener="#{empresaBean.subirLogo}"
+                                                   allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                                   cancelLabel="Cancelar" 
+                                                   update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:logo"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <p:tabView id="tabDatos">
+                                <p:tab title="#{msg.puntoVenta}">
+                                    <p:dataTable var="puntoVenta" 
+                                                 value="#{empresaBean.empresa.puntoVentaList}" 
+                                                 id="tablaPuntoVenta"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                            <p:commandButton value="#{msg.nuevo}"  
+                                                             actionListener="#{empresaBean.verPuntoVenta(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onPuntoVentaSelect}"
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaPuntoVenta"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.nombre}">
+                                            <h:outputLabel value="#{puntoVenta.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.impresora}"
+                                                  width="120">
+                                            <h:outputLabel value="#{puntoVenta.impresora}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.ubicacion}">
+                                            <h:outputLabel value="#{puntoVenta.ubicacion}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.codigoSRI}"
+                                                  width="100">
+                                            <h:outputLabel value="#{puntoVenta.codigoSri}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaPuntoVenta" 
+                                                              actionListener="#{empresaBean.eliminarPunto(puntoVenta)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verPuntoVenta(puntoVenta)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaPuntoVenta"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+
+                                <p:tab title="#{msg.controles}">
+                                    <p:dataTable var="controles" 
+                                                 value="#{empresaBean.empresa.controlesList}" 
+                                                 id="tablaControles"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                           <p:commandButton value="#{msg.nuevo}"  
+                                                            actionListener="#{empresaBean.verControles(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onControlSelect}"
+                                                        update="tablaControles"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.controles}">
+                                            <h:outputLabel value="#{controles.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.controles}">
+                                            <h:outputLabel value="#{controles.detalle}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.valor}"
+                                                  width="100">
+                                            <h:outputLabel value="#{controles.valor}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaControles" 
+                                                              actionListener="#{empresaBean.eliminarControl(controles)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verControles(controles)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaControles"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+
+                                <p:tab title="#{msg.tarjeta}">
+                                    <p:dataTable var="tarjeta" 
+                                                 value="#{empresaBean.empresa.tarjetaEmpresaList}" 
+                                                 id="tablaTarjetas"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                           <p:commandButton value="#{msg.nuevo}"  
+                                                            actionListener="#{empresaBean.verTarjeta(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onTarjetaSelect}"
+                                                        update="tablaTarjetas"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.banco}"
+                                                  width="250">
+                                            <h:outputLabel value="#{tarjeta.banco.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.tipoTarjeta}"
+                                                  width="100">
+                                            <h:outputLabel value="#{tarjeta.tipoTarjeta.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.detalle}">
+                                            <h:outputLabel value="#{tarjeta.detalle}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.estado}"
+                                                  width="70">
+                                            <h:outputLabel value="#{msg.activo}" rendered="#{tarjeta.estado eq 1}" />
+                                            <h:outputLabel value="#{msg.inactivo}" rendered="#{tarjeta.estado eq 2}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaTarjetas" 
+                                                              actionListener="#{empresaBean.eliminarTarjeta(tarjeta)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verTarjeta(tarjeta)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaTarjetas"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab title="#{msg.seccion}">
+                                    <p:dataTable var="seccion" 
+                                                 value="#{empresaBean.empresa.seccionList}" 
+                                                 id="tablaSeccion"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                           <p:commandButton value="#{msg.nuevo}"  
+                                                            actionListener="#{empresaBean.verSeccion(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onSeccionSelect}"
+                                                        update="tablaSeccion"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.seccion}"
+                                                  width="150">
+                                            <h:outputLabel value="#{seccion.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.orden}"
+                                                  width="50">
+                                            <h:outputLabel value="#{seccion.orden}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.columnas}"
+                                                  width="50"
+                                                  visible="false">
+                                            <h:outputLabel value="#{seccion.columnas}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.descripcion}">
+                                            <h:outputLabel value="#{seccion.detalle}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaSeccion" 
+                                                              actionListener="#{empresaBean.eliminarSeccion(controles)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verSeccion(seccion)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaSeccion"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+                            </p:tabView>
+                        </p:tab>
+                        <p:tab title="Datos Ubicacion">
+                            <h:panelGrid columns="3">
+                                <h:panelGrid columns="1"
+                                             id="panelDireccion">
+                                    <h:outputLabel value="#{msg.direccion}: "/>
+                                    <p:inputTextarea rows="2" cols="40" 
+                                                     autoResize="false" 
+                                                     style="background-color: khaki"
+                                                     id="txtDireccion"
+                                                     maxlength="200"
+                                                     required="true"
+                                                     value="#{empresaBean.empresa.direccion}"/>
+                                    <h:inputHidden value="#{empresaBean.empresa.coordenadaLatitud}" id="hidLatitud"/>
+                                    <h:inputHidden value="#{empresaBean.empresa.coordenadaLongitud}" id="hidLongitud"/>
+                                </h:panelGrid>
+                                <p:spacer/>
+                                <p:spacer/>
+
+                                <h:panelGrid columns="1">
+                                    <p:outputLabel value="* #{msg.provincia}:" for="cmbProvincia"/>
+                                    <p:selectOneMenu id="cmbProvincia"
+                                                     style="width: 230px"
+                                                     value="#{empresaBean.provincia}"
+                                                     required="true"  
+                                                     requiredMessage="#{msg.provincia}: Campo obligatorio."
+                                                     filter="true" filterMatchMode="startsWith"
+                                                     converter="omnifaces.SelectItemsConverter">
+                                        <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{empresaBean.listaProvincias}" var="prov" itemLabel="#{prov.descripcion}" itemValue="#{prov}" />
+                                        <p:ajax event="change" listener="#{empresaBean.actualizarProvincia}" 
+                                                update="@this, :frmCabecera:tabPrincipal:cmbCanton, :frmCabecera:tabPrincipal:cmbParroquia, panelMapa  "/>
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="cmbProvincia" />
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <p:outputLabel value="* #{msg.canton}:" for="cmbCanton"/>
+                                    <p:selectOneMenu id="cmbCanton" style="width: 230px"
+                                                     required="true"
+                                                     requiredMessage="#{msg.canton}: Campo obligatorio."
+                                                     filter="true" filterMatchMode="startsWith"
+                                                     value="#{empresaBean.canton}"
+                                                     converter="omnifaces.SelectItemsConverter">
+                                        <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{empresaBean.listaCantones}" var="can" itemLabel="#{can.descripcion}" itemValue="#{can}"/>
+                                        <p:ajax event="change" listener="#{empresaBean.actualizarCanton}" 
+                                                update="@this, :frmCabecera:tabPrincipal:cmbParroquia, panelMapa"/>
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="cmbCanton" />
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <p:outputLabel value="* #{msg.parroquia}:" for="cmbParroquia"/>
+                                    <p:selectOneMenu id="cmbParroquia"
+                                                     styleClass="campoSeleccion" style="width: 230px"
+                                                     filter="true" filterMatchMode="startsWith"
+                                                     required="true"
+                                                     requiredMessage="#{msg.parroquia}: Campo obligatorio."
+                                                     value="#{empresaBean.empresa.parroquia}"
+                                                     converter="omnifaces.SelectItemsConverter">
+                                        <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{empresaBean.listaParroquias}" var="parr" itemLabel="#{parr.descripcion}" itemValue="#{parr}"/>
+                                        <p:ajax event="change" listener="#{empresaBean.actualizarParroquia}" update="@this, panelMapa"/>
+                                    </p:selectOneMenu>
+                                    <p:message display="text" 
+                                               for="cmbParroquia" />
+                                </h:panelGrid>
+                            
+                            </h:panelGrid>
+                            <h:panelGrid id="panelMapa" style="width: 100%" rendered="true">
+                                <h:outputLabel value="Ubicación:" style="font-weight: bold"/>
+                                <br/>
+                                <p:gmap center="#{empresaBean.empresa.coordenadaLatitud},#{empresaBean.empresa.coordenadaLongitud}" 
+                                        zoom="#{empresaBean.zoom}" 
+                                        streetView="true"
+                                        widgetVar="gmap"
+                                        type="ROADMAP" 
+                                        style="width:100%;height:600px" 
+                                        model="#{empresaBean.simpleModel}" >
+                                    <p:ajax event="markerDrag" listener="#{empresaBean.onMarkerDrag}" update=":frmCabecera:tabPrincipal:panelDireccion" oncomplete="GetAddress()"  />
+                                </p:gmap>
+
+                            </h:panelGrid>
+                        </p:tab>
+                    </p:tabView>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

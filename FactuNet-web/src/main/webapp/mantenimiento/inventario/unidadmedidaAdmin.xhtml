@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+       
+       
+        <p:panel style="width: 100%" 
+                 id="pnlUnidadMedida">
+            <h:panelGrid columns="2">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.buscar} #{msg.unidadmedida} "/>
+                    <p:inputText value="#{unidadMedidaBean.buscarUnidadMedida}" size="50"> 
+                       <p:ajax event="keyup" update=":frmCabecera:tabMasterInventario:tablaUnidadMedida" 
+                                listener="#{unidadMedidaBean.buscar()}"/>                                                       
+                    </p:inputText>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{unidadMedidaBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{unidadMedidaBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{unidadMedidaBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+            <p:dataTable var="unidadmedida"  
+                         value="#{unidadMedidaBean.lista}"
+                         id="tablaUnidadMedida" 
+                         emptyMessage="#{msg.tablaVacia}">  
+            
+             <f:facet name="header">
+                    <p:commandButton value="#{msg.nuevo}"  
+                                     oncomplete="PF('dialog012').show()"
+                                     actionListener="#{unidadMedidaBean.nuevo()}"
+                                     immediate="true"
+                                     update=":frmCabecera:tabMasterInventario:dlgUnidadMedida"
+                                     icon="ui-icon-comment"/>
+             </f:facet>   
+              
+                <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                    <h:outputLabel value="#{unidadmedida.codigo}" />
+                </p:column>
+
+                <p:column headerText="#{msg.unidadmedida}">
+                    <h:outputLabel value="#{unidadmedida.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.abreviatura}">
+                    <h:outputLabel value="#{unidadmedida.abreviatura}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.orden}"
+                          width="50">
+                    <h:outputLabel value="#{unidadmedida.orden}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}" 
+                          width="70"
+                          style="text-align: center">
+
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmCabecera:grMensajes, :frmCabecera:tabMasterInventario:tablaUnidadMedida" 
+                                      actionListener="#{unidadMedidaBean.eliminar(unidadmedida)}"
+                                      immediate="true"
+                                      title="#{msg.eliminar}">
+                          <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                     <p:commandButton icon="ui-icon-pencil" 
+                                      title="#{msg.editar}"
+                                      process="tablaUnidadMedida"
+                                      update=":frmCabecera:tabMasterInventario:dlgUnidadMedida"
+                                      oncomplete="PF('dialog012').show()"
+                                      action="#{unidadMedidaBean.seleccionar(unidadmedida)}"/>
+                  </p:column>
+             </p:dataTable>  
+        </p:panel>     
+
+        
+        <p:dialog header="#{msg.unidadmedida}" 
+                  widgetVar="dialog012" 
+                  resizable="false"
+                  id="dlgUnidadMedida">
+
+          <h:form id="frm012">
+              <h:panelGrid columns="2">
+                  
+                  <h:outputLabel value="#{msg.unidadmedida}: "/>
+                  <p:inputText value="#{unidadMedidaBean.unidadmedida.nombre}"
+                               required="true" 
+                               size="40" 
+                               maxlength="100" 
+                               style="background-color: khaki "/>
+
+                  <h:outputLabel value="#{msg.abreviatura}: "/>
+                  <p:inputText value="#{unidadMedidaBean.unidadmedida.abreviatura}"
+                               required="true" size="40"
+                               maxlength="100"
+                               style="background-color: khaki "/>
+                  
+                  <h:outputLabel value="#{msg.orden}" />
+                  <p:spinner value="#{unidadMedidaBean.unidadmedida.orden}" 
+                             min="1" max="100" 
+                             size="10"/>
+                  
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{unidadMedidaBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                  update=":frmCabecera:tabMasterInventario:tablaUnidadMedida, :frmCabecera:grMensajes" />
+                
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialog012').hide()"/>
+                </h:panelGrid> 
+            </h:form>
+        </p:dialog>
+
+        
+    </body>
+</html>

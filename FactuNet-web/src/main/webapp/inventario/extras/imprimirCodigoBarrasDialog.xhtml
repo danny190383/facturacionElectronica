@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>#{msg.imprimir} #{msg.codigoBarras}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            <p:fieldset>
+                <h:panelGrid columns="4">
+                    <h:outputLabel value="#{msg.filas}" />
+                    <p:spinner value="#{imprimirBarrasBean.filas}" 
+                               min="1" max="100" 
+                               size="5">
+                        <p:ajax listener="#{imprimirBarrasBean.cargarListas}"
+                                update="barCodeServicio"/>
+                    </p:spinner>
+                    <h:outputLabel value="#{msg.columnas}" />
+                    <p:spinner value="#{imprimirBarrasBean.columnas}" 
+                               min="1" max="6" 
+                               size="5">
+                        <p:ajax listener="#{imprimirBarrasBean.cargarListas}"
+                                update="barCodeServicio"/>
+                    </p:spinner>
+                </h:panelGrid>
+            </p:fieldset>
+            <p:fieldset id="barCodeServicio">
+                <c:forEach var="filas"
+                           items="#{imprimirBarrasBean.listaFilas}">
+                    <c:forEach var="columnas"
+                               items="#{imprimirBarrasBean.listaColumnas}">
+                        <p:barcode value="#{imprimirBarrasBean.barras}" 
+                           type="code128"
+                           format="png"
+                           width="90"
+                           height="40"/>
+                        
+                        <p:spacer width="20" height="20" />
+                        
+                    </c:forEach>
+                    <br/>
+                </c:forEach>
+                
+                <p:commandButton type="button" 
+                                 icon="ui-icon-print" 
+                                 title="#{msg.imprimir} #{msg.codigoBarras}">
+                    <p:printer target="barCodeServicio" />
+                </p:commandButton>
+            </p:fieldset>   
+        </h:form>
+    </h:body>
+</html>

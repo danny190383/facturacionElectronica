@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+         <ui:composition template="./../../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:fieldset legend="#{msg.criterioBusqueda}">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{msg.reporte}: "/>
+                        <p:selectOneMenu value="#{reportesClientesBean.reporteSeleccionado}" 
+                                         style="width: 250px">
+                            <f:selectItems value="#{reportesClientesBean.listaReportes}"
+                                           var="repo"
+                                           itemLabel="#{repo.descripcion}"
+                                           itemValue="#{repo.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.tipocliente}: "/>
+                        <p:selectOneMenu value="#{reportesClientesBean.tipoclienteSelc}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesClientesBean.listaTipoCliente}" 
+                                           var="tipo"
+                                           itemLabel="#{tipo.nombre}"
+                                           itemValue="#{tipo.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.ciudad}: "/>
+                        <p:selectOneMenu value="#{reportesClientesBean.ciudadSelc}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesClientesBean.listaCiudades}" 
+                                           var="ciudad"
+                                           itemLabel="#{ciudad.nombre}"
+                                           itemValue="#{ciudad.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.sexo}: "/>
+                        <p:selectOneMenu value="#{reportesClientesBean.sexoSelc}" 
+                                         panelStyle="width:240px"  
+                                         effect="fade" style="width:250px"  
+                                         filter="true" filterMatchMode="startsWith">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue="-1"/>
+                            <f:selectItems value="#{reportesClientesBean.listaSexo}" 
+                                           var="sexo"
+                                           itemLabel="#{sexo.nombre}"
+                                           itemValue="#{sexo.codigo}"/>
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="#{msg.fechaNacimiento} #{msg.desde}: "/>
+                        <p:calendar value="#{reportesClientesBean.fechaInicio}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true"  showOn="button" 
+                                    showOtherMonths="true" navigator="true"/>
+                        
+                        <h:outputText value="#{msg.fechaNacimiento} #{msg.hasta}: "/>
+                        <p:calendar value="#{reportesClientesBean.fechaFin}" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    showButtonPanel="true" showOn="button" 
+                                    showOtherMonths="true" navigator="true"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" cellspacing="5" >
+                        <h:commandLink target="_blank" actionListener="#{reportesClientesBean.generarReportePDF()}">
+                            <p:graphicImage url="/resources/imagenes/pdf.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesClientesBean.generarReporteXlS()}">
+                            <p:graphicImage url="/resources/imagenes/excel.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesClientesBean.generarReporteHTML()}">
+                            <p:graphicImage url="/resources/imagenes/html.png"
+                                            width="27"/>
+                        </h:commandLink>
+                    </h:panelGrid>
+                </p:fieldset>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

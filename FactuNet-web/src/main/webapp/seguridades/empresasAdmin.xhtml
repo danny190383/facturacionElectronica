@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:panel style="width: 100%" 
+                         id="pnlEmpresas"
+                         header="#{msg.administracion} #{msg.empresas}">
+                    <p:dataTable var="empresa" 
+                                 value="#{empresasAdminBean.listaEmpresas}" 
+                                 id="tablaEmpresa" 
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 rowIndexVar="index">
+
+                        <f:facet name="header">
+                           <p:commandButton value="#{msg.nuevo}"  
+                                            actionListener="#{empresasAdminBean.seleccionar(null)}" 
+                                            process="@this"
+                                            icon="ui-icon-comment"/>
+                        </f:facet>
+
+                        <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                            <h:outputLabel value="#{empresa.codigo}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.ruc}" width="100">
+                            <h:outputLabel value="#{empresa.ruc}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.empresa}">
+                            <h:outputLabel value="#{empresa.nombre}" /><br/>
+                            <h:outputLabel value="#{empresa.nombreAbreviado}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.contactar}">
+                            <h:outputLabel value="#{empresa.telefono1} - #{empresa.telefono2}" /><br/>
+                            <h:outputLabel value="#{empresa.email}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.fecha} Desde"
+                                  width="100">
+                            <h:outputLabel value="#{empresa.fechaDesde}">
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.fecha} Hasta"
+                                  width="100">
+                            <h:outputLabel value="#{empresa.fechaHasta}">
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}" width="80" style="text-align: center">
+                            <h:outputLabel value="#{empresa.estado ? msg.activo : msg.inactivo}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                 width="70"
+                                 style="text-align: center">
+
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             ajax="false"
+                                             process="tablaEmpresa"
+                                             action="#{empresasAdminBean.seleccionar(empresa)}"/>
+                        </p:column>
+                    </p:dataTable>         
+                </p:panel>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,159 @@
+body {
+    background-repeat: repeat, no-repeat;
+    background-position: center -100px;
+    font-size: 12px;
+    font-family: Verda;
+    color: #000000;  
+    font-style: normal;
+    overflow: auto;    
+    margin: 0px;
+}
+
+.caja-notificacion{
+    position: fixed; /*para que la caja se mantenga fija*/
+    top: 1px; /*movemos la caja de arriba*/
+    /*left: 310px;*/
+    /*background-color: #ffffff;  el color de fondo de la barra*/
+    z-index: 200;  
+}
+
+.caja-datos-secion{
+    position: fixed; /*para que la caja se mantenga fija*/
+    top:0px;
+    left: 0px;
+    background-color: #ffffff; /* el color de fondo de la barra*/
+    z-index: 200;  
+}
+
+.caja-botones{
+    position: fixed; /*para que la caja se mantenga fija*/
+    top: 40%; /*movemos la caja de arriba*/
+    right: 1%;
+    background-color: #ffffff; /* el color de fondo de la barra*/
+    z-index: 100;
+}
+
+.caja-botones-arriba{
+    position: fixed; /*para que la caja se mantenga fija*/
+    top: 35px; /*movemos la caja de arriba*/
+    /*left: 215px;*/
+    /*background-color: #ffffff;  el color de fondo de la barra*/
+    z-index: 250; 
+    width: 80%;
+}
+
+.texto_obligatorio{
+    background-color: khaki 
+}
+
+.texto_numerico{
+    text-align: right    
+}
+
+.texto_negrita{
+    font-style: normal;
+    font-weight: bold;
+}
+
+.texto_login{
+    font-style: normal;
+    font-weight: bold;
+    font-size:12px;
+    color: #000000;
+}
+
+.texto_notificacion{
+    font-style: normal;
+    font-weight: bold;
+    font-size:20px;
+}
+
+.texto_etiquetas{
+    font-style: normal;
+    font-weight: bold;
+    font-size:12px;
+}
+
+.bottom1{
+    position:fixed;
+    bottom:0px;
+    width:100%; 
+    height: 5px;
+    text-align: center;
+    color: black;
+    padding: 10px;
+
+
+    /* Safari 5.1+, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Opera 11.10+ */
+    background: -o-linear-background(top, #081b53, #214B92);
+    /* IE 10 */
+    background: -ms-linear-background(top, #75B2E2, #B4D1EF);
+    /* estándar */
+    background: linear-background(top, #75B2E2, #B4D1EF);
+
+} 
+
+.bottom2{
+    width:300px; /*min width should give to center the div.*/
+    margin:0px auto; /*here it will make center*/            
+}  
+
+.ui-widget {
+    font-size: 11px;
+}
+
+.ui-fileupload-buttonbar {
+    background: transparent none;
+    border: none;
+}
+
+.ui-fileupload-content {
+    display: none;
+}
+
+.ui-panel .ui-panel-titlebar {
+    padding: 0;
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-size: 17px;
+}
+
+.ui-menubar .ui-menuitem-text{
+    font-size: 11px;
+    padding: 0px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.ui-menubar {
+    border:2px solid #ccc;width: auto;
+}
+
+.ui-icon.fa {
+    width: 18px;
+    height: 10px;
+    zoom: 200%; 
+    -moz-transform: scale(2.25); 
+    -webkit-zoom: 1.25; 
+    -ms-zoom: 1.25;
+}
+
+.topAligned {
+    vertical-align: top;
+}
+
+#background {
+    width: 100%; 
+    height: 100%; 
+    position: fixed; 
+    left: 0px; 
+    top: 0px; 
+    z-index: -1;
+}
+

@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.pedidoVenta}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarPedidosVentasBean.listaFacturas}" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         expandedRow="#{true}">
+                
+                <p:rowExpansion>
+                    <p:dataTable var="detalle"
+                                 value="#{pedido.facturaDetalleList}"
+                                 style="width: 55%">
+                        
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{detalle.productoServicio.nombre}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.cantidad}"
+                                  width="50"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{detalle.cantidad}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.facturar}"
+                                  width="50"
+                                  style="text-align: right"
+                                  rendered="false">
+                            <h:outputLabel value="#{detalle.cantidadPorFacturar}"
+                                            style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.pvp}"
+                                  width="50"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{detalle.productoServicio.pvp}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.total}"
+                                  width="50"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{detalle.subtotalPedido}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                    </p:dataTable>
+                 </p:rowExpansion>
+                
+                <p:column headerText="#{msg.empresa}"
+                          width="150">
+                    <h:outputLabel value="#{pedido.empresa.nombre}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                 <p:column width="110"
+                           headerText="#{msg.lugar}"
+                           filterBy="#{pedido.mesa.nombre}"
+                           rendered="false">
+                     <f:facet name="filter">
+                         <p:inputText value="#{buscarPedidosVentasBean.mesa}"
+                                      size="12"
+                                      onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                     </f:facet>
+                     <h:outputLabel value="#{pedido.mesa.nombre}" 
+                                    style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                 </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarPedidosVentasBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.fecha}"
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold">
+                        <f:convertDateTime timeZone="#{parametrosApplicationPedidos.timeZone}" 
+                                            pattern="#{parametrosApplicationPedidos.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.cedula}"
+                          filterBy="#{pedido.cliente.persona.cedula}"
+                          width="110">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarPedidosVentasBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.cedula}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}"
+                          filterBy="#{pedido.cliente.persona.nombres}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarPedidosVentasBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.cliente.persona.nombres} #{pedido.cliente.persona.apellidos}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.mascota}"
+                          filterBy="#{pedido.cliente.persona.nombres}"
+                          width="200"
+                          rendered="#{login.cuenta.empleado.persona.empresa.tipoEmpresa eq 2}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarPedidosVentasBean.mascota}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.mascota.nombre} #{pedido.mascota.raza.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.responsable}"
+                          width="100"
+                          visible="false">
+                    <h:outputLabel value="#{pedido.empleado.persona.nombres} #{pedido.empleado.persona.apellidos}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.estado}"
+                          width="110"
+                          filterBy="#{pedido.estado}">
+                    <f:facet name="filter">
+                        <p:selectOneMenu value="#{buscarPedidosVentasBean.estado}">
+                            <f:selectItem itemLabel="#{msg.todos}" itemValue='0' />
+                            <f:selectItem itemLabel="#{msg.ingresada}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.factura}" itemValue="2" />
+                            <f:selectItem itemLabel="#{msg.despachado}" itemValue="3" />
+                            <p:ajax listener="#{buscarPedidosVentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputLabel value="#{msg.ingresada}" rendered="#{pedido.estado eq 1}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                    <h:outputLabel value="#{msg.factura}" rendered="#{pedido.estado eq 2}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                    <h:outputLabel value="#{msg.registrado}" rendered="#{pedido.estado eq 3}" 
+                                   style="color: red;font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

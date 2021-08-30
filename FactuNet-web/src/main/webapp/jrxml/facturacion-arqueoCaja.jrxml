@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="facturacion-arqueoCaja" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e2e9e607-6158-4239-b567-fbaa5c83fce3">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="14"/>
+	<property name="ireport.y" value="113"/>
+	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
+			<style backcolor="#CCCCCC"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="ad_fini" class="java.util.Date"/>
+	<parameter name="ad_ffin" class="java.sql.Timestamp"/>
+	<parameter name="usuario" class="java.lang.String"/>
+	<parameter name="puntoventa" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" class="java.lang.Integer"/>
+	<parameter name="cliente" class="java.lang.String"/>
+	<parameter name="documento" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT punto_venta.nombre as punto_venta,factura.numero, factura.fecha, persona.cedula, persona.nombres, persona.apellidos, factura.total_retencion, factura.total_pagar
+,persona_empleado.nombres as r_nombres,persona_empleado.apellidos as r_apellidos,factura.cliente,
+factura.subtotal, factura.iva, factura.total, factura.descuento,punto_venta.codigo_sri as codigo_sri_punto , empresa.codigo_sri as codigo_sri_empresa
+ from factura inner join cliente on
+factura.cliente = cliente.codigo inner join tipo_persona on
+tipo_persona.codigo = cliente.codigo inner join persona on
+tipo_persona.persona = persona.codigo inner join empleado on
+factura.empleado = empleado.codigo inner join tipo_persona as tipo_empleado on
+tipo_empleado.codigo = empleado.codigo inner join persona as persona_empleado on
+tipo_empleado.persona = persona_empleado.codigo inner join punto_venta on
+factura.punto_venta = punto_venta.codigo  inner join empresa on
+punto_venta.empresa = empresa.codigo
+where factura.discriminador = 5 and factura.estado = '2' and factura.tipo_documento != 23 and
+persona_empleado.cedula like $P{usuario} and factura.punto_venta::text like $P{puntoventa}  and factura.tipo_documento::text like $P{documento} and cliente.codigo::text like $P{cliente} and
+factura.empresa = $P{empresa} and
+factura.fecha between $P{ad_fini}  and  $P{ad_ffin} order by factura.punto_venta,persona_empleado.nombres,factura.fecha]]>
+	</queryString>
+	<field name="punto_venta" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Integer"/>
+	<field name="fecha" class="java.sql.Timestamp"/>
+	<field name="cedula" class="java.lang.String"/>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="apellidos" class="java.lang.String"/>
+	<field name="total_retencion" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="r_nombres" class="java.lang.String"/>
+	<field name="r_apellidos" class="java.lang.String"/>
+	<field name="cliente" class="java.lang.Integer"/>
+	<field name="subtotal" class="java.math.BigDecimal"/>
+	<field name="iva" class="java.math.BigDecimal"/>
+	<field name="total" class="java.math.BigDecimal"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="codigo_sri_punto" class="java.lang.String"/>
+	<field name="codigo_sri_empresa" class="java.lang.String"/>
+	<sortField name="numero"/>
+	<variable name="total_1" class="java.math.BigDecimal" resetType="Group" resetGroup="usuario" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="subtotal_1" class="java.math.BigDecimal" resetType="Group" resetGroup="usuario" calculation="Sum">
+		<variableExpression><![CDATA[$F{subtotal}]]></variableExpression>
+	</variable>
+	<variable name="iva_1" class="java.math.BigDecimal" resetType="Group" resetGroup="usuario" calculation="Sum">
+		<variableExpression><![CDATA[$F{iva}]]></variableExpression>
+	</variable>
+	<variable name="contador" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$F{numero}]]></variableExpression>
+	</variable>
+	<variable name="total_ret" class="java.math.BigDecimal" resetType="Group" resetGroup="usuario" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_retencion}]]></variableExpression>
+	</variable>
+	<variable name="total_fin" class="java.math.BigDecimal" resetType="Group" resetGroup="usuario" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_pagar}]]></variableExpression>
+	</variable>
+	<group name="Empresa">
+		<groupExpression><![CDATA[$F{punto_venta}]]></groupExpression>
+		<groupHeader>
+			<band height="11">
+				<staticText>
+					<reportElement x="1" y="0" width="95" height="11" forecolor="#003366" uuid="18921092-c677-4d59-957e-c2624e4528b2"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Punto de Venta:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="96" y="0" width="454" height="11" forecolor="#003366" uuid="c10e9ec0-71e2-4c5d-81b1-c756746783fd"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{punto_venta}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="usuario">
+		<groupExpression><![CDATA[$F{r_nombres}]]></groupExpression>
+		<groupHeader>
+			<band height="11">
+				<textField>
+					<reportElement x="96" y="0" width="286" height="11" forecolor="#003366" uuid="1eb064c1-6072-49dc-997b-bbc23d7e3917"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{r_nombres} + " " + $F{r_apellidos}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="0" width="95" height="11" forecolor="#003366" uuid="0c719c41-36a5-43b4-90f3-3ae4e781c5db"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vendedor:]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="59">
+				<staticText>
+					<reportElement x="342" y="0" width="58" height="12" forecolor="#000000" uuid="0c719c41-36a5-43b4-90f3-3ae4e781c5db"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Subtotal:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="408" y="23" width="66" height="12" forecolor="#000000" uuid="e6e5c85b-8603-423b-acc3-6a9b508c6336"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="408" y="0" width="66" height="12" uuid="686bae3c-572a-4ef8-9cbc-29e9f4fbac8c"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{subtotal_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+					<reportElement x="408" y="11" width="66" height="12" uuid="866ee222-31f2-4e6d-81f7-cccaeabf5c3f"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{iva_1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="342" y="11" width="58" height="12" forecolor="#000000" uuid="0c719c41-36a5-43b4-90f3-3ae4e781c5db"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IVA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="22" width="58" height="12" forecolor="#000000" uuid="0c719c41-36a5-43b4-90f3-3ae4e781c5db"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="408" y="47" width="66" height="12" forecolor="#000000" uuid="704dc344-8d89-484e-99a5-729e25431870"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_fin}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="408" y="35" width="66" height="12" forecolor="#000000" uuid="8857c12c-4313-41e7-8875-92a7b87106bd"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_ret}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="342" y="35" width="58" height="12" forecolor="#000000" uuid="bb464c0e-83c7-42eb-8d25-294206641db8"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Ret.:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="47" width="58" height="12" forecolor="#000000" uuid="5b55e8bf-1b38-450e-8c62-121691d16fb9"/>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total - Ret.:]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="10" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="10" uuid="1d165f48-e560-4dff-9a5e-9969815f32bd"/>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cabecera.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-19" y="0" width="595" height="20" backcolor="#9DB1B8" uuid="49a0d759-2933-4e84-a710-24b35c83309d"/>
+				<staticText>
+					<reportElement mode="Transparent" x="20" y="0" width="234" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="b38111a2-ad78-4b43-be56-e38875e994b9"/>
+					<textElement>
+						<font size="14" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Reporte de Ventas]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy HH.mm.ss">
+					<reportElement x="349" y="5" width="57" height="13" forecolor="#FFFFFF" uuid="a4edd925-3dc5-4bd6-ac50-d5c7f091e690"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{ad_fini}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy HH.mm.ss">
+					<reportElement x="450" y="5" width="61" height="12" forecolor="#FFFFFF" uuid="dd398160-8c27-4048-b7b1-1eb1fee0318f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{ad_ffin}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="311" y="5" width="38" height="12" uuid="1e796e48-d99c-4578-af0c-a649d7de67ff"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Desde:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="417" y="5" width="33" height="12" uuid="e49ad40c-0609-4c5d-b487-210bdaedd20a"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Hasta:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="58" height="13" uuid="38f7496e-c158-4c01-905a-8b06e69555e7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No. Documento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="0" width="56" height="13" uuid="4efe288f-99bf-493b-81e0-8b81a7f5ffc2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Identificador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="0" width="40" height="13" uuid="8b52976e-209b-4394-8f00-e4ef93a0451e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descuento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="0" width="160" height="13" uuid="cb685517-7843-46ef-9607-ce93495edd20"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="434" y="0" width="40" height="13" uuid="c64d38bb-fbb6-41eb-af3f-8b214afc9394"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="314" y="0" width="40" height="13" uuid="c64d38bb-fbb6-41eb-af3f-8b214afc9394"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subtotal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="0" width="40" height="13" uuid="c64d38bb-fbb6-41eb-af3f-8b214afc9394"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="474" y="0" width="40" height="13" uuid="6e449511-e76d-4010-b62a-d9a7c12548dc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ret.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="514" y="0" width="40" height="13" uuid="c7bc93f8-619c-4308-a21e-dbd934462b30"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tot. -  Ret.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="58" y="0" width="40" height="13" uuid="6485b8f5-9996-4835-8cde-5c8da3c0026c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<frame>
+				<reportElement style="Detail" mode="Opaque" x="1" y="0" width="553" height="12" uuid="7f877228-aa2f-4f77-9bd9-2e4ea0bccc1b"/>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="393" y="0" width="40" height="12" uuid="815f314d-5c72-4cb7-9f63-dcb3e94fedfa"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{iva}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="313" y="0" width="40" height="12" uuid="666a12d1-66ef-42f8-999c-ca75b9f9ccfe"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="433" y="0" width="40" height="12" uuid="e8bf73d2-0ebc-48ea-9fb9-3719def95355"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="153" y="0" width="160" height="12" uuid="abfb3d7a-523b-47fa-84bc-78e3723b11f1"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombres} + " " + $F{apellidos}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="98" y="0" width="55" height="12" uuid="5192fd16-8810-49a8-b50a-ad0f07be18f2"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="58" y="0" width="40" height="12" uuid="3a1d0ec3-48bd-4d89-8a81-b85783bec71d"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="57" height="12" uuid="c566db15-4ad8-45af-bc7d-130e65f5298f"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_sri_empresa} + $F{codigo_sri_punto} + $F{numero}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="353" y="0" width="40" height="12" uuid="3a700509-b80a-46b2-b846-da9057d00b54"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="473" y="0" width="40" height="12" uuid="39e0393b-5ff7-4465-a8f6-d7b496005f96"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total_retencion}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement x="513" y="0" width="40" height="12" uuid="1a719f4d-a4f0-4084-b878-b11e991a6707"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total_pagar}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-19" y="2" width="595" height="13" backcolor="#9DB1B8" uuid="a8b4542b-3745-4618-bb57-7b6b79377aeb"/>
+				<textField>
+					<reportElement mode="Transparent" x="239" y="0" width="332" height="13" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="218542f6-e181-4a91-8302-e22cfc62b658"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de "+ $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField pattern="EEEEE, dd  MMMMM yyyy HH:mm:ss">
+					<reportElement x="21" y="0" width="218" height="13" forecolor="#FFFFFF" uuid="5dcb7ee5-1bc0-4fd0-86a8-f579f50458b0"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="109" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="220" height="13" uuid="0b99527a-b3ec-4dbd-b5f2-527e00db497a"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Efectivo"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["140"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="15" width="220" height="13" uuid="0b99527a-b3ec-4dbd-b5f2-527e00db497a"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Tarjeta Debito"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["141"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="30" width="220" height="13" uuid="0b99527a-b3ec-4dbd-b5f2-527e00db497a"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Depositos"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["147"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="45" width="220" height="13" uuid="0b99527a-b3ec-4dbd-b5f2-527e00db497a"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Transferencias"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["148"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="60" width="220" height="13" uuid="b3164b18-34d2-4a7e-b86d-912d5ecdd791"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Credito"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["149"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="75" width="220" height="13" uuid="24eaa084-58d1-4065-94f0-9b89ccea626b"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total Retención"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["170"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="90" width="220" height="13" uuid="c9eebf8a-c4bc-4c6e-b13f-7c611a632025"/>
+				<subreportParameter name="cliente">
+					<subreportParameterExpression><![CDATA[$P{cliente}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_fini">
+					<subreportParameterExpression><![CDATA[$P{ad_fini}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="estado">
+					<subreportParameterExpression><![CDATA["2"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombre_forma">
+					<subreportParameterExpression><![CDATA["Total"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="documento">
+					<subreportParameterExpression><![CDATA[$P{documento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ad_ffin">
+					<subreportParameterExpression><![CDATA[$P{ad_ffin}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="usuario">
+					<subreportParameterExpression><![CDATA[$P{usuario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="forma">
+					<subreportParameterExpression><![CDATA["%%"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="puntoventa">
+					<subreportParameterExpression><![CDATA[$P{puntoventa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$P{empresa}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="discriminador">
+					<subreportParameterExpression><![CDATA[5]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesArqueoCaja.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.cliente}</title>
+        <h:outputStylesheet name="css/theme.css"/>
+        <h:outputStylesheet name="css/default.css"/>
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCUmbh1CLsnQfkSVtFctPwxNx3j8xD6xT0"></script>
+    </h:head>
+
+    <h:body>
+        <script type="text/javascript">
+            function GetAddress() {
+                var lat = parseFloat(document.getElementById("frmNuevoCliente:tabPrincipal:hidLatitud").value);
+                var lng = parseFloat(document.getElementById("frmNuevoCliente:tabPrincipal:hidLongitud").value);
+
+                var latlng = new google.maps.LatLng(lat, lng);
+                var geocoder = geocoder = new google.maps.Geocoder();
+                geocoder.geocode({'latLng': latlng}, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[1]) {
+                            console.log("Location: " + results[1].formatted_address);
+                            try {
+                                document.getElementById("frmNuevoCliente:tabPrincipal:txtDireccion").value = results[1].formatted_address;
+                               
+                            } catch (e) {
+                                alert(e);
+                            }
+                        }
+                    }
+                });
+            }
+
+        </script>
+        <h:form style="width: 100%"
+                id="frmNuevoCliente">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+          
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.guardar}" 
+                                     actionListener="#{nuevoClientePedidosBean.agregar()}"
+                                     styleClass="texto_etiquetas"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, :frmNuevoCliente:tabPrincipal"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoClientePedidosBean.cerrar()}"
+                                     styleClass="texto_etiquetas"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            <p:tabView id="tabPrincipal">
+                <p:tab title="Datos Generales">
+                     <h:panelGrid columns="2"
+                                id="pnlCliente">
+                       <h:panelGrid columns="2"
+                                    style="margin-bottom:10px" cellpadding="5">
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.nombres}" 
+                                              styleClass="texto_etiquetas"/>
+                               <p:inputText value="#{nuevoClientePedidosBean.cliente.persona.nombres}"
+                                            maxlength="50"
+                                            size="30"
+                                            required="true"
+                                            style="background-color: khaki;font-size: 13px "/>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.apellidos}" 
+                                              styleClass="texto_etiquetas"/>
+                               <p:inputText value="#{nuevoClientePedidosBean.cliente.persona.apellidos}"
+                                            maxlength="50"
+                                            size="30"
+                                            required="true"
+                                            style="background-color: khaki;font-size: 13px "/>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.numeroIdentificacion}"
+                                              styleClass="texto_etiquetas"/>
+                               <p:inputText value="#{nuevoClientePedidosBean.cliente.persona.cedula}"
+                                            maxlength="#{nuevoClientePedidosBean.tipoIdentificacion.tipoValidacion.longitud}"
+                                            size="30"
+                                            rendered="#{nuevoClientePedidosBean.tipoIdentificacion.tipoValidacion.nombre eq 'CEDULA - RUC'}"
+                                            validator="com.jvc.factunet.validador.ValidarCedulaRucNulo"
+                                            style="background-color: khaki;font-size: 13px ">
+                                   <p:keyFilter regEx="/[\d]/" 
+                                                preventPaste="false"/>
+                               </p:inputText> 
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.correo}"
+                                              styleClass="texto_etiquetas"/>
+                               <p:inputText value="#{nuevoClientePedidosBean.cliente.persona.email}"
+                                            size="30"
+                                            maxlength="50"
+                                            style="background-color: khaki;font-size: 13px "
+                                            validatorMessage="#{msg.emailInvalido}">
+                                    <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail" />
+                               </p:inputText>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.telefono}" 
+                                              styleClass="texto_etiquetas"/>
+                               <p:inputText value="#{nuevoClientePedidosBean.cliente.persona.telefono}"
+                                            maxlength="10"
+                                            size="30"
+                                            style="background-color: khaki;font-size: 13px ">
+                                   <p:keyFilter regEx="/[\d]/"/>
+                               </p:inputText>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.estadocivil}" 
+                                              styleClass="texto_etiquetas"/>
+                               <p:selectOneMenu value="#{nuevoClientePedidosBean.cliente.persona.estadoCivil}"
+                                                style="width: 218px"
+                                                id="slcEstadoCivil"
+                                                converter="omnifaces.SelectItemsConverter">
+                                   <f:selectItems value="#{nuevoClientePedidosBean.listaEstadoCivil}" 
+                                                  var="estadoCivil"
+                                                  itemLabel="#{estadoCivil.nombre}"
+                                                  itemValue="#{estadoCivil}"/>
+                               </p:selectOneMenu>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.sexo}"
+                                              styleClass="texto_etiquetas"/>
+                               <p:selectOneMenu value="#{nuevoClientePedidosBean.cliente.persona.sexo}"
+                                                style="width: 218px"
+                                                id="slcSexo"
+                                                converter="omnifaces.SelectItemsConverter">
+                                   <f:selectItems value="#{nuevoClientePedidosBean.listaSexo}" 
+                                                  var="sexo"
+                                                  itemLabel="#{sexo.nombre}"
+                                                  itemValue="#{sexo}"/>
+                               </p:selectOneMenu>
+                           </h:panelGrid>
+
+                           <h:panelGrid columns="1">
+                               <h:outputLabel value="#{msg.fechaNacimiento}" 
+                                              styleClass="texto_etiquetas"/>
+                               <p:calendar value="#{nuevoClientePedidosBean.cliente.persona.fechaNacimiento}" 
+                                           navigator="true" 
+                                           showOn="button" 
+                                           timeZone="#{parametrosApplicationPedidos.timeZone}"
+                                           locale="#{parametrosApplicationPedidos.local}" 
+                                           pattern="#{parametrosApplicationPedidos.formatoFecha}"
+                                           size="25"/>
+                           </h:panelGrid>
+                       </h:panelGrid>
+
+                       <h:panelGrid columns="1" 
+                                    style="text-align: center">
+
+                           <h:outputLabel value="#{msg.foto}"
+                                          styleClass="texto_etiquetas"/>
+                           <p:graphicImage id="logo"
+                                           url="#{nuevoClientePedidosBean.urlLogo}"
+                                           width="150px"
+                                           height="150px"
+                                           style="border: solid 1px"
+                                           cache="false" />
+                           <p:fileUpload  mode="advanced" 
+                                          skinSimple="true"
+                                          sizeLimit="1000000"  
+                                          label="#{msg.seleccionar}"
+                                          auto="true"
+                                          fileUploadListener="#{nuevoClientePedidosBean.subirLogo}"
+                                          allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                          cancelLabel="#{msg.cancelar}" 
+                                          update=":frmNuevoCliente:grMensajes, :frmNuevoCliente:tabPrincipal:logo"/>
+                       </h:panelGrid>
+                   </h:panelGrid> 
+                </p:tab>
+                <p:tab title="Datos Ubicacion">
+                    <h:panelGrid columns="1" id="panelDireccion">
+                        <h:outputLabel value="#{msg.direccion}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="2" cols="30" 
+                                         autoResize="false" 
+                                         id="txtDireccion"
+                                         style="background-color: khaki;font-size: 13px "
+                                         value="#{nuevoClientePedidosBean.cliente.persona.direccion}"/>
+                        <h:inputHidden value="#{nuevoClientePedidosBean.cliente.persona.coordenadaLatitud}" id="hidLatitud"/>
+                        <h:inputHidden value="#{nuevoClientePedidosBean.cliente.persona.coordenadaLongitud}" id="hidLongitud"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1"
+                                 width="100%">
+                        <h:panelGrid columns="3">
+                            <h:outputLabel value="Provincia:" 
+                                           styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="Canton:" 
+                                           styleClass="texto_etiquetas"/>
+                            <h:outputLabel value="Parroquia:" 
+                                           styleClass="texto_etiquetas"/>
+
+                            <p:selectOneMenu id="cmbProvincia"
+                                             style="width: 230px"
+                                             value="#{nuevoClientePedidosBean.provincia}"
+                                             filter="true" filterMatchMode="startsWith"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             required="true">
+                                <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{nuevoClientePedidosBean.listaProvincias}" 
+                                               var="prov" 
+                                               itemLabel="#{prov.descripcion}" itemValue="#{prov}" />
+                                <p:ajax event="change" 
+                                        listener="#{nuevoClientePedidosBean.actualizarProvincia}" 
+                                        update="@this, cmbCanton, cmbParroquia, panelMapa  "/>
+                            </p:selectOneMenu>
+
+
+                            <p:selectOneMenu id="cmbCanton" style="width: 230px"
+                                             filter="true" filterMatchMode="startsWith"
+                                             value="#{nuevoClientePedidosBean.canton}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             required="true">
+                                <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{nuevoClientePedidosBean.listaCantones}" var="can" itemLabel="#{can.descripcion}" itemValue="#{can}"/>
+                                <p:ajax event="change" listener="#{nuevoClientePedidosBean.actualizarCanton}" 
+                                        update="@this, cmbParroquia, panelMapa"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu id="cmbParroquia"
+                                             styleClass="campoSeleccion" style="width: 230px"
+                                             filter="true" filterMatchMode="startsWith"
+                                             value="#{nuevoClientePedidosBean.cliente.persona.parroquia}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             required="true">
+                                <f:selectItem itemLabel="--Seleccione--" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{nuevoClientePedidosBean.listaParroquias}" var="parr" itemLabel="#{parr.descripcion}" itemValue="#{parr}"/>
+                                <p:ajax event="change" listener="#{nuevoClientePedidosBean.actualizarParroquia}" update="@this, panelMapa"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="panelMapa" style="width: 100%" >
+                            <p:gmap center="#{nuevoClientePedidosBean.cliente.persona.coordenadaLatitud},#{nuevoClientePedidosBean.cliente.persona.coordenadaLongitud}" 
+                                    zoom="#{nuevoClientePedidosBean.zoom}" 
+                                    streetView="true"
+                                    widgetVar="gmap"
+                                    type="ROADMAP" 
+                                    style="width:100%;height:600px" 
+                                    model="#{nuevoClientePedidosBean.simpleModel}" >
+                                <p:ajax event="markerDrag" listener="#{nuevoClientePedidosBean.onMarkerDrag}" update="panelDireccion" oncomplete="GetAddress()"  />
+                            </p:gmap>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+            
+        </h:form>
+    </h:body>
+</html>

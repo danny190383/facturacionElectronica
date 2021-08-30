@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.pendienteCompra}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="detalle" 
+                         id="tablaDetalles"
+                         value="#{buscarPendientesCompra.facturaDetalle}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         rowsPerPageTemplate="10,15,20"
+                         selection="#{buscarPendientesCompra.facturaDetalleSelc}" 
+                         rowKey="#{detalle}">
+                
+                <f:facet name="header" >
+                    <p:commandButton process="tablaDetalles" 
+                                     icon="ui-icon-check" 
+                                     value="#{msg.agregarSeleccion}" 
+                                     action="#{buscarPendientesCompra.seleccionarLista}"/>
+                </f:facet>
+                
+                <p:column selectionMode="multiple" 
+                          style="width:16px;text-align:center"/>
+                
+                <p:column headerText="#{msg.codigoBarras}"
+                        width="110">
+                    <h:outputLabel value="#{detalle.productoServicio.codigoBarras}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.productos}">
+                    <h:outputLabel value="#{detalle.productoServicio.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cantidad}"
+                          width="50">
+                    <h:outputLabel value="#{detalle.cantidad}" />
+                </p:column>
+
+                <p:column headerText="#{msg.costo}"
+                          width="50">
+                    <h:outputLabel value="#{detalle.precioVentaUnitario}" />
+                </p:column>
+
+                <p:column headerText="#{msg.subtotal}"
+                          width="50">
+                    <h:outputLabel value="#{detalle.subtotalSinDescuento}"/>
+                </p:column>
+
+                <p:column headerText="#{msg.solicitante}"
+                          width="100">
+                    <h:outputLabel value="#{detalle.empleado.persona.nombres} #{detalle.empleado.persona.apellidos}" />
+                </p:column>
+
+                
+                <p:column headerText="#{msg.opcion}"
+                          style="text-align: center"
+                          width="60">
+                    
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmBusquedaDetalles:grMensajes, :frmBusquedaDetalles:tablaDetalles" 
+                                      actionListener="#{buscarPendientesCompra.eliminar(detalle)}"
+                                      title="#{msg.eliminar}">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+                
+            </p:dataTable>
+             
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <p:panel style="width: 100%" 
+                 id="pnlImpuesto">
+            <h:panelGrid columns="2">
+                <h:panelGrid columns="3">
+                    <h:outputLabel value="#{msg.buscar} #{msg.impuesto} "/>
+                    <p:inputText value="#{tipoImpuestoBean.buscarImpuesto}" 
+                                 maxlength="40" size="50" transient="true"/>
+                    <p:ajax event="keyup" update=":frmCabecera:tabMasterSistema:tablaImpuesto" 
+                                listener="#{tipoImpuestoBean.buscar()}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{tipoImpuestoBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoImpuestoBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoImpuestoBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+                    
+            <p:dataTable var="tipodocumento" 
+                         value="#{tipoImpuestoBean.lista}" 
+                         id="tablaImpuesto"
+                         emptyMessage="#{msg.tablaVacia}">
+
+                 <f:facet name="header">
+                    <p:commandButton value="#{msg.nuevo}"  
+                                     oncomplete="PF('dialogoImpuesto').show()"
+                                     actionListener="#{tipoImpuestoBean.nuevo()}" 
+                                     immediate="true"
+                                     update=":frmCabecera:tabMasterSistema:dlgImpuesto"
+                                     icon="ui-icon-comment" />
+                </f:facet>
+
+                <p:column headerText="#{msg.codigo} SRI" width="80" style="text-align: center">
+                    <h:outputLabel value="#{tipodocumento.codigoSri}" />
+                </p:column>
+
+                <p:column headerText="#{msg.impuesto}">
+                    <h:outputLabel value="#{tipodocumento.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.opcion}" 
+                          width="70"
+                          style="text-align: center">
+
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmCabecera:grMensajes, :frmCabecera:tabMasterSistema:tablaImpuesto" 
+                                      actionListener="#{tipoImpuestoBean.eliminar(tipodocumento)}"
+                                      immediate="true"
+                                      title="#{msg.eliminar}">
+                          <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                     <p:commandButton icon="ui-icon-pencil" 
+                                      title="#{msg.editar}"
+                                      process="tablaImpuesto"
+                                      update=":frmCabecera:tabMasterSistema:dlgImpuesto"
+                                      oncomplete="PF('dialogoImpuesto').show()"
+                                      action="#{tipoImpuestoBean.seleccionar(tipodocumento)}"/>
+                  </p:column>
+            </p:dataTable>
+        </p:panel>  
+                
+        <p:dialog header="#{msg.impuesto}" 
+                  widgetVar="dialogoImpuesto" 
+                  resizable="false"
+                  id="dlgImpuesto">
+
+            <h:form id="frmImpuesto">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{msg.impuesto}: "/>
+                    <p:inputText value="#{tipoImpuestoBean.tipodocumento.nombre}"
+                                 required="true" 
+                                 size="50" maxlength="40"
+                                 style="background-color: khaki "/>
+
+                    <h:outputLabel value="#{msg.codigoSRI}: "/>
+                    <p:inputText value="#{tipoImpuestoBean.tipodocumento.codigoSri}"
+                             required="true" 
+                             size="50" maxlength="40"
+                             style="background-color: khaki "/>
+
+                    <p:commandButton value="#{msg.guardar}"  
+                                     actionListener="#{tipoImpuestoBean.guardar()}"
+                                     icon="ui-icon-check" 
+                                     process="@form"
+                                     update=":frmCabecera:tabMasterSistema:tablaImpuesto, :frmCabecera:grMensajes" />
+
+                    <p:commandButton value="#{msg.cancelar}" 
+                                     immediate="true"
+                                     update="@form"
+                                     process="@form"
+                                     icon="ui-icon-cancel" 
+                                     oncomplete="PF('dialogoImpuesto').hide()"/>
+                </h:panelGrid> 
+            </h:form>
+        </p:dialog>
+    </body>
+</html>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.guardar}"  
+                                             icon="ui-icon-disk"
+                                             actionListener="#{opcionesMenuBean.insertSelectedMultiple}"
+                                             update=":frmCabecera:grMensajes" />
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            
+            <ui:define name="content">
+                
+                <p:panel header="#{msg.adminOpcionesMenu}">
+                    <h:panelGrid columns="2"
+                                 style="margin-bottom:10px" cellpadding="5">
+                        <p:fieldset id="flsOpciones0001" 
+                                    style="width:250px;height:450px;" 
+                                    legend="#{msg.roles}">
+                            
+                            <p:dataTable var="rol" 
+                                         value="#{opcionesMenuBean.listaRol}" 
+                                         selection="#{opcionesMenuBean.rol}" 
+                                         rowKey="#{rol.codigo}"
+                                         selectionMode="single">
+                                
+                                <p:ajax event="rowSelect" 
+                                        listener="#{opcionesMenuBean.onSelect}" 
+                                        update=":frmCabecera:flsOpciones0002" />
+                                
+                                
+                                <p:column headerText="#{msg.roles} #{msg.sistema}">
+                                    <h:outputLabel value="#{rol.nombre}" />
+                                </p:column>
+                            </p:dataTable>
+                              
+                        </p:fieldset>
+                        <p:fieldset id="flsOpciones0002" 
+                                    style="height:450px;" 
+                                    legend="#{msg.opciones}">
+                            <p:scrollPanel style="height:400px">
+                                <p:tree value="#{opcionesMenuBean.root}" var="node" id="menuTree"  
+                                         dynamic="true" selectionMode="checkbox"
+                                         selection="#{opcionesMenuBean.selectedNodes}">  
+
+                                    <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                                collapsedIcon="ui-icon-folder-collapsed">  
+                                        <h:outputLabel value="#{node.nombre}" />  
+                                    </p:treeNode>  
+
+                                </p:tree> 
+                            </p:scrollPanel>
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:panel>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

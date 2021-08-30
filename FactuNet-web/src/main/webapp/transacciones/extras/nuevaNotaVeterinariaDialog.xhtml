@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.notaMedica}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNotaMedica">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal"
+                         rendered="false">
+                    <p:menu> 
+
+                        <p:menuitem  value="#{msg.cerrar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevaNotaVeterinariaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            <h:panelGrid columns="2" >
+                <p:fieldset style="width: 200px;height: 516px"
+                            legend="#{msg.mascotas}">
+                    <h:outputLabel value="#{msg.cliente} :" />
+                    <h:outputLabel value="#{nuevaNotaVeterinariaBean.cliente.persona.nombres} #{nuevaNotaVeterinariaBean.cliente.persona.apellidos}" />
+                    <br/>
+                    <h:outputLabel value="#{msg.cuenta} :"/>
+                    <h:outputLabel value="#{nuevaNotaVeterinariaBean.cliente.totalDeuda}"
+                                   style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                    <p:dataTable var="mascota" 
+                                 value="#{nuevaNotaVeterinariaBean.cliente.persona.mascotaPersonaList}" 
+                                 selection="#{nuevaNotaVeterinariaBean.mascotaSelc}" 
+                                 rowKey="#{mascota}"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 id="tablaMascotas">>
+                       
+                       <f:facet name="header">
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             actionListener="#{nuevaNotaVeterinariaBean.verMascota(null)}" 
+                                             icon="ui-icon-comment" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{nuevaNotaVeterinariaBean.onMascotaSelect}"
+                                        update=":frmNotaMedica:tablaMascotas"/>
+                           </p:commandButton>
+                       </f:facet>
+                        
+                       <p:column selectionMode="single" 
+                                  style="width:16px;text-align:center"/>
+
+                       <p:ajax event="rowSelectRadio"  
+                               listener="#{nuevaNotaVeterinariaBean.inicializar}"
+                               update=":frmNotaMedica:pnlDatosNotaMedica" />
+
+
+                       <p:column headerText="#{msg.mascota}">
+                           <h:outputLabel value="#{mascota.nombre} #{mascota.raza.nombre}" />
+                       </p:column>
+                       
+                       <p:column width="30"
+                                 style="text-align: center">
+
+                          <p:commandButton icon="ui-icon-pencil" 
+                                           title="#{msg.editar}"
+                                           action="#{nuevaNotaVeterinariaBean.verMascota(mascota)}">
+                             <p:ajax event="dialogReturn"
+                                     listener="#{nuevaNotaVeterinariaBean.onMascotaSelect}"
+                                     update=":frmNotaMedica:tablaMascotas"/>
+                         </p:commandButton>   
+                      </p:column>
+                   </p:dataTable>
+                </p:fieldset>
+                <p:fieldset id="pnlDatosNotaMedica" 
+                            style="position: static; top: 0px;height: 516px"
+                            legend="#{msg.notaMedica} #{nuevaNotaVeterinariaBean.mascotaSelc.nombre}">
+                    
+                    <p:dataTable var="nota"
+                                 value="#{nuevaNotaVeterinariaBean.mascotaSelc.mascotaNotaMedicaList}"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 id="tablaNotas"
+                                 scrollable="true" 
+                                 scrollHeight="300">
+                        
+                        <f:facet name="header">
+                            <p:commandButton value="#{msg.nuevo}"
+                                             icon="ui-icon-plusthick"
+                                             oncomplete="PF('esDialogClaseFicha').show()"
+                                             action="#{nuevaNotaVeterinariaBean.inicializar()}" 
+                                             process="@this"
+                                             update=":frmNotaMedica:dialogClaseFicha"/>
+                        </f:facet>
+
+                        <p:column headerText="#{msg.fecha}"
+                                  width="90">
+                            <h:outputText value="#{nota.fecha}" >
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{msg.signos}"
+                                  width="40">
+                            <h:outputText value="P:" style="color: red"/><h:outputText value="#{nota.peso}" /><br/>
+                            <h:outputText value="T:" style="color: red"/><h:outputText value="#{nota.temperatura}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.notaMedica}">
+                            <h:outputText value="D:" style="color: red"/><h:outputText value="#{nota.diagnostico}" /><br/>
+                            <h:outputText value="O:" style="color: red"/><h:outputText value="#{nota.observacion}" /><br/>
+                            <h:outputText value="T:" style="color: red"/><h:outputText value="#{nota.tratamiento}" />
+                        </p:column>
+
+                        <p:column width="30">
+                            <p:commandButton icon="ui-icon-close" 
+                                            update=":frmNotaMedica:grMensajes, tablaNotas" 
+                                            actionListener="#{nuevaNotaVeterinariaBean.eliminar(nota)}"
+                                            title="#{msg.eliminar}">
+                               <p:confirm header="#{msg.confirmacion}" 
+                                          message="#{msg.eliminar}" 
+                                          icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             oncomplete="PF('esDialogClaseFicha').show()"
+                                             process="@this"
+                                             update=":frmNotaMedica:dialogClaseFicha"
+                                             action="#{nuevaNotaVeterinariaBean.seleccionar(nota)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+            </h:panelGrid>
+            
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+            
+            <p:dialog header="#{msg.notaMedica}" 
+                      widgetVar="esDialogClaseFicha" 
+                      modal="true" 
+                      width="50%"
+                      resizable="false"
+                      id="dialogClaseFicha">
+                
+                <h:form id="frmEditClaseFicha">
+                    <h:panelGrid columns="4"
+                                 width="100%">
+
+                        <h:outputLabel value="#{msg.fecha} :" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:calendar value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.fecha}" 
+                                    navigator="true" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFechaHoraSMS}"
+                                    size="20"
+                                    showOn="button"/>
+
+                        <h:outputLabel value="#{msg.peso}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.peso}"
+                                     maxlength="6"
+                                     size="10"
+                                     placeholder="Kg"
+                                     style="background-color: khaki ">
+                            <p:keyFilter regEx="/[\d\.]/" />
+                            <f:validateDoubleRange minimum="0" /> 
+                        </p:inputText>
+
+                        <h:outputLabel value="#{msg.temperatura}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputText value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.temperatura}"
+                                     maxlength="6"
+                                     size="10"
+                                     placeholder="°C"
+                                     style="background-color: khaki ">
+                            <p:keyFilter regEx="/[\d\.]/" />
+                            <f:validateDoubleRange minimum="0" /> 
+                        </p:inputText>
+                        
+                        <h:outputLabel value="#{msg.proximaCita} :" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:calendar value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.fechaProxima}" 
+                                    navigator="true" 
+                                    timeZone="#{parametrosApplication.timeZone}"
+                                    locale="#{parametrosApplication.local}" 
+                                    pattern="#{parametrosApplication.formatoFecha}"
+                                    size="20"
+                                    showOn="button"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1"
+                                 width="100%">
+                        <h:outputLabel value="#{msg.diagnostico}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="5" style="width: 100%" 
+                                         autoResize="false" 
+                                         maxlength="1500"
+                                         value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.diagnostico}"/>
+
+                        <h:outputLabel value="#{msg.observacion}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="5" style="width: 100%" 
+                                         autoResize="false" 
+                                         maxlength="1500"
+                                         value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.observacion}"/>
+
+                        <h:outputLabel value="#{msg.tratamiento}" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:inputTextarea rows="5" style="width: 100%"  
+                                         maxlength="1500"
+                                         autoResize="false" 
+                                         value="#{nuevaNotaVeterinariaBean.mascotaNotaMedica.tratamiento}"/>
+
+                    </h:panelGrid>
+                    
+                    <p:separator/>
+                    
+                    <h:panelGrid columns="2" style="margin: 0 auto;">
+
+                        <p:commandButton value="#{msg.guardar}"  
+                                         actionListener="#{nuevaNotaVeterinariaBean.agregarNotaPedido}"
+                                         icon="ui-icon-disk"
+                                         process="@form"
+                                         update="@form, :frmNotaMedica:grMensajes, :frmNotaMedica:tablaNotas"/>
+
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         immediate="true"
+                                         icon=" ui-icon-closethick"
+                                         process="@form"
+                                         update="@form"
+                                         oncomplete="PF('esDialogClaseFicha').hide()"/>
+                    </h:panelGrid>
+                </h:form>
+             </p:dialog>
+        </h:form>
+    </h:body>
+</html>

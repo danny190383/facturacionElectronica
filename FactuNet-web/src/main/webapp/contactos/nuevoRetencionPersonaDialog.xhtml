@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.retencion}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoRetencionPersona.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoRetencionPersona.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                        style="width: 100%"
+                        id="pnlDatosContacto">
+                
+                <h:outputLabel value="#{msg.tiporetencion}" />
+                <p:selectOneMenu value="#{nuevoRetencionPersona.tipoSlc}"
+                                style="width: 147px"
+                                disabled="#{nuevoRetencionPersona.editar}">
+                    <f:selectItems value="#{nuevoRetencionPersona.listaTipoRetencion}" 
+                                  var="retencion"
+                                  itemLabel="#{retencion.nombre}"
+                                  itemValue="#{retencion.codigo}"/>
+                </p:selectOneMenu>
+               
+                <h:outputLabel value="#{msg.observacion}" />
+                <p:inputTextarea rows="2" cols="30" 
+                                 autoResize="false"
+                                 rendered="#{nuevoRetencionPersona.tipoPantalla  eq 1}"
+                                 value="#{nuevoRetencionPersona.retencionPersona.observacion}"/>
+                
+                <p:inputTextarea rows="2" cols="30" 
+                                 autoResize="false"
+                                  rendered="#{nuevoRetencionPersona.tipoPantalla  ne 1}"
+                                 value="#{nuevoRetencionPersona.retencionServicio.observacion}"/>
+           </h:panelGrid> 
+            </p:fieldset>    
+        </h:form>
+    </h:body>
+</html>

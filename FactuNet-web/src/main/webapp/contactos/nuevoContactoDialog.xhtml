@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.contacto}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{contactoBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{contactoBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 100%"
+                             id="pnlDatosContacto">
+
+                    <h:outputLabel value="#{msg.nombres}: "/>
+                    <p:inputText value="#{contactoBean.contacto.persona.nombres}"
+                                 maxlength="50"
+                                 size="35"
+                                 required="true"
+                                 style="background-color: khaki">
+                        <p:keyFilter regEx="/[a-z ]/i" />
+                    </p:inputText> 
+
+                    <h:outputLabel value="#{msg.apellidos}: "/>
+                    <p:inputText value="#{contactoBean.contacto.persona.apellidos}"
+                                 maxlength="50"
+                                 size="35">
+                        <p:keyFilter regEx="/[a-z ]/i" />
+                    </p:inputText> 
+
+                    <p:selectOneMenu value="#{contactoBean.tipoIdentificacionSlc}"
+                                     style="width: 100px">
+                        <f:selectItems value="#{contactoBean.listaTipoIdentificacion}" 
+                                       var="tipoId"
+                                       itemLabel="#{tipoId.nombre}"
+                                       itemValue="#{tipoId.codigo}"/>
+                        <p:ajax update="pnlCedula"
+                                listener="#{contactoBean.cambiarValidacion()}"/>
+                    </p:selectOneMenu>
+                    <h:panelGroup id="pnlCedula">
+                        <p:inputText value="#{contactoBean.contacto.persona.cedula}"
+                                     maxlength="#{contactoBean.tipoIdentificacion.tipoValidacion.longitud}"
+                                     size="25"
+                                     rendered="#{contactoBean.tipoIdentificacion.tipoValidacion.nombre eq 'Cedula - RUC'}"
+                                     validator="com.jvc.factunet.validador.ValidarCedulaRucNulo">
+                            <p:keyFilter regEx="/[\d]/" 
+                                         preventPaste="false"/>
+                        </p:inputText> 
+
+                        <p:inputText value="#{contactoBean.contacto.persona.cedula}"
+                                     maxlength="#{contactoBean.tipoIdentificacion.tipoValidacion.longitud}"
+                                     size="25"
+                                     rendered="#{contactoBean.tipoIdentificacion.tipoValidacion.nombre ne 'Cedula - RUC'}">
+                            <p:keyFilter regEx="#{contactoBean.tipoIdentificacion.tipoValidacion.valor}" 
+                                         preventPaste="false"/>
+                        </p:inputText> 
+                    </h:panelGroup>
+
+                    <h:outputLabel value="#{msg.correo}" />
+                    <p:inputText value="#{contactoBean.contacto.persona.email}"
+                                 size="35"
+                                 maxlength="50"
+                                 validatorMessage="#{msg.emailInvalido}">
+                         <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail" />
+                    </p:inputText>
+
+                    <h:outputLabel value="#{msg.direccion}" />
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     value="#{contactoBean.contacto.persona.direccion}"/>
+
+                     <h:outputLabel value="#{msg.descripcion}" />
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false"
+                                     value="#{contactoBean.contacto.descripcion}"/>
+
+                    <h:outputLabel value="#{msg.sexo}" />
+                    <p:selectOneMenu value="#{contactoBean.contacto.persona.sexo.codigo}"
+                                     style="width: 147px" >
+                        <f:selectItems value="#{contactoBean.listaSexo}" 
+                                       var="sexoC"
+                                       itemLabel="#{sexoC.nombre}"
+                                       itemValue="#{sexoC.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.ciudad}" />
+                    <p:selectOneMenu value="#{contactoBean.contacto.persona.ciudad.codigo}"
+                                     style="width: 147px">
+                        <f:selectItems value="#{contactoBean.listaCiudad}" 
+                                       var="ciudadC"
+                                       itemLabel="#{ciudadC.nombre}"
+                                       itemValue="#{ciudadC.codigo}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid> 
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

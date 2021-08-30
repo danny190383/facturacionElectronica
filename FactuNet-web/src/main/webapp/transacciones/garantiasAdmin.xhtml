@@ -1,0 +1,352 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             actionListener="#{garantiasBean.inicializar}"
+                                             update=":frmCabecera:pnlPrincipal, pnlBotones" 
+                                             icon="ui-icon-document"/>  
+
+                            <p:commandButton value="#{msg.guardar}" 
+                                             icon="ui-icon-disk"
+                                             actionListener="#{garantiasBean.guardar}"
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, pnlBotones"/>  
+
+                            <p:commandButton value="#{msg.ingreso}"  
+                                             icon="ui-icon-search"
+                                             actionListener="#{garantiasBean.verBusquedaIngresos}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{garantiasBean.onIngresoCabeceraSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                             
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           actionListener="#{garantiasBean.generarReportePDF()}"
+                                           disabled="#{garantiasBean.garantiaCabecera.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print" />
+                            </h:commandLink>
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{garantiasBean.garantiaCabecera.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{garantiasBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{garantiasBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{garantiasBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.ingreso}"
+                         id="pnlPrincipal">
+                    <h:panelGrid columns="3">
+                        <p:fieldset legend="#{msg.datosGenerales}"
+                                     style="height: 130px">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{msg.fecha} #{msg.ingreso}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:calendar value="#{garantiasBean.garantiaCabecera.fechaIngreso}" 
+                                            navigator="true"
+                                            timeZone="#{parametrosApplication.timeZone}"
+                                            locale="#{parametrosApplication.local}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"
+                                            size="10"
+                                            disabled="#{garantiasBean.garantiaCabecera.estado ne 0 }"/>
+                                
+                                <h:outputLabel value="#{msg.descripcion}: "
+                                               styleClass="texto_etiquetas"/>
+                                <p:inputTextarea rows="2" cols="40" 
+                                             style="height: 50px;width: 250px"
+                                             autoResize="false" 
+                                             maxlength="800"
+                                             value="#{garantiasBean.garantiaCabecera.descripcion}"
+                                             readonly="#{garantiasBean.garantiaCabecera.estado eq 2}"/>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.cliente}"
+                                    style="height: 130px;width: 320px">
+                            
+                            <h:panelGrid columns="2"
+                                         id="pnlCliente">
+                                <h:outputLabel value="#{msg.cedula}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{garantiasBean.cliente.persona.cedula}"
+                                               styleClass="texto_etiquetas"
+                                               rendered="#{garantiasBean.garantiaCabecera.estado eq 1}"/>
+                                <h:panelGrid columns="2"
+                                             rendered="#{garantiasBean.garantiaCabecera.estado ne 1}">
+                                    <p:fragment autoUpdate="true">
+                                        <p:inputText value="#{garantiasBean.cliente.persona.cedula}"
+                                                     maxlength="13"
+                                                     size="20"
+                                                     validator="com.jvc.factunet.validador.ValidarCedulaRucNulo">
+                                           <p:keyFilter regEx="/[\d]/" 
+                                                        preventPaste="false"/>
+                                       </p:inputText> 
+                                        <p:commandButton actionListener="#{garantiasBean.buscarCliente}"
+                                                         icon="ui-icon-search"
+                                                         title="#{msg.buscar}" 
+                                                         update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma"/>
+                                    </p:fragment>
+                                </h:panelGrid>
+                                
+                                <h:outputLabel value="#{msg.cliente}: "
+                                               styleClass="texto_etiquetas"/>
+                                <h:outputLabel value="#{garantiasBean.cliente.persona.nombres} #{garantiasBean.cliente.persona.apellidos}"
+                                               styleClass="texto_etiquetas"/>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2"
+                                         rendered="#{garantiasBean.garantiaCabecera.estado eq 0 }">
+                                <p:fragment autoUpdate="true">
+                                    <p:commandButton value="#{msg.buscar}"  
+                                                    icon="ui-icon-search"
+                                                    actionListener="#{garantiasBean.verBusquedaClientes}">
+                                     <p:ajax event="dialogReturn" 
+                                             listener="#{garantiasBean.onClienteSelect}" 
+                                             update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{garantiasBean.verNuevoCliente}" 
+                                                     icon="ui-icon-comment"
+                                                     update=":frmCabecera:grMensajes">
+                                          <p:ajax event="dialogReturn" 
+                                                  listener="#{garantiasBean.onClienteSelect}"
+                                                  update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaProforma"/>
+                                   </p:commandButton>
+                               </p:fragment>
+                            </h:panelGrid>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <p:dataTable var="items" 
+                                 id="tablaProforma"
+                                 value="#{garantiasBean.garantiaCabecera.garantiaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <f:facet name="header">
+                            <p:fragment autoUpdate="true">
+                                <p:commandButton value="#{msg.registrarEquipo}"  
+                                                 actionListener="#{garantiasBean.verNuevoIngreso(null)}" 
+                                                 icon="ui-icon-comment"
+                                                 update=":frmCabecera:grMensajes">
+                                      <p:ajax event="dialogReturn" 
+                                              listener="#{garantiasBean.onIngresoSelect}"
+                                              update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma"/>
+                               </p:commandButton>
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column style="width:16px">
+                            <p:rowToggler/>
+                        </p:column>
+
+                        <p:rowExpansion>
+                            <p:dataTable var="productoPaca" 
+                                        id="tablaProductosPaca"
+                                        value="#{items.servicioDetalleList}" 
+                                        emptyMessage="#{msg.tablaVacia}"
+                                        resizableColumns="true"
+                                        resizeMode="expand"
+                                        editable="true" 
+                                        editMode="cell">
+
+                               <f:facet name="header">
+                                   <p:fragment autoUpdate="true">
+                                       <p:commandButton value="#{msg.nuevo} #{msg.servicio}"  
+                                                        actionListener="#{garantiasBean.verBusquedaProductosStock(items)}" 
+                                                        icon="ui-icon-comment"
+                                                        update=":frmCabecera:grMensajes">
+                                              <p:ajax event="dialogReturn" 
+                                                      listener="#{garantiasBean.onProductoSelect}"
+                                                      update=":frmCabecera:grMensajes, tablaProductosPaca"/>
+                                       </p:commandButton>
+                                       
+                                       <p:commandButton value="#{msg.factura}"  
+                                                        icon="ui-icon-disk"
+                                                        update=":frmCabecera:grMensajes"
+                                                        actionListener="#{garantiasBean.facturarServicios(items)}"/>
+                                   </p:fragment>
+                               </f:facet>
+
+                               <p:column headerText="#{msg.codigoBarras}" 
+                                         width="105">
+                                   <h:outputLabel value="#{productoPaca.productoServicio.codigoBarras}" />
+                               </p:column>
+
+                               <p:column headerText="#{msg.producto}">
+                                   <h:outputLabel value="#{productoPaca.productoServicio.nombre}" />
+                               </p:column>
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="50">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{productoPaca.cantidad}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{productoPaca.cantidad}" 
+                                                         style="width:80%;text-align: right "
+                                                         maxlength="7">
+                                                <p:keyFilter regEx="/[\d]/" />
+                                                <f:validateDoubleRange minimum="1" /> 
+                                                <p:ajax update=":frmCabecera:tablaProforma, :frmCabecera:grMensajes"
+                                                        listener="#{garantiasBean.onCellEditCantidad(productoPaca)}"/>
+                                            </p:inputText>
+                                        </f:facet>
+                                    </p:cellEditor>
+                               </p:column>
+                                
+                               <p:column headerText="#{msg.pvp}"
+                                          width="50">
+                                    <h:outputLabel value="#{productoPaca.costo}" />
+                               </p:column>
+                                
+                               <p:column headerText="#{msg.total}"
+                                          width="50">
+                                    <h:outputLabel value="#{productoPaca.total}" />
+                               </p:column>
+
+                               <p:column headerText="#{msg.opcion}" 
+                                         width="40"
+                                         style="text-align: center"
+                                         rendered="#{garantiasBean.garantiaCabecera.estado ne 3 }">
+
+                                   <p:commandButton  icon="ui-icon-close" 
+                                                     update=":frmCabecera:grMensajes, tablaProductosPaca" 
+                                                     actionListener="#{garantiasBean.eliminarServicio(items,productoPaca)}"
+                                                     immediate="true"
+                                                     title="#{msg.eliminar}">
+                                       <p:confirm header="#{msg.confirmacion}" 
+                                                  message="#{msg.eliminar}" 
+                                                  icon="ui-icon-alert" />
+                                   </p:commandButton>
+                                   
+                               </p:column>
+                           </p:dataTable>
+                        </p:rowExpansion>
+                        
+                        <p:column headerText="#{msg.tipo}"
+                                  width="80">
+                            <h:outputLabel value="#{msg.servicios}" rendered="#{items.tipo eq 1}"/>
+                            <h:outputLabel value="#{msg.garantia}" rendered="#{items.tipo eq 2}"/>
+                        </p:column>
+                       
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoRecepcion}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.fechaEstimada}"
+                                  width="100">
+                            <h:outputLabel value="#{items.fechaEstimada}" >
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.valor}"
+                                  width="50">
+                            <h:outputLabel value="#{items.costo}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}"
+                                  width="50">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{msg.ingresada}" rendered="#{items.estado eq 1}" />
+                                    <h:outputLabel value="#{msg.enviado}" rendered="#{items.estado eq 2}" />
+                                    <h:outputLabel value="#{msg.reingreso}" rendered="#{items.estado eq 3}" />
+                                    <h:outputLabel value="#{msg.entregado}" rendered="#{items.estado eq 4}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                     <p:selectOneMenu value="#{items.estado}" 
+                                                      style="width:80%">
+                                       <f:selectItem itemLabel="#{msg.ingresada}" itemValue="1" />
+                                       <f:selectItem itemLabel="#{msg.enviado}" itemValue="2" />
+                                       <f:selectItem itemLabel="#{msg.reingreso}" itemValue="3" />
+                                       <f:selectItem itemLabel="#{msg.entregado}" itemValue='4' />
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="60"
+                                  style="text-align: center"
+                                  rendered="#{garantiasBean.garantiaCabecera.estado ne 3 }">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
+                                            actionListener="#{garantiasBean.eliminar(items)}"
+                                            title="#{msg.eliminar}"
+                                            rendered="#{garantiasBean.garantiaCabecera.estado eq 0}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton icon="ui-icon-pencil" 
+                                             title="#{msg.editar}"
+                                             action="#{garantiasBean.verNuevoIngreso(items)}">
+                                 <p:ajax event="dialogReturn" 
+                                         update=":frmCabecera:grMensajes, tablaProforma"/>
+                           </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

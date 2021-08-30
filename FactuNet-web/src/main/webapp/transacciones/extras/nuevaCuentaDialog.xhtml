@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.nuevo} #{msg.cuenta}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevaRetencion">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            <p:fieldset>
+                <h:panelGrid columns="3" 
+                             id="pnlDatosFactura">
+                    <p:fragment autoUpdate="true"
+                                rendered="#{nuevaCuentaBean.tipo ne 1}">
+                         <p:commandButton value="#{msg.factura}"  
+                                          actionListener="#{nuevaCuentaBean.verBusquedaFacturasVenta}"
+                                         icon="ui-icon-search">
+                           <p:ajax event="dialogReturn" 
+                                   listener="#{nuevaCuentaBean.onFacturaSelect}"
+                                   update="pnlDatosFactura, :frmNuevaRetencion:grMensajes, tablaCuentas"/>
+                        </p:commandButton>
+                    </p:fragment>
+                    <p:fragment autoUpdate="true"
+                                rendered="#{nuevaCuentaBean.tipo eq 1}">
+                         <p:commandButton value="#{msg.factura}"  
+                                          actionListener="#{nuevaCuentaBean.verBusquedaFacturasCompra}"
+                                         icon="ui-icon-search">
+                           <p:ajax event="dialogReturn" 
+                                   listener="#{nuevaCuentaBean.onFacturaSelect}"
+                                   update="pnlDatosFactura, :frmNuevaRetencion:grMensajes, tablaCuentas"/>
+                        </p:commandButton>
+                    </p:fragment>
+                    <h:outputLabel value="#{nuevaCuentaBean.factura.numero}"/>
+                    <h:outputLabel value="#{nuevaCuentaBean.factura.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </h:panelGrid>
+                <p:dataTable var="cuenta" 
+                             value="#{nuevaCuentaBean.factura.facturaPagoList}"
+                             id="tablaCuentas"
+                             style="width: 90%"
+                             emptyMessage="#{msg.tablaVacia}">
+                    
+                     <f:facet name="header">
+                        <p:fragment autoUpdate="true">
+                           <p:inputText value="#{nuevaCuentaBean.totalCuenta}"
+                                        rendered="#{nuevaCuentaBean.factura eq null}"
+                                        style="width: 60px;background-color: khaki;text-align: right;font-size: 12px;font-weight: bold;color: red;">
+                               <p:keyFilter regEx="/[\d\.]/"/>
+                               <f:validateDoubleRange minimum="0" maximum="100000000.0" /> 
+                           </p:inputText>
+                           <p:commandButton icon="ui-icon-disk"
+                                            value="#{nuevaCuentaBean.factura eq null ? msg.nuevo : msg.cambiar }"
+                                            actionListener="#{nuevaCuentaBean.verPago}"
+                                            title="#{msg.formaPago}"
+                                            update=":frmNuevaRetencion:grMensajes">
+                              <p:ajax event="dialogReturn" 
+                                      listener="#{nuevaCuentaBean.onPagoSelect}"
+                                      update=":frmNuevaRetencion:grMensajes, tablaCuentas"/>
+                          </p:commandButton>
+                        </p:fragment>
+                    </f:facet>
+
+                    <p:column headerText="#{msg.formaPago}"
+                              style="text-align: left">
+                        <h:outputText value="#{cuenta.formaPago.nombre}" />
+                    </p:column>
+
+                   <p:column headerText="#{msg.valor}"
+                             width="50"
+                             style="text-align: right">
+                       <h:outputText value="#{cuenta.valor}"/>
+                   </p:column>
+               </p:dataTable>
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

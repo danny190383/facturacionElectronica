@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.credito}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarCreditosBean.listaFacturaPagos}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         rowsPerPageTemplate="10,15,20">
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="cuenta"
+                                 value="#{pedido.cuentaFacturaList}"
+                                 emptyMessage="#{msg.tablaVacia}">
+                        
+                        <p:column style="width:16px">
+                            <p:rowToggler />
+                        </p:column>
+                        
+                        <p:rowExpansion>
+                            <p:dataTable var="abono"
+                                         value="#{cuenta.abonoCuentaList}"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         style="width: 50%">
+                                
+                                <p:column headerText="#{msg.pago}">
+                                    <h:outputLabel value="#{abono.formaPago.nombre}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.fecha} #{msg.pago}"
+                                          width="70">
+                                    <h:outputLabel value="#{abono.fecha}" >
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.valor}"
+                                          width="50"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{abono.valor}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:rowExpansion>
+                        
+                        <p:column headerText="#{msg.cuenta}"
+                                  width="110">
+                            <h:outputLabel value="#{cuenta.formaPago.nombre}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.numero}"
+                                  width="60">
+                            <h:outputLabel value="#{cuenta.numero}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.detalle}"
+                                  width="150">
+                            <h:outputLabel value="#{cuenta.detalle}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.fecha} #{msg.vencimiento}"
+                                  width="70">
+                            <h:outputLabel value="#{cuenta.fechaVencimiento}" >
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.valor}"
+                                  width="40"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{cuenta.valor}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.saldo}"
+                                  width="40"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{cuenta.saldo}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+                <p:column headerText="#{msg.numero}"
+                          width="100"
+                          filterBy="#{pedido.factura.numero}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCreditosBean.numero}"
+                                     size="5"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarCreditosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarCreditosBean.generarReportePDF(pedido.factura.codigo)}"
+                                   target="_blank" 
+                                   rendered="#{pedido.factura.numero ne -1}">
+                        <h:outputLabel value="#{pedido.factura.numero}" />
+                    </h:commandLink>
+                    <p:spacer width="20" height="20" />
+                    <h:commandLink actionListener="#{buscarCreditosBean.generarReporteCuentasPDF(pedido)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{msg.cuenta}"/>
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.factura.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarCreditosBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarCreditosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarCreditosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.factura.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.ruc}"
+                          width="110">
+                    <h:outputLabel value="#{pedido.factura.cliente.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.ruc}"
+                          filterBy="#{pedido.factura.cliente.persona.cedula}"
+                          width="110"
+                          rendered="false">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCreditosBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCreditosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.factura.cliente.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}">
+                    <h:outputLabel value="#{pedido.factura.cliente.persona.nombres} #{pedido.factura.cliente.persona.apellidos}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.proveedor}"
+                          filterBy="#{pedido.factura.cliente.persona.nombres}"
+                          rendered="false">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCreditosBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCreditosBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.factura.cliente.persona.nombres} #{pedido.factura.cliente.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.responsable}"
+                          width="100">
+                    <h:outputLabel value="#{pedido.factura.empleado.persona.nombres} #{pedido.factura.empleado.persona.apellidos}" />
+                </p:column>
+
+                <p:column headerText="#{msg.descripcion}"
+                          width="150">
+                    <h:outputLabel value="#{pedido.factura.descripcion}" />
+                </p:column>
+
+                <p:column headerText="#{msg.factura}"
+                          width="40"
+                          style="text-align: right">
+                    <h:outputLabel value="#{pedido.factura.total}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.credito}"
+                          width="40"
+                          style="text-align: right">
+                    <h:outputLabel value="#{pedido.valor}"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

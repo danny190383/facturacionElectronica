@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.personas}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaPersonas">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="clie" 
+                         id="tablaPersonas"
+                         value="#{buscarPersonasBean.lazyModel}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         lazy="true" 
+                         rowsPerPageTemplate="10,15,20">
+                
+                <p:column headerText="#{msg.cedula}" sortBy="#{clie.cedula}" filterBy="#{clie.cedula}">
+                    <h:outputLabel value="#{clie.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.nombres}" sortBy="#{clie.nombres}" filterBy="#{clie.nombres}">
+                    <h:outputLabel value="#{clie.nombres}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.apellidos}" sortBy="#{clie.apellidos}" filterBy="#{clie.apellidos}">
+                    <h:outputLabel value="#{clie.apellidos}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.opcion}"
+                          style="text-align: center"
+                          width="60">
+                    
+                    <p:commandButton  actionListener="#{buscarPersonasBean.seleccionar(clie)}"
+                                      title="#{msg.seleccionar}" 
+                                      icon="ui-icon-check"/>
+                </p:column>
+                
+            </p:dataTable>
+             
+        </h:form>
+    </h:body>
+    
+</html>

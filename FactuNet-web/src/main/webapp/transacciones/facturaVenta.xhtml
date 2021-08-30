@@ -1,0 +1,1220 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             actionListener="#{facturaVentaBean.inicializar()}"
+                                             update=":frmCabecera:pnlPrincipal, pnlBotones" 
+                                             icon="ui-icon-document"
+                                             id="btnNuevo"/>  
+                            
+                            <p:commandButton value="#{msg.facturar}" 
+                                             icon="ui-icon-disk"
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 1}"
+                                             actionListener="#{facturaVentaBean.verPago(1)}" 
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones, :frmCabecera:dlgRestriccionID" >
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.facturar}" 
+                                           icon="ui-icon-alert" />
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{facturaVentaBean.onPagoSelect}"
+                                        update=":frmCabecera:grMensajes,:frmCabecera:pnlPrincipal, pnlBotones"/>
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.reservar}" 
+                                             icon="ui-icon-disk"
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 1}"
+                                             actionListener="#{facturaVentaBean.verPago(2)}" 
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, :frmCabecera:pnlBotones" >
+                               <p:confirm header="#{msg.confirmacion}" 
+                                          message="#{msg.reservar}" 
+                                          icon="ui-icon-alert"/> 
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{facturaVentaBean.onPagoSelect}" 
+                                       update=":frmCabecera:grMensajes,:frmCabecera:pnlPrincipal, pnlBotones"/>
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.actualizar}" 
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 2 and
+                                                         facturaVentaBean.facturaVenta.tipoDocumento ne 22}"
+                                             actionListener="#{facturaVentaBean.verPagoRetencionVentana(facturaVentaBean.facturaVenta)}"
+                                             update=":frmCabecera:grMensajes" 
+                                             icon="ui-icon-disk">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.actualizar}" 
+                                           icon="ui-icon-alert" />
+                                <p:ajax event="dialogReturn" 
+                                        update=":frmCabecera:pnlPrincipal, pnlBotones, :frmCabecera:grMensajes" 
+                                        listener="#{facturaVentaBean.onPagoRetencionSelect}" />
+                            </p:commandButton> 
+                            
+                            <p:commandButton value="#{msg.facturar} Reserva" 
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 2 and
+                                                         facturaVentaBean.facturaVenta.tipoDocumento eq 22}"
+                                             actionListener="#{facturaVentaBean.facturarReserva}"
+                                             update=":frmCabecera:grMensajes" 
+                                             icon="ui-icon-disk">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="Desea facturar la reserva?" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.proforma}"  
+                                             icon="ui-icon-search"
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 1}"
+                                             actionListener="#{facturaVentaBean.verBusquedaProformas}">
+                              <p:ajax event="dialogReturn" 
+                                      listener="#{facturaVentaBean.onProformaSelect}" 
+                                      update=":frmCabecera:pnlPrincipal, pnlBotones, :frmCabecera:grMensajes" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.documento} de Venta"  
+                                             icon="ui-icon-search"
+                                             actionListener="#{facturaVentaBean.verBusquedaFacturas}" >
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{facturaVentaBean.onFacturaSelect}" 
+                                       update=":frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.pedidoVenta}"  
+                                             icon="ui-icon-search"
+                                             actionListener="#{facturaVentaBean.verBusquedaPedidosVenta}" 
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                               <p:ajax event="dialogReturn" 
+                                       listener="#{facturaVentaBean.onPedidoVentaSelect}" 
+                                       update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal, pnlBotones" />
+                            </p:commandButton>
+
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           id="btnPrint"
+                                           title="#{msg.imprimir} #{msg.facturaVenta} #{msg.pdf}"
+                                           actionListener="#{facturaVentaBean.generarReportePDF}">
+                                <p:commandButton type="button" icon="ui-icon-print" 
+                                                 value="PDF"
+                                                 disabled="#{facturaVentaBean.facturaVenta.codigo eq null}"
+                                                 title="#{msg.imprimir} #{msg.facturaVenta}"/>
+                            </h:commandLink>
+                                
+                            <p:commandButton icon="ui-icon-print"
+                                             value="#{msg.tiket}"
+                                             title="#{msg.imprimir} #{msg.facturaVenta} #{msg.autoprint}"
+                                             actionListener="#{facturaVentaBean.imprimirConsulta}"
+                                             disabled="#{facturaVentaBean.facturaVenta.codigo eq null}"/>
+                           
+                            <p:commandButton value="#{msg.anular}" 
+                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 2}"
+                                             actionListener="#{facturaVentaBean.anular}"
+                                             update=":frmCabecera:pnlPrincipal, pnlBotones, :frmCabecera:grMensajes" 
+                                             icon="ui-icon-trash">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.anular}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton> 
+                        </f:facet>
+                        
+                        <f:facet name="right">
+                            <p:menuButton value="#{msg.imprimir}" 
+                                          disabled="#{facturaVentaBean.facturaVenta.codigo eq null}">
+                                <p:menuitem title="#{msg.imprimir}"
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{facturaVentaBean.generarReportePDF()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank"
+                                                   actionListener="#{facturaVentaBean.generarReporteXlS()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/excel.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                                <p:menuitem title="#{msg.imprimir}" 
+                                            style="width: 0px;width: 0px">
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{facturaVentaBean.generarReporteHTML()}">
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage url="../../resources/imagenes/html.png"
+                                                            width="27"/>
+                                            <h:outputLabel value="#{msg.activo}"/>
+                                        </h:panelGrid>
+                                    </h:commandLink>
+                                </p:menuitem>
+                            </p:menuButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+                <div class="caja-notificacion">
+                    <h:panelGrid columns="2"
+                                 id="pnlProductoVer">
+                        <p:panel style="width: 800px;height: 30px">
+                            <h:outputText value="#{facturaVentaBean.productoVer.nombre}"
+                                          styleClass="texto_notificacion" />
+                        </p:panel>
+                        <p:panel style="width: 120px;text-align: right;height: 30px">
+                            <h:outputText value="#{facturaVentaBean.productoVer.pvp}" 
+                                          styleClass="texto_notificacion" />
+                        </p:panel>
+                    </h:panelGrid>
+                </div>
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.documento} de Venta"
+                         id="pnlPrincipal">
+                    <p:tabView id="tabPrincipalDatos">
+                        <p:tab title="#{msg.datosGenerales}">
+                            <h:panelGrid columns="3">
+                                <p:fieldset legend="#{msg.datosGenerales}"
+                                             style="height: 200px"
+                                             id="flsDatosGenerales">
+                                    <h:panelGrid columns="2">
+                                        
+                                        <h:outputLabel value="#{msg.fecha} :" 
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.facturaVenta.fecha}">
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                                        </h:outputLabel>
+
+                                        <h:outputLabel value="#{msg.numero} :" 
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.facturaVenta.observacion}-#{facturaVentaBean.facturaVenta.numero}" 
+                                                       styleClass="texto_etiquetas"
+                                                       style="color: #e9322d;font-size: 13px"/>
+                                        
+                                        <h:outputLabel value="#{msg.descripcion}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <p:inputTextarea rows="2" cols="40" 
+                                                     style="height: 50px;width: 200px"
+                                                     autoResize="false" 
+                                                     maxlength="800"
+                                                     value="#{facturaVentaBean.facturaVenta.descripcion}"
+                                                     readonly="#{facturaVentaBean.facturaVenta.estado ne 1}"/>
+                                        
+                                        <h:outputLabel value="#{msg.total}: "
+                                                       style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                                        <h:outputLabel value="#{facturaVentaBean.facturaVenta.totalPagar}"
+                                                       id="txtTotalFactura"
+                                                       style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                <p:fieldset legend="#{msg.cliente}"
+                                            style="height: 200px;width:330px">
+
+                                    <h:panelGrid columns="2"
+                                                 id="pnlCliente">
+                                        <h:outputLabel value="#{msg.cedula}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.cedula}"
+                                                       styleClass="texto_etiquetas"
+                                                       rendered="#{facturaVentaBean.facturaVenta.estado ne 1}"/>
+                                        <h:panelGrid columns="2"
+                                                     rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                            <p:fragment autoUpdate="true">
+                                                <h:panelGrid columns="3">
+                                                <p:inputText value="#{facturaVentaBean.cliente.persona.cedula}"
+                                                             maxlength="13"
+                                                             placeholder="#{msg.cedula} #{msg.ruc} #{msg.pasaporte}"
+                                                             size="20"/>
+                                                <p:commandButton actionListener="#{facturaVentaBean.buscarCliente}"
+                                                                 icon="ui-icon-search"
+                                                                 title="#{msg.buscar}" 
+                                                                 update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                
+                                                <p:selectBooleanCheckbox value="#{facturaVentaBean.consumidor}"
+                                                                         title="#{msg.consumidorFinal}">
+                                                   <p:ajax update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                           listener="#{facturaVentaBean.consumidorFinal}"/>
+                                                </p:selectBooleanCheckbox>
+                                                </h:panelGrid>
+                                            </p:fragment>
+                                        </h:panelGrid>
+
+                                        <h:outputLabel value="#{msg.cliente}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.nombres} #{facturaVentaBean.cliente.persona.apellidos}"
+                                                       styleClass="texto_etiquetas"/>
+                                        
+                                        <h:outputLabel value="#{msg.telefono}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.telefono}"
+                                                       styleClass="texto_etiquetas"/>
+                                        
+                                        <h:outputLabel value="#{msg.direccion}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.direccion}"
+                                                       styleClass="texto_etiquetas"/>
+
+                                        <h:outputLabel value="#{msg.descuento}: "
+                                                       styleClass="texto_etiquetas"
+                                                       rendered="#{facturaVentaBean.facturaVenta.estado eq 1}"/>
+                                        <h:panelGrid columns="3"
+                                                     rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                            <p:inputNumber value="#{facturaVentaBean.descuento}" 
+                                                            decimalPlaces="2" symbol="%" 
+                                                            symbolPosition="s" emptyValue="zero"
+                                                            minValue="0" maxValue="100"
+                                                            required="true"
+                                                            inputStyle="width: 35px;background-color: khaki;text-align: right">
+                                                <p:ajax listener="#{facturaVentaBean.generalDescuento}"
+                                                       update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                            </p:inputNumber> 
+                                            <h:outputLabel value="#{msg.comision}: "
+                                                           styleClass="texto_etiquetas"/>
+                                            <h:panelGrid columns="2"
+                                                         id="pnlValorComision">
+                                                 <p:inputNumber value="#{facturaVentaBean.comision}" 
+                                                                decimalPlaces="2" symbol="%" 
+                                                                symbolPosition="s" emptyValue="zero"
+                                                                minValue="0" maxValue="100"
+                                                                required="true"
+                                                                inputStyle="width: 35px;background-color: khaki;text-align: right">
+                                                    <p:ajax listener="#{facturaVentaBean.generalRecargo}"
+                                                           update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                </p:inputNumber> 
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2"
+                                                 rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                        <p:fragment autoUpdate="true">
+                                            <p:commandButton value="#{msg.buscar}"  
+                                                            icon="ui-icon-search"
+                                                            actionListener="#{facturaVentaBean.verBusquedaClientes}">
+                                             <p:ajax event="dialogReturn" 
+                                                     listener="#{facturaVentaBean.onClienteSelect}" 
+                                                     update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura" />
+                                            </p:commandButton>
+
+                                            <p:commandButton value="#{msg.nuevo}"  
+                                                             actionListener="#{facturaVentaBean.verNuevoCliente(false)}" 
+                                                             icon="ui-icon-comment"
+                                                             update=":frmCabecera:grMensajes">
+                                                  <p:ajax event="dialogReturn" 
+                                                          listener="#{facturaVentaBean.onClienteSelect}"
+                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                           </p:commandButton>
+                                            
+                                            <p:commandButton value="#{msg.editar}"  
+                                                             actionListener="#{facturaVentaBean.verNuevoCliente(true)}" 
+                                                             icon="ui-icon-comment"
+                                                             update=":frmCabecera:grMensajes">
+                                                  <p:ajax event="dialogReturn" 
+                                                          listener="#{facturaVentaBean.onClienteSelect}"
+                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                           </p:commandButton>
+                                       </p:fragment>
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                <p:fieldset legend="#{msg.formaPago}"
+                                            style="height: 200px;width: 400px"
+                                            rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                    <h:panelGrid columns="2"
+                                                 id="pnlFormaPago">
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="#{msg.efectivo}:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.efectivo}">
+                                              <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                      listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
+                                            
+                                            
+                                            <h:outputLabel value="#{msg.tarjetaDebito}:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.debito}">
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
+
+                                            <h:outputLabel value="#{msg.tarjetaCredito}:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.tarjeta}">
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
+
+                                            <h:outputLabel value="#{msg.credito}:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.credito}">
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
+                                            
+                                            <h:outputLabel value="Otra Forma de Pago:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.otraFP}">
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                                <h:outputLabel value="#{msg.tipo} :" 
+                                                               rendered="#{facturaVentaBean.tarjeta}"/>
+                                                <p:selectOneMenu value="#{facturaVentaBean.tarjetaEmpresaSlc}"
+                                                                 filter="true" filterMatchMode="startsWith"
+                                                                 style="width: 90%"
+                                                                 rendered="#{facturaVentaBean.tarjeta}">
+                                                    <p:ajax update="comisionTarjeta, :frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                            listener="#{facturaVentaBean.cargarComisiones}"/>
+                                                    <f:selectItems value="#{facturaVentaBean.listaTarjetaEmpresa}" 
+                                                                   var="tarjetaEmpresa"
+                                                                   itemLabel="#{tarjetaEmpresa.tipoTarjeta.nombre} #{msg.banco} #{tarjetaEmpresa.banco.nombre}"
+                                                                   itemValue="#{tarjetaEmpresa.codigo}"/>
+                                                </p:selectOneMenu>
+
+                                                <h:outputLabel value="#{msg.pago}:" 
+                                                               rendered="#{facturaVentaBean.tarjeta}"/>
+                                                <p:selectOneMenu value="#{facturaVentaBean.comisionTarjetaSlc}"
+                                                                 filter="true" filterMatchMode="startsWith"
+                                                                 style="width: 90%"
+                                                                 id="comisionTarjeta"
+                                                                 rendered="#{facturaVentaBean.tarjeta}">
+                                                    <p:ajax update=":frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                            listener="#{facturaVentaBean.cambiarComision}"/>
+                                                    <f:selectItems value="#{facturaVentaBean.listaComisionTarjeta}" 
+                                                                   var="comision"
+                                                                   itemLabel="#{comision.nombre} #{comision.valor}"
+                                                                   itemValue="#{comision.codigo}"/>
+                                                </p:selectOneMenu>
+                                                
+                                                <h:outputLabel value="#{msg.numeroCuentas}:" 
+                                                               rendered="#{facturaVentaBean.credito}"/>
+                                                <p:inputText value="#{facturaVentaBean.numeroCuentas}"
+                                                             style="background-color: khaki;text-align: right"
+                                                             required="true"
+                                                             size="5"
+                                                             maxlength="2"
+                                                             rendered="#{facturaVentaBean.credito}">
+                                                    <p:keyFilter regEx="/[\d\.]/"/>
+                                                    <f:validateDoubleRange minimum="1" /> 
+                                                </p:inputText>
+                                                <h:outputLabel value="#{msg.dias} #{msg.credito} :" 
+                                                               rendered="#{facturaVentaBean.credito}"/>
+                                                <p:inputText value="#{facturaVentaBean.diasCredito}"       
+                                                             rendered="#{facturaVentaBean.credito}"
+                                                             style="background-color: khaki;text-align: right"
+                                                             required="true"
+                                                             size="5"
+                                                             maxlength="4">
+                                                     <p:keyFilter regEx="/[\d\.]/"/>
+                                                     <f:validateDoubleRange minimum="0" /> 
+                                                </p:inputText> 
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                </p:fieldset>
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="#{msg.retencion}"
+                               rendered="#{facturaVentaBean.facturaVenta.estado ne 1 and
+                                           facturaVentaBean.facturaVenta.tipoDocumento ne 22}">
+                            <p:dataTable var="documento" 
+                                         id="tablaDocRetencion"
+                                         value="#{facturaVentaBean.facturaVenta.documentoRetencion}" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         expandedRow="#{true}"
+                                         editable="true" 
+                                         editMode="cell">
+                                <f:facet name="header" >
+                                    <p:commandButton actionListener="#{facturaVentaBean.crearDocumentoRetencion(facturaVentaBean.facturaVenta)}"
+                                                     icon="ui-icon-check" 
+                                                     value="#{msg.crear} #{msg.retencion}"
+                                                     update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaDocRetencion"/>
+                                </f:facet>
+                                <p:column headerText="#{msg.numero}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{documento.numero}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{documento.numero}" 
+                                                         style="width:80%;text-align: right "
+                                                         maxlength="9">
+                                                <p:keyFilter regEx="/[\d]/" />
+                                            </p:inputText>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{msg.fecha}"
+                                         width="65">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{documento.fecha}"
+                                                           style="color: red;font-size: 13px;font-style: normal;font-weight: bold">
+                                                 <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                                     pattern="#{parametrosApplication.formatoFecha}"/>
+                                            </h:outputLabel>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                             <p:calendar value="#{documento.fecha}" 
+                                                         navigator="true"
+                                                         timeZone="#{parametrosApplication.timeZone}"
+                                                         locale="#{parametrosApplication.local}" 
+                                                         pattern="#{parametrosApplication.formatoFecha}"
+                                                         size="10"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{msg.observacion}">
+                                     <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputLabel value="#{documento.observacion}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText size="100" value="#{documento.observacion}" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{msg.estado}"
+                                          width="100"
+                                          style="text-align: right">
+                                    <p:cellEditor>
+                                       <f:facet name="output">
+                                           <h:outputText value="#{msg.sinDocumento}" rendered="#{documento.estadoDocumento eq 1}"/>
+                                           <h:outputText value="#{msg.conDocumento}" rendered="#{documento.estadoDocumento eq 2}"/>
+                                       </f:facet>
+                                       <f:facet name="input">
+                                           <p:selectOneMenu value="#{documento.estadoDocumento}" 
+                                                            style="width:90px">
+                                                <f:selectItem itemLabel="#{msg.sinDocumento}" itemValue="1" />
+                                                <f:selectItem itemLabel="#{msg.conDocumento}" itemValue="2" />
+                                            </p:selectOneMenu>
+                                       </f:facet>
+                                   </p:cellEditor>
+                                </p:column>
+                                <p:column headerText="#{msg.total}"
+                                          width="65"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{documento.totalRetencion}"/>
+                                </p:column>
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="80"
+                                          style="text-align: center">
+                                    <h:commandLink actionListener="#{facturaVentaBean.generarReporteRetencionPDF(documento.codigo)}"
+                                                    target="_blank" >
+                                        <p:commandButton type="button" icon="ui-icon-print" 
+                                                         title="#{msg.imprimir} #{msg.retencion}"/>
+                                    </h:commandLink>
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                        update=":frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaFacturaVenta" 
+                                                        actionListener="#{facturaVentaBean.eliminarDocumento(facturaVentaBean.facturaVenta ,documento)}"
+                                                        title="#{msg.eliminar}">
+                                            <p:confirm header="#{msg.confirmacion}" 
+                                                       message="#{msg.eliminar}" 
+                                                       icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+                                <p:rowExpansion>
+                                    <p:dataTable var="retencion" 
+                                                 value="#{documento.retencionList}"
+                                                 style="width: 90%"
+                                                 emptyMessage="#{msg.tablaVacia}">
+                                        
+                                        <f:facet name="header" >
+                                            <h:panelGrid columns="2">
+                                                    <p:selectOneMenu value="#{facturaVentaBean.retencionSlc}"
+                                                                    style="width: 300px">
+                                                        <f:selectItems value="#{facturaVentaBean.listaTipoRetencion}" 
+                                                                        var="retencion"
+                                                                        itemLabel="#{retencion.codigoImpuesto} #{retencion.nombre}"
+                                                                        itemValue="#{retencion.codigo}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:commandButton actionListener="#{facturaVentaBean.agregarRetencion(documento)}"
+                                                                    icon="ui-icon-check" 
+                                                                    value="#{msg.agregar}"
+                                                                    update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaFacturaVenta"/>
+
+                                            </h:panelGrid>
+                                        </f:facet>
+                                                    
+                                       <p:column headerText="#{msg.retencion}"
+                                                 style="text-align: left">
+                                           <h:outputText value="#{retencion.tipoRetencion.codigoImpuesto} #{retencion.tipoRetencion.nombre}" />
+                                       </p:column>
+
+                                       <p:column headerText="%"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.tipoRetencion.valor}"/>
+                                       </p:column>
+                                        
+                                        <p:column headerText="#{msg.base}"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.baseImponible}"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.valor}"
+                                                 width="50"
+                                                 style="text-align: right">
+                                           <h:outputText value="#{retencion.valor}"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.opcion}" 
+                                               width="50"
+                                               style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:tabPrincipalDatos:tablaDocRetencion, :frmCabecera:tablaFacturaVenta" 
+                                                              actionListener="#{facturaVentaBean.eliminarRetencion(documento,retencion)}"
+                                                              title="#{msg.eliminar}">
+                                                  <p:confirm header="#{msg.confirmacion}" 
+                                                             message="#{msg.eliminar}" 
+                                                             icon="ui-icon-alert" />
+                                            </p:commandButton>
+                                        </p:column>
+                                   </p:dataTable>
+                                </p:rowExpansion>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.guia} #{msg.remision}"
+                               rendered="#{facturaVentaBean.facturaVenta.tipoDocumento ne 22}">
+                            <p:dataTable var="guia"
+                                         value="#{facturaVentaBean.facturaVenta.guiaRemisionList}"
+                                         id="tablaGuia"
+                                         emptyMessage="#{msg.tablaVacia}">
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton value="#{msg.nuevo} #{msg.guia}"  
+                                                         actionListener="#{facturaVentaBean.verGuia(null)}" 
+                                                         update=":frmCabecera:grMensajes"
+                                                         icon="ui-icon-comment">
+                                           <p:ajax event="dialogReturn" 
+                                                   listener="#{facturaVentaBean.onGuiaSelect}"
+                                                   update=":frmCabecera:grMensajes, tablaGuia"/>
+                                        </p:commandButton>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column headerText="#{msg.secuencia}"
+                                          width="50"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.secuencia}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.motivo}"
+                                          width="100">
+                                    <h:outputLabel value="#{guia.motivo.nombre}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.salida}"
+                                          width="70">
+                                    <h:outputLabel value="#{guia.fechaEnvio}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.recepcion}"
+                                          width="70">
+                                    <h:outputLabel value="#{guia.fechaRecepcion}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="#{msg.transportistas}">
+                                    <h:outputLabel value="#{guia.transportista.persona.nombres}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.valor}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{guia.valor}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="100"
+                                          style="text-align: center">
+                                    
+                                    <h:commandLink target="_blank" 
+                                                   actionListener="#{facturaVentaBean.generarReportePDF(guia.codigo)}"
+                                                   rendered="#{facturaVentaBean.facturaVenta.codigo ne null}">
+                                         <p:commandButton type="button" icon="ui-icon-print"/>
+                                    </h:commandLink>
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, tablaGuia" 
+                                                      actionListener="#{facturaVentaBean.eliminarGuia(guia)}"
+                                                      title="#{msg.eliminar}"
+                                                      rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, tablaGuia" 
+                                                      actionListener="#{facturaVentaBean.actualizarGuia(guia)}"
+                                                      title="#{msg.anular}"
+                                                      rendered="#{guia.codigo ne null}"
+                                                      disabled="#{guia.estado eq 2}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.anular}" 
+                                                     icon="ui-icon-trash" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{facturaVentaBean.verGuia(guia)}"
+                                                     disabled="#{guia.estado eq 2}">
+                                          <p:ajax event="dialogReturn" 
+                                                  update=":frmCabecera:grMensajes, tablaGuia"
+                                                  listener="#{facturaVentaBean.calcularTransporte}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column footerText="#{msg.total} #{msg.transporte}" 
+                                                  colspan="5"
+                                                  style="text-align:right"/>
+                                        <p:column footerText="#{facturaVentaBean.totalTransporte}" 
+                                                  style="text-align:right"/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    <p:dataTable var="items" 
+                                 id="tablaFacturaVenta"
+                                 value="#{facturaVentaBean.facturaVenta.facturaDetalleList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 resizableColumns="true"
+                                 resizeMode="expand">
+
+                        <f:facet name="header">
+                            <p:fragment autoUpdate="true"
+                                        rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                                
+                                <p:focus id="focus"
+                                         for="txtCodigoBarras"/>
+                                <p:inputText value="#{facturaVentaBean.codigoBarras}"
+                                            id="txtCodigoBarras"
+                                            size="35"
+                                            autocomplete="off"
+                                            placeholder="#{msg.codigoBarras} / #{msg.series}">
+                                   <p:ajax event="change" 
+                                           listener="#{facturaVentaBean.buscarProductoBarras}"
+                                           update="tablaFacturaVenta,:frmCabecera:grMensajes,@this,focus, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                </p:inputText>
+
+                                <p:commandButton value="#{msg.buscar}"  
+                                                icon="ui-icon-search"
+                                                actionListener="#{facturaVentaBean.verBusquedaProductosStock(null)}">
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{facturaVentaBean.onProductoSelect}" 
+                                            update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura" />
+                                </p:commandButton>
+                            
+                                <p:commandButton id="toggler" type="button" 
+                                                 style="float:right" 
+                                                 icon="ui-icon-calculator" />
+                                <p:columnToggler datasource="tablaFacturaVenta" 
+                                                 trigger="toggler" />
+                            </p:fragment>
+                        </f:facet>
+                        
+                        <p:column style="width:16px">
+                            <p:rowToggler rendered="#{items.isPaquete}"/>
+                        </p:column>
+                        
+                        <p:rowExpansion>
+                            <p:dataTable var="paqueteP"
+                                         value="#{items.productoServicio.paqueteVentaList}"
+                                         rendered="#{items.isPaquete and facturaVentaBean.facturaVenta.estado eq 1}"
+                                         id="tablaProductosPaquete"
+                                         editable="true" 
+                                         editMode="cell">
+                                
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true" rendered="false">
+                                        <p:commandButton value="#{msg.buscar}"  
+                                                         icon="ui-icon-search"
+                                                         actionListener="#{facturaVentaBean.verBusquedaProductosStock(items.productoServicio)}">
+                                         <p:ajax event="dialogReturn" 
+                                                 listener="#{facturaVentaBean.onProductoPaqueteSelect}" 
+                                                 update="tablaProductosPaquete, :frmCabecera:grMensajes" />
+                                        </p:commandButton>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column headerText="#{msg.stock}"
+                                          width="40"
+                                          style="text-align:center"
+                                          visible="false">
+                                    <h:outputLabel value="#{paqueteP.stock}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.bodega}"
+                                          width="40"
+                                          style="text-align:center">
+                                    <h:outputLabel value="#{paqueteP.bodega.siglas}"
+                                                   title="#{paqueteP.bodega.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.producto.nombre}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40"
+                                          style="text-align:right">
+                                    <h:outputLabel value="#{paqueteP.cantidad}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40"
+                                          style="text-align:right" 
+                                          rendered="false">
+                                      <p:cellEditor>
+                                          <f:facet name="output">
+                                              <h:outputLabel value="#{paqueteP.cantidad}"/>
+                                          </f:facet>
+                                          <f:facet name="input">
+                                              <p:inputText value="#{paqueteP.cantidad}" 
+                                                           style="width:80%;text-align: right "
+                                                           maxlength="9">
+                                                  <p:keyFilter regEx="/[\d\.]/" />
+                                                  <f:validateDoubleRange minimum="0" /> 
+                                              </p:inputText>
+                                          </f:facet>
+                                      </p:cellEditor>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.total}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{paqueteP.total}" />
+                                </p:column> 
+                                
+                                <p:column headerText="#{msg.bodega}"
+                                          width="120"
+                                          style="text-align: center">
+                                    <p:selectOneMenu value="#{paqueteP.bodegaSlc}"
+                                                     rendered="#{paqueteP.isBodega}"
+                                                     style="width: 80%"
+                                                     disabled="true">
+                                        
+                                        <p:ajax listener="#{facturaVentaBean.cambiarBodega(paqueteP)}"
+                                                update="tablaProductosPaquete"/>
+                                        
+                                        <f:selectItems value="#{paqueteP.producto.productoStockList}" 
+                                                       var="stock"
+                                                       itemLabel="#{stock.bodega.siglas} : #{stock.stock}"
+                                                       itemValue="#{stock.bodega.codigo}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="60"
+                                          style="text-align: center">
+
+                                      <p:commandButton  icon="ui-icon-close" 
+                                                      update="tablaProductosPaquete" 
+                                                      rendered="false"
+                                                      actionListener="#{facturaVentaBean.eliminarProductoPaquete(items.productoServicio,paqueteP)}"
+                                                      title="#{msg.eliminar}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                      </p:commandButton>
+
+                                      <p:commandButton  icon="ui-icon-folder-open"
+                                                        title="#{msg.kardex}"
+                                                        actionListener="#{facturaVentaBean.verKardex(paqueteP.producto)}"/>
+
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <p:dataTable var="paqueteP"
+                                         value="#{items.detallePaqueteList}"
+                                         rows="10"
+                                         paginator="true"
+                                         rendered="#{facturaVentaBean.facturaVenta.estado ne 1}"
+                                         id="tablaDetalleProductosPaquete">
+
+                                <p:column headerText="#{msg.bodega}"
+                                          width="40"
+                                          style="text-align:center">
+                                    <h:outputLabel value="#{paqueteP.bodega.siglas}"
+                                                   title="#{paqueteP.bodega.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.codigoBarras}"
+                                          width="130"
+                                          visible="false">
+                                    <h:outputLabel value="#{paqueteP.productoServicio.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.productoServicio.nombre}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{paqueteP.cantidad}" />
+                                </p:column> 
+                                
+                                <p:column headerText="#{msg.total}"
+                                          width="40"
+                                          style="text-align: right"
+                                          visible="false">
+                                    <h:outputLabel value="#{paqueteP.subtotalConDescuento}" />
+                                </p:column> 
+                                
+                                
+                            </p:dataTable>
+                        </p:rowExpansion>
+                        
+                        <p:column headerText="#{msg.iva}"
+                                  width="60"
+                                  style="text-align:center">
+                            <p:selectOneMenu value="#{items.impuestoTarifa}"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             style="width: 40px"
+                                             disabled="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                               <f:selectItems value="#{facturaVentaBean.listaTarifas}" 
+                                              var="impT"
+                                              itemLabel="#{impT.descripcion}"
+                                              itemValue="#{impT}"/>
+                               <p:ajax update="tablaFacturaVenta" 
+                                       listener="#{facturaVentaBean.calcularTotales}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.stock}"
+                                  width="30"
+                                  style="text-align:center">
+                            <h:outputLabel value="#{items.stock}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.bodega}"
+                                  width="30"
+                                  visible="false"
+                                  style="text-align:center"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 3}">
+                            <h:outputLabel value="#{items.bodega.siglas}"
+                                           title="#{items.bodega.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.productos}">
+                            <h:outputLabel value="#{items.productoServicio.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="Cant."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.cantidad}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="Cant."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.cantidad}"
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.cantidad}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditCantidad(items)}"/>
+                                    </p:inputNumber>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Rec."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.descuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="% Rec."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.comision} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.comision}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditComision(items, true)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. Rec."
+                                  width="40"
+                                  visible="false"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.valorComision}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Rec."
+                                  width="40"
+                                  style="text-align:right"
+                                  visible="false"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorComision}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorComision}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditValorComision(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.precioVentaUnitario}"
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.precioVentaUnitario}" 
+                                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditValorUnitario(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="40"
+                                  visible="false"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.descuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="% Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.descuento} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.descuento}" 
+                                                    decimalPlaces="2" symbol="%" 
+                                                    symbolPosition="s" emptyValue="zero"
+                                                    minValue="0"
+                                                    inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditDescuento(items, true)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <h:outputLabel value="#{items.valorDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. Des."
+                                  width="40"
+                                  style="text-align:right"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.valorDescuento}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.valorDescuento}" 
+                                                   decimalPlaces="2"
+                                                   minValue="0"
+                                                   inputStyle="width:80%;text-align: right ">
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                listener="#{facturaVentaBean.onCellEditValorDescuento(items)}"/>
+                                    </p:inputNumber> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario} Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                        </p:column>
+
+                        <p:column headerText="V. #{msg.total} Des."
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.total}"
+                                  width="40"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.subtotalSinDescuento}"
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.opcion}" 
+                                  width="80"
+                                  style="text-align: center"
+                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
+
+                            <p:commandButton  icon="ui-icon-close" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura" 
+                                            actionListener="#{facturaVentaBean.eliminar(items)}"
+                                            title="#{msg.eliminar}">
+                                <p:confirm header="#{msg.confirmacion}" 
+                                           message="#{msg.eliminar}" 
+                                           icon="ui-icon-alert" />
+                            </p:commandButton>
+                            
+                            <p:commandButton  icon="ui-icon-folder-open"
+                                              title="#{msg.kardex}"
+                                              actionListener="#{facturaVentaBean.verKardex(items.productoServicio)}"/>
+                            
+                            <p:commandButton  icon="ui-icon-comment" 
+                                              title="#{msg.series}"
+                                              actionListener="#{facturaVentaBean.verRegistroSeries(items)}" 
+                                              update=":frmCabecera:grMensajes">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{facturaVentaBean.onRegistroSeriesSelect}"
+                                        update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                            </p:commandButton> 
+                        </p:column>
+                        
+                        <p:columnGroup type="footer">
+                            <p:row>
+                                <p:column rowspan="11"
+                                          colspan="6">
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.subtotal}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.subtotal}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.descuento}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.descuento}" style="text-align:right"/>
+                            </p:row>
+                            <p:repeat value="#{facturaVentaBean.facturaVenta.cabeceraFacturaImpuestoTarifaList}" 
+                                      var="subtotalesImpuestos">
+                                <p:row>
+                                    <p:column footerText="#{subtotalesImpuestos.etiqueta}" style="text-align:right"
+                                              colspan="4"/>
+                                    <p:column footerText="#{subtotalesImpuestos.baseImponible}" 
+                                              style="text-align:right"/>
+                                </p:row>
+                            </p:repeat>
+                            <p:row>
+                                <p:column footerText="#{msg.iva}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.iva}" style="text-align:right"/>
+                            </p:row>
+                            <p:row>
+                                <p:column footerText="#{msg.total}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.total}" style="text-align:right"/>
+                            </p:row>
+                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                                <p:column footerText="#{msg.retencion}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.totalRetencion}" style="text-align:right"/>
+                            </p:row>
+                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                                <p:column footerText="#{msg.valorPagar} - #{msg.retencion}" style="text-align:right"
+                                          colspan="4"/>
+                                <p:column footerText="#{facturaVentaBean.facturaVenta.totalPagar}" style="text-align:right"/>
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                </p:panel>
+                <p:dialog header="#{msg.restriccion}" 
+                          widgetVar="dlgRestriccion" 
+                          height="100"
+                          id="dlgRestriccionID">
+                    <h:outputLabel value="#{msg.restriccionFactura1}"/>
+                    <br/>
+                    <h:outputLabel value="#{msg.restriccionFactura2}"/>
+                    <br/>
+                    <h:outputLabel value="#{msg.restriccionFactura3}"/>
+                    <br/>
+                    <h:outputLabel value="#{msg.restriccionFactura4}"/>
+                    <br/>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{msg.aceptar}" 
+                                         actionListener="#{facturaVentaBean.verPagoVentana()}"
+                                         onclick="PF('dlgRestriccion').hide();" >
+                            <p:ajax event="dialogReturn" 
+                                    listener="#{facturaVentaBean.onPagoSelect}"
+                                    update=":frmCabecera:grMensajes,:frmCabecera:pnlPrincipal, pnlBotones"/>
+                        </p:commandButton>
+                        <p:commandButton value="#{msg.cancelar}" 
+                                         onclick="PF('dlgRestriccion').hide();" />
+                    </h:panelGrid>
+                </p:dialog> 
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

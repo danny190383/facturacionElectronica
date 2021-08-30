@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{kardexProductosBean.producto.codigoBarras} #{kardexProductosBean.producto.codigo} #{kardexProductosBean.producto.nombre}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmKardex">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <p:dataTable var="items" 
+                         id="tablaKardex"
+                         emptyMessage="#{msg.tablaVacia}"
+                         value="#{kardexProductosBean.listaKardex}"
+                         paginator="true"
+                         rows="15">
+                
+                <f:facet name="header" >
+                    
+                    <h:outputText value="#{msg.desde}: "
+                                  rendered="#{kardexProductosBean.vista eq '2'}"/>
+                    <p:calendar value="#{kardexProductosBean.fechaInicio}" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                showButtonPanel="true"  showOn="button" 
+                                showOtherMonths="true" navigator="true"
+                                rendered="#{kardexProductosBean.vista eq '2'}">
+                        <p:ajax event="dateSelect" 
+                                listener="#{kardexProductosBean.filtrarKardex}"
+                                update="tablaKardex, frmKardex:grMensajes"/>
+                    </p:calendar>
+
+                    <h:outputText value="#{msg.hasta}: "
+                                  rendered="#{kardexProductosBean.vista eq '2'}"/>
+                    <p:calendar value="#{kardexProductosBean.fechaFin}" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                showButtonPanel="true" showOn="button" 
+                                showOtherMonths="true" navigator="true"
+                                rendered="#{kardexProductosBean.vista eq '2'}">
+                        <p:ajax event="dateSelect" 
+                                listener="#{kardexProductosBean.filtrarKardex}"
+                                update="tablaKardex, frmKardex:grMensajes"/>
+                    </p:calendar>
+                    
+                    <p:selectOneMenu value="#{kardexProductosBean.bodegaSelc}" 
+                                     panelStyle="width:150px"
+                                     style="width: 150px"
+                                     rendered="#{kardexProductosBean.listaBodegas.size() > 1}">
+
+                        <f:selectItems value="#{kardexProductosBean.listaBodegas}" 
+                                       var="bodega" 
+                                       itemLabel="#{bodega.nombre}" 
+                                       itemValue="#{bodega.codigo}" />
+                        
+                        <p:ajax listener="#{kardexProductosBean.filtrarKardex}"
+                                update="tablaKardex, :frmKardex:grMensajes"/>
+                        
+                    </p:selectOneMenu>
+                </f:facet>
+
+                <p:column headerText="#{msg.fecha}"
+                          width="130">
+                    <h:outputLabel value="#{items[1]}" >
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                           pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.tipo}"
+                          width="110">
+                    <h:outputLabel value="#{msg.facturaCompra}" rendered="#{items[2] eq 4}"/>
+                    <h:outputLabel value="#{msg.facturaVenta}" rendered="#{items[2] eq 5}"/>
+                    <h:outputLabel value="#{msg.transferencia}" rendered="#{items[2] eq 6}"/>
+                    <h:outputLabel value="#{msg.individual}" rendered="#{items[2] eq 7}"/>
+                    <h:outputLabel value="#{msg.notaCredito}" rendered="#{items[2] eq 9}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="50">
+                    <h:outputLabel value="#{items[9]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.tipo}"
+                          width="30">
+                    <h:outputLabel value="#{items[11]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.cantidad}"
+                          width="50">
+                    <h:outputLabel value="#{items[4]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.costo}"
+                          width="50">
+                    <h:outputLabel value="#{items[12]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.valor}"
+                          width="50">
+                    <h:outputLabel value="#{items[10]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.aQuien}">
+                    <h:outputLabel value="#{items[7]} #{items[8]}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.stock}"
+                          width="50">
+                    <h:outputLabel value="#{items[5]}" />
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

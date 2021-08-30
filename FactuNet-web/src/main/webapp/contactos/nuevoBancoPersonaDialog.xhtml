@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.banco}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+             <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoBancoPersonaBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoBancoPersonaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                        style="width: 100%"
+                        id="pnlDatosContacto">
+
+                <h:outputLabel value="#{msg.numeroCuenta}: "/>
+                <p:inputText value="#{nuevoBancoPersonaBean.bancoPersona.numeroCuenta}"
+                            maxlength="50"
+                            size="35"
+                            required="true"
+                            styleClass="texto_obligatorio">
+                    <p:keyFilter regEx="/[\d]/" />
+                </p:inputText> 
+                
+                <h:outputLabel value="#{msg.banco}" />
+                <h:panelGrid id="pnlBanco"
+                             columns="2">
+                    <p:selectOneMenu value="#{nuevoBancoPersonaBean.bancoPersona.banco}"
+                                     style="width: 147px"
+                                     filter="true"
+                                     filterMatchMode="startsWith"
+                                     id="slcBanco"
+                                     converter="omnifaces.SelectItemsConverter">
+                        <f:selectItems value="#{nuevoBancoPersonaBean.listaBancos}" 
+                                       var="banco"
+                                       itemLabel="#{banco.nombre}"
+                                       itemValue="#{banco}"/>
+                    </p:selectOneMenu>
+                    <p:commandButton actionListener="#{nuevoBancoPersonaBean.refreshBanco}"
+                                     icon="ui-icon-arrowrefresh-1-w"
+                                     title="#{msg.recargar}" 
+                                     update="slcBanco"
+                                     partialSubmit="true"
+                                     process="pnlBanco"/>
+                </h:panelGrid>
+                <h:outputLabel value="#{msg.tipoCuenta}" />
+                <p:selectOneMenu value="#{nuevoBancoPersonaBean.bancoPersona.tipoCuenta}"
+                                style="width: 147px" 
+                                converter="omnifaces.SelectItemsConverter">
+                    <f:selectItems value="#{nuevoBancoPersonaBean.listaTipoCuenta}" 
+                                  var="tipoCuenta"
+                                  itemLabel="#{tipoCuenta.nombre}"
+                                  itemValue="#{tipoCuenta}"/>
+                </p:selectOneMenu>
+               
+                <h:outputLabel value="#{msg.observacion}" />
+               <p:inputTextarea rows="2" cols="30" 
+                                autoResize="false"
+                                value="#{nuevoBancoPersonaBean.bancoPersona.observacion}"/>
+           </h:panelGrid> 
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

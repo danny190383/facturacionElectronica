@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+               
+               <p:tabView id="tabMasterVeterinaria" 
+                          dynamic="true" cache="true">
+
+                    <p:tab title="#{msg.sexo}">
+                        <ui:include src="/mantenimiento/veterinaria/sexoMascotaAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.raza}">
+                        <ui:include src="/mantenimiento/veterinaria/razaMascotaAdmin.xhtml"/>
+                    </p:tab>
+                   
+                    <p:tab title="#{msg.especie}">
+                        <ui:include src="/mantenimiento/veterinaria/especieMascotaAdmin.xhtml"/>
+                    </p:tab>
+                   
+                </p:tabView>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

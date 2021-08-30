@@ -1,0 +1,444 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            <ui:define name="botones">
+                 <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.cuenta}"  
+                                             icon="ui-icon-search"
+                                             immediate="true"
+                                             actionListener="#{cuentasAdminBean.verBusquedaCuentas}"/>
+                        </f:facet>
+                    </p:toolbar>
+                 </div>
+            </ui:define>
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.cuenta}">
+                    <h:panelGrid columns="2">
+                        <p:fieldset legend="#{msg.aQuien}"
+                                    style="width: 400px;height: 100px">
+                            <h:panelGrid columns="2"
+                                        id="pnlCliente">
+                               <h:outputLabel value="#{msg.cedula} #{msg.ruc}: "
+                                              styleClass="texto_etiquetas"/>
+                               <h:outputLabel value="#{cuentasAdminBean.persona.cedula}"
+                                              styleClass="texto_etiquetas"/>
+
+                               <h:outputLabel value="#{msg.nombre}: "
+                                              styleClass="texto_etiquetas"/>
+                               <h:outputLabel value="#{cuentasAdminBean.persona.nombres} #{cuentasAdminBean.persona.apellidos}"
+                                              styleClass="texto_etiquetas"/>
+                           </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:fragment autoUpdate="true">
+                                    <p:commandButton value="#{msg.buscar} #{msg.cliente}"  
+                                                    icon="ui-icon-search"
+                                                    actionListener="#{cuentasAdminBean.verBusquedaClientes}"
+                                                    rendered="#{cuentasAdminBean.tipo ne 1}">
+                                     <p:ajax event="dialogReturn" 
+                                             listener="#{cuentasAdminBean.onClienteSelect}" 
+                                             update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalCuentas" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="#{msg.buscar} #{msg.proveedor}"  
+                                                    icon="ui-icon-search"
+                                                    actionListener="#{cuentasAdminBean.verBusquedaProveedores}"
+                                                    rendered="#{cuentasAdminBean.tipo eq 1}">
+                                     <p:ajax event="dialogReturn" 
+                                             listener="#{cuentasAdminBean.onProveedorSelect}" 
+                                             update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalCuentas" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="#{msg.historial} #{msg.credito}"  
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{cuentasAdminBean.verBusquedaCreditos}"
+                                                     rendered="#{cuentasAdminBean.tipo ne 1}"
+                                                     update=":frmCabecera:grMensajes"/>
+                                </p:fragment>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="#{msg.valor}"
+                                    style="width: 300px;height: 100px">
+                            <h:panelGrid columns="2"
+                                         id="pnlTotalSeleccionado">
+                                <p:outputLabel value="#{msg.totalPagar}:"
+                                               style="font-size: 20px;font-style: normal;font-weight: bold"/>
+                                <p:outputLabel value="#{cuentasAdminBean.totalListaSlc}"
+                                               style="font-size: 20px;font-style: normal;font-weight: bold;color: #e9322d"/>
+                            </h:panelGrid>
+                        </p:fieldset>
+                    </h:panelGrid>
+                    <br/>
+                    <p:tabView id="tabPrincipalCuentas">
+                        <p:tab title="#{msg.administracion} #{msg.cuenta}">
+                            <p:dataTable var="cuenta" 
+                                         value="#{cuentasAdminBean.listaCuentas}"
+                                         id="tablaCuentas"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         style="width: 98%"
+                                         editable="true" 
+                                         editMode="cell"
+                                         resizableColumns="true"
+                                         resizeMode="expand"
+                                         selection="#{cuentasAdminBean.listaCuentasSlc}"
+                                         rowKey="#{cuenta}">
+                                
+                                <p:ajax event="rowSelectCheckbox" listener="#{cuentasAdminBean.calcularTotal}" 
+                                        update=":frmCabecera:pnlTotalSeleccionado"
+                                        process="tablaCuentas"/>
+                                <p:ajax event="rowUnselectCheckbox" listener="#{cuentasAdminBean.calcularTotal}" 
+                                        update=":frmCabecera:pnlTotalSeleccionado"
+                                        process="tablaCuentas"/>
+                                <p:ajax event="toggleSelect" listener="#{cuentasAdminBean.calcularTotal}" 
+                                        update=":frmCabecera:pnlTotalSeleccionado"
+                                        process="tablaCuentas"/>
+                                
+                                <f:facet name="header">
+                                    <p:fragment autoUpdate="true">
+                                        <p:commandButton icon="ui-icon-comment"
+                                                         value="#{msg.nuevo} #{msg.cuenta}"
+                                                         actionListener="#{cuentasAdminBean.verNuevaCuenta}"
+                                                         title="#{msg.nuevo}"
+                                                         update=":frmCabecera:grMensajes">
+                                            <p:ajax event="dialogReturn" 
+                                                    listener="#{cuentasAdminBean.onCuentaSelect}"
+                                                    update=":frmCabecera:grMensajes, tablaCuentas"/>
+                                        </p:commandButton>
+                                        
+                                        <p:commandButton icon="ui-icon-comment"
+                                                         process="tablaCuentas"
+                                                         value="#{msg.pago} #{msg.cuenta}"
+                                                         actionListener="#{cuentasAdminBean.verPagoLista()}"
+                                                         title="#{msg.pago}"
+                                                         update=":frmCabecera:grMensajes"/>
+                                    </p:fragment>
+                                </f:facet>
+                                
+                                <p:column selectionMode="multiple" 
+                                          style="width:16px;text-align:center"/>
+
+                               <p:column style="width:16px">
+                                   <p:rowToggler />
+                               </p:column>
+
+                               <p:column headerText="#{msg.cuenta}"
+                                         width="50">
+                                   <h:commandLink actionListener="#{cuentasAdminBean.generarReporteCuentasPDF(cuenta.facturaPago)}"
+                                                  target="_blank" 
+                                                  immediate="true">
+                                        <h:outputText value="#{cuenta.codigo}"
+                                                      style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                   </h:commandLink>
+                               </p:column>
+
+                               <p:column headerText="#{msg.factura}"
+                                         width="50">
+                                   <h:commandLink actionListener="#{cuentasAdminBean.generarReportePDF(cuenta.facturaPago.factura)}"
+                                                  target="_blank" 
+                                                  immediate="true"
+                                                  rendered="#{cuenta.facturaPago.factura.numero ne -1}">
+                                        <h:outputText value="#{cuenta.facturaPago.factura.numero}"
+                                                      style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                   </h:commandLink>
+                                   <h:outputText value="#{msg.cuenta}" rendered="#{cuenta.facturaPago.factura.numero eq -1}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.tipo}"
+                                         width="120">
+                                   <h:outputText value="#{cuenta.formaPago.nombre}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.valor}"
+                                         width="50">
+                                   <h:outputText value="#{cuenta.valor}" 
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.saldo}"
+                                         width="50">
+                                   <h:outputText value="#{cuenta.saldo}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.vencimiento}"
+                                         width="100">
+                                   <h:outputText value="#{cuenta.fechaVencimiento}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold">
+                                       <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                       pattern="#{parametrosApplication.formatoFecha}"/>
+                                   </h:outputText>
+                               </p:column>
+
+                               <p:column headerText="#{msg.dias}"
+                                         width="30">
+                                   <h:outputText value="#{cuenta.dias}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.interes}"
+                                         width="50">
+                                   <p:cellEditor>
+                                       <f:facet name="output">
+                                           <h:outputText value="#{cuenta.interes} %"
+                                                         style="font-size: 13px;font-style: normal;font-weight: bold"/> 
+                                       </f:facet>
+                                       <f:facet name="input">
+                                           <p:inputNumber value="#{cuenta.interes}"
+                                                          minValue="0.00" maxValue="1000"
+                                                          size="5"
+                                                          symbol="%" 
+                                                          symbolPosition="s"
+                                                          inputStyle="font-size: 13px;font-style: normal;font-weight: bold">
+                                               <p:ajax update="tablaCuentas, :frmCabecera:grMensajes"
+                                                       listener="#{cuentasAdminBean.onCellEdit(cuenta)}"/>
+                                           </p:inputNumber> 
+                                       </f:facet>
+                                   </p:cellEditor>
+                               </p:column>
+
+                               <p:column headerText="#{msg.valor}"
+                                         width="50">
+                                   <h:outputText value="#{cuenta.valorInteres}"
+                                                 style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                               </p:column>
+
+                               <p:column headerText="#{msg.observacion}">
+                                   <p:cellEditor>
+                                       <f:facet name="output">
+                                           <h:outputText value="#{cuenta.detalle}"
+                                                         style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                       </f:facet>
+                                       <f:facet name="input">
+                                           <p:inputTextarea rows="2" cols="33"
+                                                            value="#{cuenta.detalle}"
+                                                            style="font-size: 13px;font-style: normal;font-weight: bold"/> 
+                                       </f:facet>
+                                   </p:cellEditor>
+                               </p:column>
+
+                               <p:column headerText="#{msg.opcion}"
+                                         width="50">
+                                    <p:commandButton icon="fa fa-fw fa-money"
+                                                     actionListener="#{cuentasAdminBean.verPago(cuenta)}"
+                                                     style="width: 45px;height: 25px"
+                                                     title="#{msg.pago}"
+                                                     process="tablaCuentas">
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{cuentasAdminBean.onPagoSelect}"
+                                                update=":frmCabecera:grMensajes, tablaCuentas"/>
+                                    </p:commandButton>
+                               </p:column>
+
+                               <p:rowExpansion>
+                                   <p:dataTable var="abono"
+                                                value="#{cuenta.abonoCuentaList}"
+                                                style="width: 70%"
+                                                emptyMessage="#{msg.tablaVacia}">
+                            
+                                       <p:column headerText="#{msg.formaPago}"
+                                                 width="120">
+                                           <h:commandLink actionListener="#{cuentasAdminBean.generarReporteAbonoPDF(cuenta.codigo)}"
+                                                         target="_blank" 
+                                                         immediate="true">
+                                              <h:outputText value="#{abono.formaPago.nombre}"
+                                                             style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                          </h:commandLink>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.fecha}"
+                                                 width="120">
+                                           <h:outputLabel value="#{abono.fecha}">
+                                               <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                       pattern="#{parametrosApplication.formatoFecha}"/>
+                                           </h:outputLabel>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.valor}"
+                                                 width="80">
+                                             <h:outputText value="#{abono.valor}" />
+                                       </p:column>
+                                   </p:dataTable>
+                               </p:rowExpansion>
+                           </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.administracion} #{msg.retencion}">
+                            <p:dataTable var="documento" 
+                                         value="#{cuentasAdminBean.listaRetencion}"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         style="width: 98%"
+                                         resizableColumns="true"
+                                         resizeMode="expand"
+                                         id="tablaRetencionesFactura"
+                                         paginator="true"
+                                         rows="15">
+                                
+                                <p:column style="width:16px">
+                                   <p:rowToggler />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.factura}"
+                                          width="100">
+                                    <h:commandLink actionListener="#{cuentasAdminBean.generarReportePDF(documento.factura.codigo)}"
+                                                    target="_blank" 
+                                                    immediate="true">
+                                         <h:outputLabel value="#{documento.factura.numero}" />
+                                    </h:commandLink>
+                                    <p:spacer width="20" height="20" />
+                                    <h:commandLink actionListener="#{cuentasAdminBean.generarReporteRetencionPDF(documento.codigo)}"
+                                                    target="_blank" 
+                                                    immediate="true">
+                                         <h:outputLabel value="Ret." />
+                                    </h:commandLink>
+                                </p:column>
+
+                                <p:column headerText="#{msg.fecha}"
+                                          width="100">
+                                    <h:outputText value="#{documento.fecha}" >
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="#{msg.descripcion}">
+                                    <h:outputText value="#{documento.factura.descripcion}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.total}"
+                                          width="60">
+                                    <h:outputText value="#{documento.totalRetencion}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.estado}"
+                                          width="150"
+                                          style="text-align: right"
+                                          visible="#{cuentasAdminBean.tipo ne 1}">
+                                    <h:outputText value="#{msg.sinDocumento}" rendered="#{documento.estadoDocumento eq 1}"/>
+                                    <h:outputText value="#{msg.conDocumento}" rendered="#{documento.estadoDocumento eq 2}"/>
+                                </p:column>
+
+                                <p:rowExpansion>
+                                   <p:dataTable var="retencion"
+                                                value="#{documento.retencionList}"
+                                                style="width: 70%"
+                                                emptyMessage="#{msg.tablaVacia}">
+
+                                       <p:column headerText="#{msg.retencion}">
+                                           <h:outputLabel value="#{retencion.tipoRetencion.nombre}" />
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.porcentaje}"
+                                                 width="80">
+                                            <h:outputLabel value="#{retencion.tipoRetencion.valor}" />
+                                       </p:column>
+                                       
+                                       <p:column headerText="#{msg.base}"
+                                                 width="60">
+                                            <h:outputText value="#{retencion.baseImponible}" />
+                                        </p:column>
+                                       
+                                       <p:column headerText="#{msg.concepto}"
+                                                 width="80">
+                                           <h:outputLabel value="#{msg.servicio}" rendered="#{retencion.tipoRetencion.tipo eq 1}"/>
+                                           <h:outputLabel value="#{msg.bienes}" rendered="#{retencion.tipoRetencion.tipo eq 2}"/>
+                                       </p:column>
+
+                                       <p:column headerText="#{msg.valor}"
+                                                 width="80">
+                                           <h:outputText value="#{retencion.valor}" />
+                                       </p:column>
+                                   </p:dataTable>
+                               </p:rowExpansion>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </p:panel>
+                <p:dialog id="mdlPagosConsolidados" 
+                          widgetVar="mdlPagosConsolidados" 
+                          resizable="false"
+                          modal="false" 
+                          header="#{msg.cuenta}">
+
+                    <h:form id="frmPagosConsolidados">
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="#{msg.totalPagar}:"
+                                           style="font-size: 20px;font-style: normal;font-weight: bold"/>
+                            <p:outputLabel value="#{cuentasAdminBean.totalListaSlc}"
+                                           style="font-size: 20px;font-style: normal;font-weight: bold;color: #e9322d"/>
+                        </h:panelGrid>   
+                        <h:panelGrid columns="2"
+                                      id="pnlDatosPagos">
+                            <p:outputLabel value="#{msg.formaPago}:"/>
+                            <p:selectOneMenu value="#{cuentasAdminBean.formaPagoSlc}"
+                                             required="true">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue=""/>
+                                <f:selectItem itemLabel="#{msg.efectivo}" itemValue="140"/>
+                                <f:selectItem itemLabel="#{msg.transferencia}" itemValue="148"/>
+                                <f:selectItem itemLabel="#{msg.deposito}" itemValue="147"/>
+                                <f:selectItem itemLabel="#{msg.tarjetaDebito}" itemValue="141"/>
+                                <f:selectItem itemLabel="#{msg.tarjetaCredito}" itemValue="153"/>
+                                <p:ajax update="pnlDatosPagos"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputLabel value="#{msg.tipo} :" 
+                                           rendered="#{cuentasAdminBean.formaPagoSlc eq 153}"/>
+                            <p:selectOneMenu value="#{cuentasAdminBean.tarjetaEmpresaSlc}"
+                                             filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%"
+                                             required="true"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             rendered="#{cuentasAdminBean.formaPagoSlc eq 153}">
+                                <p:ajax update="comisionTarjeta"/>
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue=""/>
+                                <f:selectItems value="#{cuentasAdminBean.listaTarjetaEmpresa}" 
+                                               var="tarjetaEmpresa"
+                                               itemLabel="#{tarjetaEmpresa.tipoTarjeta.nombre} #{msg.banco} #{tarjetaEmpresa.banco.nombre}"
+                                               itemValue="#{tarjetaEmpresa}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="#{msg.pago}:" 
+                                           rendered="#{cuentasAdminBean.formaPagoSlc eq 153}"/>
+                            <p:selectOneMenu value="#{cuentasAdminBean.comisionTarjetaSlc}"
+                                             filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             id="comisionTarjeta"
+                                             required="true"
+                                             rendered="#{cuentasAdminBean.formaPagoSlc eq 153}">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue=""/>
+                                <f:selectItems value="#{cuentasAdminBean.tarjetaEmpresaSlc.comisionTarjetaList}" 
+                                               var="comision"
+                                               itemLabel="#{comision.nombre} #{comision.valor}"
+                                               itemValue="#{comision}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <p:separator/>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.guardar}" 
+                                                 icon="ui-icon-disk" 
+                                                 actionListener="#{cuentasAdminBean.guardarPagosList()}"
+                                                 update="frmPagosConsolidados, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalCuentas:tablaCuentas"
+                                                 process="frmPagosConsolidados"/>
+                                
+                                <p:commandButton value="#{msg.cancelar}" 
+                                                 icon="ui-icon-close" 
+                                                 onclick="PF('mdlPagosConsolidados').hide();"/>
+                            </h:panelGrid>
+                        </center>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

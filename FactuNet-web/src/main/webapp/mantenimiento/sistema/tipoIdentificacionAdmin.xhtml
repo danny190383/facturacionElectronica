@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <p:panel style="width: 100%" 
+                 id="pnlTipoIdentificacion">
+            
+            <h:panelGrid columns="2">       
+                <h:panelGrid columns="3">
+                    <h:outputLabel value="#{msg.buscar} #{msg.tipoIdentificacion} "/>
+                    <p:inputText value="#{tipoIdentificacionBean.buscar}" 
+                                 maxlength="40" size="50" transient="true"/>
+                    <p:ajax event="keyup" update=":frmCabecera:tabMasterSistema:tablaTipoIdentificacion" 
+                                listener="#{tipoIdentificacionBean.buscar()}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="3">
+                    <h:commandLink target="_blank" actionListener="#{tipoIdentificacionBean.generarReportePDF()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/pdf.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoIdentificacionBean.generarReporteXlS()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/excel.png"
+                                        width="25"/>
+                    </h:commandLink>
+                    <h:commandLink target="_blank" actionListener="#{tipoIdentificacionBean.generarReporteHTML()}"
+                                   immediate="true">
+                        <p:graphicImage url="../../resources/imagenes/html.png"
+                                        width="25"/>
+                    </h:commandLink>
+                </h:panelGrid>
+            </h:panelGrid>
+
+            <p:dataTable var="tipocontacto" 
+                         value="#{tipoIdentificacionBean.lista}" 
+                         id="tablaTipoIdentificacion" 
+                         emptyMessage="#{msg.tablaVacia}">
+
+                 <f:facet name="header">
+                    <p:commandButton value="#{msg.nuevo}"  
+                                     oncomplete="PF('dialogoTipoIdentificacion').show()"
+                                     actionListener="#{tipoIdentificacionBean.nuevo()}" 
+                                     immediate="true"
+                                     update=":frmCabecera:tabMasterSistema:dlgTipoIdentificacion"
+                                     icon="ui-icon-comment" />
+                </f:facet>
+
+                <p:column headerText="#{msg.codigo}" width="80" style="text-align: center">
+                    <h:outputLabel value="#{tipocontacto.codigo}" />
+                </p:column>
+
+                <p:column headerText="#{msg.tipoIdentificacion}">
+                    <h:outputLabel value="#{tipocontacto.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.validacion}"
+                          width="150">
+                    <h:outputLabel value="#{tipocontacto.tipoValidacion.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.codigoSRI}"
+                          width="80">
+                    <h:outputLabel value="#{tipocontacto.codigoSRI}" />
+                </p:column>
+
+                <p:column headerText="#{msg.opcion}" 
+                          width="70"
+                          style="text-align: center">
+
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update=":frmCabecera:grMensajes, :frmCabecera:tabMasterSistema:tablaTipoIdentificacion" 
+                                      actionListener="#{tipoIdentificacionBean.eliminar(tipocontacto)}"
+                                      immediate="true"
+                                      title="#{msg.eliminar}">
+                          <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                     <p:commandButton icon="ui-icon-pencil" 
+                                      title="#{msg.editar}"
+                                      update=":frmCabecera:tabMasterSistema:dlgTipoIdentificacion"
+                                      oncomplete="PF('dialogoTipoIdentificacion').show()"
+                                      process="tablaTipoIdentificacion"
+                                      action="#{tipoIdentificacionBean.seleccionar(tipocontacto)}"/>
+                  </p:column>
+            </p:dataTable>
+        </p:panel>  
+                
+        <p:dialog header="#{msg.tipoIdentificacion}" 
+                  widgetVar="dialogoTipoIdentificacion" 
+                  resizable="false"
+                  id="dlgTipoIdentificacion">
+
+          <h:form id="frmTipoIdentificacion">
+              <h:panelGrid columns="2" 
+                           rendered="#{tipoIdentificacionBean.tipoIdentificacion.tipoValidacion ne null}">
+                  
+                  <h:outputLabel value="#{msg.tipoIdentificacion}: "/>
+                  <p:inputText value="#{tipoIdentificacionBean.tipoIdentificacion.nombre}"
+                               required="true"
+                               size="50" maxlength="40"
+                               style="background-color: khaki "/>
+                  
+                  <h:outputLabel value="#{msg.codigoSRI}: "/>
+                  <p:inputText value="#{tipoIdentificacionBean.tipoIdentificacion.codigoSRI}"
+                               required="true"
+                               size="50" maxlength="10"
+                               style="background-color: khaki "/>
+                  
+                  <h:outputLabel value="#{msg.tipoValidacion}: "/>
+                  <p:selectOneMenu value="#{tipoIdentificacionBean.tipoIdentificacion.tipoValidacion.codigo}" >
+                      <f:selectItems value="#{tipoIdentificacionBean.listaValidacion}" 
+                                   var="tipoValidacion"
+                                   itemLabel="#{tipoValidacion.nombre}"
+                                   itemValue="#{tipoValidacion.codigo}"/>
+                  </p:selectOneMenu>
+                  
+
+                  <p:commandButton value="#{msg.guardar}"  
+                                   actionListener="#{tipoIdentificacionBean.guardar()}"
+                                   icon="ui-icon-check" 
+                                   process="@form"
+                                   update=":frmCabecera:tabMasterSistema:tablaTipoIdentificacion, :frmCabecera:grMensajes" />
+
+                  <p:commandButton value="#{msg.cancelar}" 
+                                   immediate="true"
+                                   update="@form"
+                                   process="@form"
+                                   icon="ui-icon-cancel" 
+                                   oncomplete="PF('dialogoTipoIdentificacion').hide()"/>
+              </h:panelGrid> 
+         </h:form>
+      </p:dialog>
+    </body>
+</html>

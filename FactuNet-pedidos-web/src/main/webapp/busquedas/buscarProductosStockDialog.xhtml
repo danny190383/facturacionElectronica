@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>#{msg.productos}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaProductos">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+                <p:tabView rendered="#{buscarProductosStockPedidosBean.visible}">
+                    <p:ajax event="tabChange" 
+                            listener="#{buscarProductosStockPedidosBean.onTabChange}" 
+                            update=":frmBusquedaProductos:flsProductos"/>
+                    <c:forEach var="padre"
+                               items="#{buscarProductosStockPedidosBean.listaPadres}">
+                        <p:tab title="#{padre.nombre}">
+                             <p:dataGrid var="hijo" 
+                                        value="#{padre.grupoProductoList}" 
+                                        columns="9" 
+                                        layout="grid">
+                                    <p:commandButton value="#{hijo.nombre}"
+                                                     style="width:120px;height:30px"
+                                                     update=":frmBusquedaProductos:flsProductos" 
+                                                     actionListener="#{buscarProductosStockPedidosBean.onNodeSelect(hijo)}"/>
+                            </p:dataGrid>
+                        </p:tab>
+                    </c:forEach>
+                </p:tabView>
+            
+                <p:fieldset id="flsProductos">
+                   <p:selectOneButton value="#{buscarProductosStockPedidosBean.opcion}"
+                                      rendered="#{!buscarProductosStockPedidosBean.visible}">
+                       <p:ajax listener="#{buscarProductosStockPedidosBean.escogerTipo}"
+                               update=":frmBusquedaProductos:flsProductos"/>
+                       <f:selectItem itemLabel="#{msg.servicios}" itemValue="S" />
+                   </p:selectOneButton>
+                   <h:panelGrid columns="2"
+                                rendered="#{buscarProductosStockPedidosBean.opcion eq 'P'}">
+                       <h:outputLabel value="#{msg.bodega}"
+                                      rendered="#{buscarProductosStockPedidosBean.listaBodegas.size() > 1}"/>
+                       <p:selectOneMenu value="#{buscarProductosStockPedidosBean.bodegaSelc}" 
+                                        panelStyle="width:180px"
+                                        style="width:180px" 
+                                        rendered="#{buscarProductosStockPedidosBean.listaBodegas.size() > 1}">
+                             <p:ajax update=":frmBusquedaProductos:tablaProductos" 
+                                     listener="#{productoStockBean.llenarTabla}" />
+                             <f:selectItems value="#{buscarProductosStockPedidosBean.listaBodegas}" 
+                                            var="bodega" 
+                                            itemLabel="#{bodega.nombre}" 
+                                            itemValue="#{bodega.codigo}" />
+                       </p:selectOneMenu>
+                  </h:panelGrid>
+                   <p:dataTable var="producto" 
+                               id="tablaProductos"
+                               value="#{buscarProductosStockPedidosBean.lazyModelStock}" 
+                               paginator="true" 
+                               emptyMessage="#{msg.tablaVacia}"
+                               rows="5" 
+                               lazy="true"  
+                               rowKey="#{producto.productoBodega.codigo}"
+                               style="position: static; top: 0px"
+                               resizableColumns="true"
+                               resizeMode="expand"
+                               rendered="#{buscarProductosStockPedidosBean.opcion eq 'P'}">
+                      
+                       <p:ajax event="rowSelectRadio" 
+                               listener="#{buscarProductosStockPedidosBean.onRowSelect}" 
+                               update=":frmBusquedaProductos:tablaSeleccionados" />
+                       
+                       <p:column selectionMode="single" style="width:16px;text-align:center"/>
+                       
+                       <p:column headerText="#{msg.codigoBarras}" filterBy="#{producto.productoBodega.codigoBarras}"
+                                 width="110"
+                                 visible="false">
+                           <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
+                       </p:column>
+
+                       <p:column headerText="#{msg.producto}" filterBy="#{producto.productoBodega.nombre}">
+                           <h:outputLabel value="#{producto.productoBodega.nombre}"
+                                          style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+                       
+                       <p:column headerText="#{msg.grupo}" filterBy="#{producto.productoBodega.grupo.nombre}"
+                                  width="100"
+                                  rendered="#{!buscarProductosStockPedidosBean.visible}">
+                            <h:outputLabel value="#{producto.productoBodega.grupo.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+
+                       <p:column headerText="#{msg.modelo}" filterBy="#{producto.productoBodega.modelo}"
+                                 width="110">
+                           <h:outputLabel value="#{producto.productoBodega.modelo}"
+                                          style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+
+                       <p:column headerText="#{msg.marca}" filterBy="#{producto.productoBodega.marca.nombre}"
+                                 width="110">
+                           <h:outputLabel value="#{producto.productoBodega.marca.nombre}"
+                                          style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+
+                       <p:column headerText="#{msg.stock}" 
+                                 width="40">
+                           <h:outputLabel value="#{producto.stock}" 
+                                          style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+
+                       <p:column headerText="#{msg.pvp}" 
+                                 width="80">
+                           <p:inputNumber value="#{producto.productoBodega.pvp}" 
+                                   decimalPlaces="#{login.cuenta.empleado.persona.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold"/>
+                       </p:column>
+                   </p:dataTable>
+                   
+                   <p:dataTable var="servicio" 
+                                id="tablaServicios"
+                                value="#{buscarProductosStockPedidosBean.lazyModelServicios}" 
+                                paginator="true" 
+                                emptyMessage="#{msg.tablaVacia}"
+                                rows="5" 
+                                lazy="true"   
+                                rowKey="#{servicio.codigo}"
+                                style="position: static; top: 0px"
+                                resizableColumns="true"
+                                resizeMode="expand"
+                                rendered="#{buscarProductosStockPedidosBean.opcion eq 'S'}">
+                       
+                       <p:ajax event="rowSelectRadio" 
+                               listener="#{buscarProductosStockPedidosBean.onRowSelect}" 
+                               update=":frmBusquedaProductos:tablaSeleccionados" />
+                       
+                       <p:column selectionMode="single" style="width:16px;text-align:center"/>
+
+                        <p:column headerText="#{msg.codigoBarras}" 
+                                  filterBy="#{servicio.codigoBarras}"
+                                  width="110"
+                                  visible="false">
+                            <h:outputLabel value="#{servicio.codigoBarras}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.servicios}" filterBy="#{servicio.nombre}">
+                            <h:outputLabel value="#{servicio.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.grupo}" filterBy="#{servicio.grupo.nombre}"
+                                  width="150"
+                                  rendered="#{!buscarProductosStockPedidosBean.visible}">
+                            <h:outputLabel value="#{servicio.grupo.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.pvp}" 
+                                  width="100"
+                                  style="text-align: right">
+                            <p:inputNumber value="#{servicio.pvp}" 
+                                   decimalPlaces="2"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                    </p:dataTable>
+                   
+                   <p:dataTable var="paquete" 
+                                id="tablaPaquetes"
+                                value="#{buscarProductosStockPedidosBean.lazyModelPaquetes}" 
+                                paginator="true" 
+                                emptyMessage="#{msg.tablaVacia}"
+                                rows="5" 
+                                lazy="true" 
+                                rowKey="#{paquete.codigo}"
+                                style="position: static; top: 0px"
+                                resizableColumns="true"
+                                resizeMode="expand"
+                                rendered="#{buscarProductosStockPedidosBean.opcion eq 'PA'}">
+                       
+                        <p:column selectionMode="single" style="width:16px;text-align:center"/>
+                       
+                        <p:column style="width:16px">
+                            <p:rowToggler/>
+                        </p:column>
+                        
+                        <p:ajax event="rowSelectRadio" 
+                               listener="#{buscarProductosStockPedidosBean.onRowSelect}" 
+                               update=":frmBusquedaProductos:tablaSeleccionados" />
+
+                        <p:rowExpansion>
+                            <p:dataTable var="paqueteP"
+                                         value="#{paquete.paqueteVentaList}"
+                                         rows="10"
+                                         paginator="true">
+
+                                <p:column headerText="#{msg.codigoBarras}"
+                                          width="110"
+                                          visible="false">
+                                    <h:outputLabel value="#{paqueteP.producto.codigoBarras}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.producto}">
+                                    <h:outputLabel value="#{paqueteP.producto.nombre}" />
+                                </p:column>   
+                                
+                                <p:column headerText="#{msg.cantidad}"
+                                          width="40">
+                                    <h:outputLabel value="#{paqueteP.cantidad}" />
+                                </p:column>  
+                                
+                                <p:column headerText="#{msg.total}"
+                                          width="40"
+                                          rendered="false">
+                                    <h:outputLabel value="#{paqueteP.total}" />
+                                </p:column>  
+                            </p:dataTable>
+                        </p:rowExpansion>
+
+                        <p:column headerText="#{msg.codigoBarras}" 
+                                  filterBy="#{paquete.codigoBarras}"
+                                  width="110">
+                            <h:outputLabel value="#{paquete.codigoBarras}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.paquetes}" filterBy="#{paquete.nombre}">
+                            <h:outputLabel value="#{paquete.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.grupo}" filterBy="#{paquete.grupo.nombre}"
+                                  width="150"
+                                  rendered="#{!buscarProductosStockPedidosBean.visible}">
+                            <h:outputLabel value="#{paquete.grupo.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.pvp}"
+                                  width="80">
+                            <p:inputNumber value="#{paquete.pvp}" 
+                                   decimalPlaces="#{login.cuenta.empleado.persona.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                    </p:dataTable>
+               </p:fieldset>
+            <p:fieldset>
+           <p:dataTable var="selec" 
+                        id="tablaSeleccionados"
+                        value="#{buscarProductosStockPedidosBean.listaProductosTodosSelc}" 
+                        emptyMessage="#{msg.tablaVacia}"
+                        style="position: static; top: 0px">
+
+                <f:facet name="header" >
+                    <p:commandButton process="tablaSeleccionados" 
+                                     icon="ui-icon-check" 
+                                     value="#{msg.agregarSeleccion}" 
+                                     action="#{buscarProductosStockPedidosBean.seleccionarLista}"/>
+                </f:facet>
+
+                <p:column headerText="#{msg.producto}" >
+                    <h:outputLabel value="#{selec.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.grupo}" 
+                          width="150">
+                    <h:outputLabel value="#{selec.grupo.nombre}" />
+                </p:column>
+
+                <p:column headerText="#{msg.pvp}" 
+                          width="100"
+                          style="text-align: right">
+                    <p:inputNumber value="#{selec.pvp}" 
+                                   decimalPlaces="#{login.cuenta.empleado.persona.empresa.decimales}"
+                                   minValue="0" readonly="true" disabled="true"
+                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column style="text-align: center"
+                          width="20">
+                    <p:commandButton  icon="ui-icon-close" 
+                                      update="tablaSeleccionados" 
+                                      actionListener="#{buscarProductosStockPedidosBean.eliminar(selec)}"
+                                      title="#{msg.eliminar}">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+                </p:fieldset>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,42 @@
+body {
+    background-repeat: repeat, no-repeat;
+    background-position: center -100px;
+    font-size: 12px;
+    font-family: Verda;
+    color: #000000;  
+    font-style: normal;
+    overflow: auto;    
+    margin: 0px;
+}
+
+.texto_obligatorio{
+    background-color: khaki 
+}
+
+.texto_numerico{
+    text-align: right    
+}
+
+.texto_negrita{
+    font-style: normal;
+    font-weight: bold;
+}
+
+.ui-widget {
+    font-size: 12px;
+}
+
+.ui-panel .ui-panel-titlebar {
+    padding: 0;
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-size: 17px;
+}
+
+
+.topAligned {
+    vertical-align: top;
+}
+

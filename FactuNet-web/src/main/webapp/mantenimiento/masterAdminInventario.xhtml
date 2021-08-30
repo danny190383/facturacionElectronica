@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="content">
+                <p:tabView id="tabMasterInventario" 
+                           dynamic="true" cache="true">
+
+                    <p:tab title="#{msg.marca}">
+                        <ui:include src="/mantenimiento/inventario/marcaAdmin.xhtml"/>
+                    </p:tab>
+                    
+                    <p:tab title="#{msg.unidadmedida}">
+                        <ui:include src="/mantenimiento/inventario/unidadmedidaAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                    <p:tab title="#{msg.banco}">
+                        <ui:include src="/mantenimiento/inventario/bancoAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                    <p:tab title="#{msg.tipoCuenta}">
+                        <ui:include src="/mantenimiento/inventario/tipoCuentaAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                    <p:tab title="#{msg.formaPago}">
+                        <ui:include src="/mantenimiento/inventario/formaPagoAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                    <p:tab title="#{msg.tipoTarjeta}">
+                        <ui:include src="/mantenimiento/inventario/tipoTarjetaAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                    <p:tab title="#{msg.motivo}">
+                        <ui:include src="/mantenimiento/inventario/motivoAdmin.xhtml"/>
+                    </p:tab> 
+                    
+                </p:tabView>
+        
+                
+            </ui:define>
+            
+        </ui:composition>
+
+    </body>
+</html>

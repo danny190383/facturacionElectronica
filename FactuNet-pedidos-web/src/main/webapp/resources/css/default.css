@@ -1,0 +1,461 @@
+div.ui-dt-c table  {
+    border: 0px;
+    /*padding: 0px;*/
+    margin: 0px;
+    overflow: hidden;
+}
+
+#bottom {
+    /* Safari 5.1+, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Opera 11.10+ */
+    background: -o-linear-background(top, #081b53, #214B92);
+    /* IE 10 */
+    background: -ms-linear-background(top, #75B2E2, #B4D1EF);
+    /* estándar */
+    background: linear-background(top, #75B2E2, #B4D1EF);
+    color: white;
+    /*padding: 10px;*/
+}
+
+#left {
+    /*padding: 10px;*/
+    width: 150px;
+    vertical-align: top;
+}
+
+#right {
+    /*padding: 10px;*/
+    width: 150px;
+    vertical-align: top;
+}
+
+#content {
+    background-color: blanchedalmond;
+    /*background-image: url(../images/indice.png);*/
+    /*padding: 10px;*/
+    vertical-align: top;
+}
+
+body {
+    background-repeat: repeat, no-repeat;
+    background-position: center -100px;
+    font-size: 15px;
+    font-family: Verda;
+    color: #000000;  
+    font-style: normal;
+    height: 100%;
+    overflow: auto;  
+    margin: 0px;
+    background:snow!important;
+}
+
+.caja-botones{
+    /*height: 240px; el alto de la caja*/
+    position: fixed; /*para que la caja se mantenga fija*/
+    top: 40%; /*movemos la caja de arriba*/
+    right: 0%;
+    z-index: 2;
+}
+
+.texto_numerico{
+    text-align: right    
+}
+
+.texto_negrita{
+    font-style: normal;
+    font-weight: bold;
+}
+
+.letraEmpresa{
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-size: 17px;
+}
+
+.slotCentral {
+    background:#333333; 
+    width:22px; 
+    height:22px;
+    display:block;
+}
+
+.slotHorizontal {
+    background:#333333; 
+    width:32px; 
+    height:12px;
+    display:block;
+}
+
+.slotVertical {
+    background:#333333; 
+    width:12px; 
+    height:30px;
+    display:block;
+}
+
+.slotEndo {
+    background:#FFFFFF; 
+    width:20px; 
+    height:20px;
+    display:block;
+}
+
+.slotTotal {
+    background:#FFFFFF; 
+    width:55px; 
+    height:55px;
+    display:block;
+}
+
+.slotActive {
+    background: #FFCC00;
+}
+
+.highlight {
+    background: orange !important;
+}
+
+.highlight1 {
+    background: aquamarine !important;
+}
+
+.highlight2 {
+    background: yellowgreen !important;
+}
+
+.highlight3 {
+    background: crimson !important;
+}
+
+.highlight4 {
+    background: tomato !important;
+}
+
+a.estilo1 {
+    background: red;
+    border-color: #932c39!important;
+}
+
+a.estilo2 {
+    background: blue;
+    border-color: #932c39!important;
+}
+
+a.estilo3 {
+    background: blueviolet;
+    border-color: #932c39!important;
+}
+
+a.estilo4 {
+    background: green;
+    border-color: #932c39!important;
+}
+
+a.estilo5 {
+    background: greenyellow;
+    border-color: #932c39!important;
+}
+
+a.estilo6 {
+    background: yellow;
+    border-color: #932c39!important;
+}
+
+a.estilo7 {
+    background: #a1a1a1;
+    border-color: #932c39!important;
+}
+
+a.estilo8 {
+    background: chocolate;
+    border-color: #932c39!important;
+}
+
+a.estilo9 {
+    background: pink;
+    border-color: #932c39!important;
+}
+
+a.estilo10 {
+    background: orange;
+    border-color: #932c39!important;
+}
+
+a.estilo11 {
+    background: #081b53;
+    border-color: #932c39!important;
+}
+
+.letraCabecera{
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-size: 10px;
+}
+
+.cabecera1{
+    height: 30px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.cabecera2 {
+    text-align: center;
+    color: white;
+    /*padding: 0px;*/
+    margin: 0px 0px 0px 0px;
+    font-size: 12px;
+    /* Safari 5.1+, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Opera 11.10+ */
+    background: -o-linear-background(top, #081b53, #214B92);
+    /* IE 10 */
+    background: -ms-linear-background(top, #75B2E2, #B4D1EF);
+    /* estándar */
+    background: linear-background(top, #75B2E2, #B4D1EF);
+
+}
+
+.bottom1{
+    position:fixed;
+    bottom:0px;
+    width:100%; 
+
+    height: 5px;
+    text-align: center;
+    color: black;
+    padding: 10px;
+
+
+    /* Safari 5.1+, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #75B2E2, #B4D1EF);
+    /* Opera 11.10+ */
+    background: -o-linear-background(top, #081b53, #214B92);
+    /* IE 10 */
+    background: -ms-linear-background(top, #75B2E2, #B4D1EF);
+    /* estándar */
+    background: linear-background(top, #75B2E2, #B4D1EF);
+
+} 
+
+.bottom2{
+    width:300px; /*min width should give to center the div.*/
+    margin:0px auto; /*here it will make center*/            
+} 
+
+.ui-widget {
+    font-size: 10px;
+}
+
+.ui-menu {
+    outline: 0 none;
+    /*padding: 0.3em;*/
+    position: relative;
+    width: 9.0em;
+}
+
+.ui-fieldset, .ui-fieldset .ui-fieldset-legend {
+    background-color: transparent;
+    background: white;
+    border-radius: 0px;
+}   
+
+.ui-fieldset .ui-fieldset-legend {
+    border: 0px;
+    color: #2e6e9e;
+    font-weight: bold;
+} 
+
+.ui-menu .ui-menu-parent .ui-menu-child {
+    /*padding: 0.3em;*/
+    position: absolute;
+    margin: 0;
+    outline: 0;
+    line-height: 1.3;
+    text-decoration: none;
+    font-size: 100%;
+    list-style: none;
+    width: auto!important;
+    background: #77B4E3
+}
+
+.ui-panelmenu .ui-menuitem-link {
+    border-bottom: 1px solid #77B4E3;
+    cursor: pointer;
+    display: block;
+    font-weight: 400;
+    line-height: 16px;
+    outline: medium none;
+    /*padding: 0.3em 0.3em 0.3em 2em;*/
+    position: relative;
+    text-decoration: none;
+}
+
+.ui-panelmenu .ui-menu-parent .ui-menu-list {
+    margin-left: 30px;
+}
+
+.ui-menu .ui-menuitem-link {
+    background: #dfeffc url("/innovativasalud/faces/javax.faces.resource/images/ui-bg_glass_85_dfeffc_1x400.png?ln=primefaces-redmond") repeat-x scroll 50% 50%;
+    color: #2e6e9e;
+    font-weight: bold;
+    font-size: 7.5pt;
+    border:  1px solid #c5dbec;
+}
+
+.ui-menu .ui-menuitem {
+    clear: both;
+    float: left;
+    margin: 1px 0;
+    /*padding: 1px;*/
+    width: 100%;
+}
+
+.ui-fileupload-buttonbar {
+    background: transparent none;
+    border: none;
+}
+
+.ui-fileupload-content {
+    display: none;
+}
+
+.menu {
+    vertical-align: top;
+    width: 225px;
+    background: snow;
+}
+
+.contenido {
+    vertical-align: top;
+    background: snow;
+}
+
+.espacioDerecha {
+    width: 80px;
+}
+
+.menu2 {
+    color: white;
+    /*padding: 1px;*/
+    margin: 0px 0px 10px 0px;
+    font-size: 12px;
+    /* Safari 5.1+, Chrome 10+ */
+    background: -webkit-linear-gradient(left, #75B2E2, #B4D1EF);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(left, #B4D1EF, #3CA1D9);
+    /* Opera 11.10+ */
+    background: -o-linear-background(left, #75B2E2, #B4D1EF);
+    /* IE 10 */
+    background: -ms-linear-background(left, #75B2E2, #B4D1EF);
+    /* estándar */
+    background: linear-background(left, #75B2E2, #B4D1EF);
+    /*background:#77B4E3;*/
+    border-radius: 8px;
+}
+
+.menuPerfil{
+    vertical-align: bottom;
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    font-size: 11px;
+
+}
+
+.top{
+    vertical-align: top;
+}
+
+.alineadoDerecha{
+    text-align: right;
+}
+
+.alineadoIzquierda{
+    text-align: left;
+}
+
+.inputNumber input
+{
+    width: 70px !important;
+}
+
+.ui-wizard-step-title {
+    font-size: 10px !important;
+    margin: 0 3px 0 0;
+    /*padding: .4em;*/
+    float: left;
+}
+
+.ui-panelgrid.showcase-text-align-center .ui-grid-responsive .ui-panelgrid-cell {
+    text-align: center;
+}
+
+.customPanelGrid .ui-panelgrid-content {
+    align-items: center;
+}
+
+.ui-paginator a {
+    margin-right: 5px;
+}
+
+.caja-botones-arriba{
+    position: fixed !important;/*para que la caja se mantenga fija*/
+    top: 43px; /*movemos la caja de arriba*/
+    left: 240px;
+    z-index: 250; 
+    width: 80%;
+}
+.caja-botones-arriba2{
+    position: fixed !important;/*para que la caja se mantenga fija*/
+    top: 63px; /*movemos la caja de arriba*/
+    z-index: 250;  
+    width: 100%;
+}
+
+.ui-paginator a {
+    margin-right: 5px;
+}
+
+.ui-panel-content{
+    background:snow!important;
+}
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+    /*color: #ffffff;*/
+    text-decoration: none;
+    font-weight: bold;
+}
+ui-tabs-header .ui-state-active, ui-tabs-header .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+    border: 1px solid #0086af;
+    background: #0086af;
+    font-weight: normal;
+    color: white;
+    font-size: 11px;
+}
+.ui-tabs .ui-tabs-nav li {
+    list-style: none;
+    position: relative;
+    margin: 0 .2em 1px 0;
+    padding: 0;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.texto_etiquetas{
+    font-style: normal;
+    font-weight: bold;
+    font-size:12px;
+}

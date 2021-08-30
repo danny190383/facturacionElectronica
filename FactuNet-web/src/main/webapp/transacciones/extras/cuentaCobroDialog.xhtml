@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <h:outputStylesheet name="css/default.css"/>
+        <title >
+            #{msg.generacion} #{msg.formaPago}
+        </title>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmCuentaCobro">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            <p:fieldset>
+            <p:watermark for="fechaVencimiento" value="aaaa-mm-dd" />
+                <h:panelGrid columns="4" 
+                            style="width: 100%"
+                            id="pnlMontoPago">
+                    <h:outputLabel style="font-size: 20px;font-weight: bold;"
+                                   value="#{msg.totalM}:" />
+                    <h:outputLabel style="font-size: 20px;font-weight: bold;color: red;" value="#{cuentaCobroBean.totalFactura}" />
+
+                    <h:outputLabel value="#{msg.pendiente} :"
+                                   style="font-size: 20px;font-weight: bold;"/>
+                    <h:panelGrid columns="2">
+                        <p:inputNumber value="#{cuentaCobroBean.montoPago}" 
+                                       decimalPlaces="2" required="true"
+                                       minValue="0" id="txtMontoPago"
+                                       inputStyle="width: 100px;background-color: khaki;text-align: right;font-size: 20px;font-weight: bold;color: red;">
+                        </p:inputNumber>
+                        <p:commandButton actionListener="#{cuentaCobroBean.agregarPago()}"
+                                        icon="ui-icon-check"
+                                        style="width:100px;height:38px"
+                                        value="#{msg.agregar} #{msg.pago}"
+                                        update="tablaPagos, grMensajes, pnlMontoPago"
+                                        partialSubmit="true"
+                                        process="pnlMontoPago"/>
+                    </h:panelGrid>
+
+                    <h:outputLabel value="#{msg.formaPago} :" />
+                    <p:selectOneMenu value="#{cuentaCobroBean.formaSlc}"
+                                     style="width: 190px" 
+                                     panelStyle="width:190px">
+                        <p:ajax update="pnlMontoPago,tablaPagos"/>
+                        <f:selectItems value="#{cuentaCobroBean.listaFormaPago}" 
+                                      var="forma"
+                                      itemLabel="#{forma.nombre}"
+                                      itemValue="#{forma.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.formaPago} #{msg.credito}  :" 
+                                   rendered="#{cuentaCobroBean.formaSlc eq 149}"/>
+                    <p:selectOneMenu value="#{cuentaCobroBean.formaCuentaSlc}"
+                                     style="width: 190px" 
+                                     panelStyle="width:190px"
+                                     rendered="#{cuentaCobroBean.formaSlc eq 149}">
+                        <p:ajax update="pnlMontoPago,tablaPagos"/>
+                        <f:selectItems value="#{cuentaCobroBean.listaFormaPagoCuenta}" 
+                                      var="formaCuenta"
+                                      itemLabel="#{formaCuenta.nombre}"
+                                      itemValue="#{formaCuenta.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.tipoTarjeta} :" 
+                                   rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc eq 153)}"/>
+                    <p:selectOneMenu value="#{cuentaCobroBean.tarjetaEmpresaSlc }"
+                                     filter="true" filterMatchMode="startsWith"
+                                     style="width: 190px"
+                                     panelStyle="width:190px"
+                                     rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc eq 153)}">
+                        <p:ajax update="comisionTarjeta"
+                                listener="#{cuentaCobroBean.cargarComisiones}"/>
+                        <f:selectItems value="#{cuentaCobroBean.listaTarjetaEmpresa}" 
+                                      var="tarjetaEmpresa"
+                                      itemLabel="#{tarjetaEmpresa.tipoTarjeta.nombre} #{msg.banco} #{tarjetaEmpresa.banco.nombre}"
+                                      itemValue="#{tarjetaEmpresa.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.formaPago} #{msg.tarjeta}:" 
+                                   rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc eq 153)}"/>
+                    <p:selectOneMenu value="#{cuentaCobroBean.comisionTarjetaSlc }"
+                                     filter="true" filterMatchMode="startsWith"
+                                     style="width: 190px"
+                                     panelStyle="width:190px"
+                                     rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc eq 153)}"
+                                     id="comisionTarjeta">
+                        <f:selectItems value="#{cuentaCobroBean.listaComisionTarjeta}" 
+                                      var="comision"
+                                      itemLabel="#{comision.nombre}"
+                                      itemValue="#{comision.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.numeroCuentas}:" 
+                                   rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc ne 153)}"/>
+                    <p:inputText value="#{cuentaCobroBean.numeroCuentas}"
+                                 style="background-color: khaki;text-align: right"
+                                 required="true"
+                                 size="5"
+                                 maxlength="2"
+                                 rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc ne 153)}">
+                       <p:keyFilter regEx="/[\d\.]/"/>
+                       <f:validateDoubleRange minimum="1" /> 
+                    </p:inputText>
+
+                    <h:outputLabel value="#{msg.banco} :" 
+                                   rendered="#{(cuentaCobroBean.formaCuentaSlc eq 152) and (cuentaCobroBean.formaSlc eq 149)}"/>
+                    <p:selectOneMenu value="#{cuentaCobroBean.bancoSlc}"
+                                    style="width: 190px"
+                                    panelStyle="width:190px"
+                                    filter="true" 
+                                    filterMatchMode="startsWith"
+                                    rendered="#{(cuentaCobroBean.formaCuentaSlc eq 152) and (cuentaCobroBean.formaSlc eq 149)}">
+                        <f:selectItems value="#{cuentaCobroBean.listaBancos}" 
+                                      var="banco"
+                                      itemLabel="#{banco.nombre}"
+                                      itemValue="#{banco.codigo}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.numero} #{msg.referencia} :" 
+                                   rendered="#{cuentaCobroBean.formaSlc eq 149}"/>
+                    <p:inputText value="#{cuentaCobroBean.cuentaFactura.numero}"
+                                 maxlength="20"
+                                 size="30"
+                                 rendered="#{cuentaCobroBean.formaSlc eq 149}">
+                        <p:keyFilter regEx="/[\d\.]/"/>
+                    </p:inputText> 
+
+                    <h:outputLabel value="#{msg.dias} #{msg.credito} :" 
+                                   rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc ne 153)}"/>
+                    <p:inputText value="#{cuentaCobroBean.diasCredito}"       
+                                 rendered="#{(cuentaCobroBean.formaSlc eq 149) and (cuentaCobroBean.formaCuentaSlc ne 153)}"
+                                 style="background-color: khaki;text-align: right"
+                                 required="true"
+                                 size="5"
+                                 maxlength="4">
+                        <p:keyFilter regEx="/[\d\.]/"/>
+                        <f:validateDoubleRange minimum="0" /> 
+                        <p:ajax event="keyup" update="fechaVencimiento, @this, grMensajes"
+                                listener="#{cuentaCobroBean.calcularFechaVencimiento()}"/>
+                    </p:inputText> 
+
+                    <h:outputLabel value="#{msg.vencimiento} :" 
+                                   rendered="#{cuentaCobroBean.formaSlc eq 149}"/>
+                    <h:outputLabel value="#{cuentaCobroBean.cuentaFactura.fechaVencimiento}" 
+                                   id="fechaVencimiento"
+                                   rendered="#{cuentaCobroBean.formaSlc eq 149}">
+                         <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+
+                    <h:outputLabel value="#{msg.detalle}: "/>
+                    <p:inputTextarea rows="3" cols="30" 
+                                     value="#{cuentaCobroBean.cuentaFactura.detalle}"/>
+                </h:panelGrid>
+
+                <p:dataTable var="items" 
+                         id="tablaPagos"
+                         value="#{cuentaCobroBean.listaFacturaPago}"
+                         emptyMessage="#{msg.tablaVacia}">
+                
+                <f:facet name="header">
+                    <p:commandButton value="#{msg.guardar}" 
+                                     actionListener="#{cuentaCobroBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     style="width:100px;height:30px;font-size: 12px;font-weight: bold;"
+                                     update=":frmCuentaCobro:grMensajes, @form"/>
+
+                    <p:commandButton value="#{msg.cancelar}" 
+                                    actionListener="#{cuentaCobroBean.cerrar()}"
+                                    immediate="true"
+                                    style="width:100px;height:30px;font-size: 12px;font-weight: bold;"
+                                    icon="ui-icon-cancel" />
+                </f:facet>
+                
+                <p:column style="width:16px">
+                    <p:rowToggler rendered="#{items.formaPago.codigo eq 149}"/>
+                </p:column>
+                 
+                <p:column headerText="#{msg.formaPago}">
+                    <h:outputLabel value="#{items.formaPago.nombre}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.valor}"
+                          width="100"
+                          style="text-align: right">
+                    <h:outputLabel value="#{items.valor}" />
+                </p:column>
+                
+                <p:rowExpansion>
+                    <p:dataTable var="itemsCuenta" 
+                                 id="tablaCuentas"
+                                 value="#{items.cuentaFacturaList}"
+                                 editable="true" 
+                                 editMode="cell"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 widgetVar="#{items}">
+                        
+                        <p:column headerText="#{msg.formaPago}">
+                            <h:outputLabel value="#{itemsCuenta.formaPago.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.valor}"
+                                  width="50">
+                            <h:outputLabel value="#{itemsCuenta.valor}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.numero}"
+                                    width="80">
+                              <p:cellEditor>
+                                  <f:facet name="output">
+                                      <h:outputLabel value="#{itemsCuenta.numero}"/>
+                                  </f:facet>
+                                  <f:facet name="input">
+                                      <p:inputText value="#{itemsCuenta.numero}" 
+                                                   style="text-align: left "
+                                                   size="5"
+                                                   maxlength="10"/>
+                                  </f:facet>
+                              </p:cellEditor>
+                          </p:column>
+
+                        <p:column headerText="#{msg.fecha}"
+                                    width="50">
+                            <p:cellEditor>
+                                 <f:facet name="output">
+                                        <h:outputLabel value="#{itemsCuenta.fechaVencimiento}" >
+                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                               pattern="#{parametrosApplication.formatoFecha}"/>
+                                        </h:outputLabel>
+                                </f:facet>
+                                <f:facet name="input">
+                                       <p:calendar value="#{itemsCuenta.fechaVencimiento}" 
+                                            navigator="true"
+                                            timeZone="#{parametrosApplication.timeZone}"
+                                            locale="#{parametrosApplication.local}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"
+                                            size="7"
+                                            required="true"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+                
+                <p:columnGroup type="footer">
+                    <p:row>
+                        <p:column footerText="#{msg.totalAplicado}" 
+                                  colspan="2" style="text-align:right;font-size: 20px;font-weight: bold;"/>
+                        <p:column footerText="#{cuentaCobroBean.totalPagos}" style="text-align:right;font-size: 20px;font-weight: bold;color: red;"/>
+                    </p:row>
+                </p:columnGroup>
+                
+                <p:column headerText="#{msg.opcion}" 
+                          width="50"
+                          style="text-align: center">
+
+                    <p:commandButton icon="ui-icon-close" 
+                                     update="tablaPagos, frmCuentaCobro:txtMontoPago" 
+                                     actionListener="#{cuentaCobroBean.eliminarCuenta(items)}"
+                                     title="#{msg.eliminar}"
+                                     partialSubmit="true"
+                                     process="tablaPagos"
+                                     rendered="#{items.formaPago.codigo ne 170}">
+                        <p:confirm header="#{msg.confirmacion}" 
+                                   message="#{msg.eliminar}" 
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                    
+                    <p:commandButton icon="ui-icon-pencil" 
+                                     title="#{msg.editar}"
+                                     update="frmCuentaCobro:pnlMontoPago, tablaPagos"
+                                     action="#{cuentaCobroBean.seleccionarFacturaPago(items)}"
+                                     partialSubmit="true"
+                                     process="tablaPagos"
+                                     rendered="#{items.formaPago.codigo ne 170}"/>
+               </p:column>
+            </p:dataTable>
+            </p:fieldset>
+            <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
+                <table width="200" align="center" border="0">
+                    <tr>
+                        <td align="center"> 
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="#{msg.si}"  
+                                                 styleClass="ui-confirmdialog-yes" 
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="#{msg.no}" 
+                                                 type="button" 
+                                                 styleClass="ui-confirmdialog-no" 
+                                                 icon="ui-icon-close" />
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                </table>
+            </p:confirmDialog> 
+        </h:form>
+    </h:body>
+</html>

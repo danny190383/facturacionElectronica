@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+            
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.guardar}"  
+                                             icon="ui-icon-disk"
+                                             actionListener="#{rolUsuarioBean.guardar}"
+                                             update=":frmCabecera:grMensajes" />
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.rol} #{msg.usuario}">
+                    <h:panelGrid columns="2"
+                                 style="margin-bottom:10px" 
+                                 cellpadding="5"
+                                 width="100%">
+                        <p:fieldset id="flsRolUsuario0001" 
+                                    style="width:250px;height:450px;" 
+                                    legend="#{msg.roles}">
+                            
+                            
+                            <p:dataTable var="rol" 
+                                         value="#{rolUsuarioBean.listaRol}" 
+                                         selection="#{rolUsuarioBean.rol}" 
+                                         rowKey="#{rol.codigo}"
+                                         selectionMode="single"
+                                         id="tablaRoles">
+                                
+                                <p:ajax event="rowSelect" 
+                                        listener="#{rolUsuarioBean.onSelect()}" 
+                                        update=":frmCabecera:flsRolUsuario0002" />
+                                
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     oncomplete="PF('dialog005').show()"
+                                                     actionListener="#{rolUsuarioBean.nuevo()}"
+                                                     immediate="true"
+                                                     update=":frmCabecera:dlgRol"
+                                                     icon="ui-icon-comment"/>
+                                </f:facet> 
+                               
+                                <p:column headerText="#{msg.roles} #{msg.sistema}" >
+                                    <h:outputLabel value="#{rol.nombre}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
+                        
+                        <p:fieldset id="flsRolUsuario0002" 
+                                    style="height:450px;width: 100%" 
+                                    legend="#{msg.opciones}">
+                            <p:pickList value="#{rolUsuarioBean.listaCuentas}" 
+                                        var="cuenta" 
+                                        itemValue="#{cuenta}" 
+                                        itemLabel="#{cuenta.identificador}" 
+                                        showCheckbox="true" 
+                                        responsive="true"
+                                        showSourceFilter="true" 
+                                        showTargetFilter="true" 
+                                        filterMatchMode="contains" 
+                                        converter="cuentaConverter">
+
+                                <f:facet name="sourceCaption">#{msg.disponibles}</f:facet>
+                                <f:facet name="targetCaption">#{msg.asignados}</f:facet>
+
+                                <p:column>
+                                    <h:outputLabel value="#{cuenta.identificador}"/><br/>
+                                    <h:outputLabel value="#{cuenta.empleado.persona.nombres} #{cuenta.empleado.persona.apellidos}" />
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="#{cuenta.empleado.empresa.nombreAbreviado}"/>
+                                </p:column>
+                            </p:pickList>
+                        </p:fieldset>
+                    </h:panelGrid>
+                </p:panel>
+                <p:dialog header="#{msg.rol}" 
+                          widgetVar="dialog005" 
+                          resizable="false"
+                          id="dlgRol">
+
+                    <h:form id="frm002">
+                        <h:panelGrid columns="2">
+                            
+                            <h:outputLabel value="#{msg.rol}: "/>
+                            <p:inputText value="#{rolUsuarioBean.rol.nombre}"
+                                         required="true" size="40" maxlength="100" />
+
+                            <p:commandButton value="#{msg.guardar}"  
+                                             actionListener="#{rolUsuarioBean.guardarRol()}"
+                                             icon="ui-icon-check" 
+                                             process="@form"
+                                            update=":frmCabecera:tablaRoles, :frmCabecera:grMensajes" />
+
+                            <p:commandButton value="#{msg.cancelar}" 
+                                             immediate="true"
+                                             update="@form"
+                                             process="@form"
+                                             icon="ui-icon-cancel" 
+                                             oncomplete="PF('dialog005').hide()"/>
+                        </h:panelGrid> 
+                    </h:form>
+                </p:dialog>
+                
+                <p:contextMenu for="tablaRoles">
+                    <p:menuitem value="#{msg.editar}" 
+                                update="dlgRol" 
+                                icon="ui-icon-search" 
+                                oncomplete="PF('dialog005').show()"/>
+                    <p:menuitem value="#{msg.eliminar}" 
+                                update=":frmCabecera:grMensajes, :frmCabecera:tablaRoles" 
+                                actionListener="#{rolUsuarioBean.eliminarRol}"
+                                immediate="true"
+                                icon="ui-icon-close" >
+                        <p:confirm header="#{msg.confirmacion}" 
+                                     message="#{msg.eliminar}" 
+                                     icon="ui-icon-alert" />
+                    </p:menuitem>
+                </p:contextMenu>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

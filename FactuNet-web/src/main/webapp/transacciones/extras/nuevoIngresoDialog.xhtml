@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.ingreso}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevo">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            <p:fieldset>
+                <h:panelGrid columns="4" 
+                             style="width: 100%"
+                             id="pnlDatosGuia">
+
+                    <h:outputLabel value="#{msg.tipo} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:selectOneMenu value="#{nuevoIngresoBean.garantiaDetalle.tipo}"
+                                     style="width: 147px"  
+                                     disabled="#{nuevoIngresoBean.garantiaDetalle.codigo ne null}" >
+                        <f:selectItem itemLabel="#{msg.servicios}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.garantia}" itemValue="2" />
+                        <p:ajax update=":frmNuevo:pnlDatosGuia"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.fechaEstimada} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:calendar value="#{nuevoIngresoBean.garantiaDetalle.fechaEstimada}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"/>
+                    
+                    <h:outputLabel value="#{msg.codigoBarras} / #{msg.series}: "/>
+                    <p:inputText value="#{nuevoIngresoBean.garantiaDetalle.codigoBarras}"
+                                 size="30"
+                                 maxlength="100"
+                                 id="txtCodigoBarras"
+                                 autocomplete="off"
+                                 placeholder="#{msg.codigoBarras} / #{msg.series}"
+                                 onkeypress="if(event.keyCode==13){onchange();return false;}">
+                        <p:ajax event="change" 
+                                listener="#{nuevoIngresoBean.buscarProductoBarras}"
+                                update=":frmNuevo:grMensajes, pnlDatosGuia"/>
+                    </p:inputText>
+                    
+                    <h:outputLabel value="#{msg.producto}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                    autoResize="false"
+                                    maxlength="200"
+                                    value="#{nuevoIngresoBean.garantiaDetalle.productoRecepcion}"/>
+                    
+                    <h:outputLabel value="#{msg.adicionales}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 1}"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     maxlength="400"
+                                     value="#{nuevoIngresoBean.garantiaDetalle.dejaAdicionales}"
+                                     rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 1}"/>
+                    
+                    <h:outputLabel value="#{msg.problemaReportado} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                    autoResize="false"
+                                    value="#{nuevoIngresoBean.garantiaDetalle.problemaReportado}"/>
+                    
+                    <h:outputLabel value="#{msg.trabajoRealizar}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 1}"/>
+                    <h:outputLabel value="#{msg.diagnostico}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false"
+                                     maxlength="200"
+                                     value="#{nuevoIngresoBean.garantiaDetalle.diagnosticoLocal}"/>
+                    
+                    <h:outputLabel value="#{msg.observacion} :" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                    autoResize="false"
+                                    value="#{nuevoIngresoBean.garantiaDetalle.observacion}"/>
+                    
+                    <h:outputLabel value="#{msg.fechaEnvio}:" 
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <p:calendar value="#{nuevoIngresoBean.garantiaDetalle.fechaEnvio}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"
+                                rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    
+                    <h:outputLabel value="#{msg.fechaReingreso}:" 
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <p:calendar value="#{nuevoIngresoBean.garantiaDetalle.fechaReingreso}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"
+                                rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    
+                    <h:outputLabel value="#{msg.fechaEntrega}:" 
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <p:calendar value="#{nuevoIngresoBean.garantiaDetalle.fechaEntrega}" 
+                                navigator="true" 
+                                timeZone="#{parametrosApplication.timeZone}"
+                                locale="#{parametrosApplication.local}" 
+                                pattern="#{parametrosApplication.formatoFecha}"
+                                size="25"
+                                rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    
+                    <h:outputLabel value="#{msg.facturaVenta}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <h:panelGrid columns="3"
+                                 rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"
+                                 id="pnlFacturaVenta">
+                        <p:fragment autoUpdate="true">               
+                           <p:commandButton actionListener="#{nuevoIngresoBean.verBusquedaFacturasVenta}"
+                                            icon="ui-icon-search">
+                             <p:ajax event="dialogReturn" 
+                                     listener="#{nuevoIngresoBean.onFacturaVentaSelect}"
+                                     update="pnlFacturaVenta"/>
+                          </p:commandButton>
+                        </p:fragment>
+                        <h:commandLink actionListener="#{nuevoIngresoBean.generarReportePDF(nuevoIngresoBean.garantiaDetalle.facturaVenta.codigo)}"
+                                        target="_blank" >
+                             <h:outputLabel value="#{nuevoIngresoBean.garantiaDetalle.facturaVenta.numero}"/>
+                        </h:commandLink>
+                        <h:outputLabel value="#{nuevoIngresoBean.garantiaDetalle.facturaVenta.fecha}">
+                           <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                       </h:outputLabel>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.facturaCompra}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"/>
+                    <h:panelGrid columns="3"
+                                 rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 2}"
+                                 id="pnlFacturaCompra">
+                       <p:fragment autoUpdate="true">               
+                           <p:commandButton actionListener="#{nuevoIngresoBean.verBusquedaFacturasCompra}"
+                                            icon="ui-icon-search">
+                             <p:ajax event="dialogReturn" 
+                                     listener="#{nuevoIngresoBean.onFacturaCompraSelect}"
+                                     update="pnlFacturaCompra"/>
+                          </p:commandButton>
+                       </p:fragment>
+                        <h:commandLink actionListener="#{nuevoIngresoBean.generarReporteRetencionPDF(nuevoIngresoBean.garantiaDetalle.facturaCompra.codigo)}"
+                                        target="_blank" >
+                          <h:outputLabel value="#{nuevoIngresoBean.garantiaDetalle.facturaCompra.numero}"/>
+                       </h:commandLink>
+                       <h:outputLabel value="#{nuevoIngresoBean.garantiaDetalle.facturaCompra.fecha}">
+                           <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                       </h:outputLabel>
+                    </h:panelGrid>
+                    
+                    <h:outputLabel value="#{msg.clave}: "
+                                   styleClass="texto_etiquetas"
+                                   rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 1}"/>
+                    <p:inputText value="#{nuevoIngresoBean.garantiaDetalle.clave}"
+                                 maxlength="50"
+                                 rendered="#{nuevoIngresoBean.garantiaDetalle.tipo eq 1}"/>
+                    
+                    <h:outputLabel value="#{msg.valorEstimado}: "
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputText value="#{nuevoIngresoBean.garantiaDetalle.costo}"
+                                 style="text-align: right "
+                                 maxlength="4"
+                                 size="10">
+                       <p:keyFilter regEx="/[\d\.]/"/>
+                       <f:validateDoubleRange minimum="0" maximum="1000.0" />
+                    </p:inputText>
+                    
+               </h:panelGrid> 
+
+               <h:panelGrid columns="2">
+                   <p:commandButton value="#{msg.agregar}" 
+                                    actionListener="#{nuevoIngresoBean.agregar()}"
+                                    icon="ui-icon-check" 
+                                    update="grMensajes, @form"/>
+
+                   <p:commandButton value="#{msg.cancelar}" 
+                                    actionListener="#{nuevoIngresoBean.cerrar()}"
+                                    immediate="true"
+                                    icon="ui-icon-cancel" />
+               </h:panelGrid>
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

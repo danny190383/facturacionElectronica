@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-template.xhtml">
+
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}" 
+                                             actionListener="#{clienteBean.nuevoCliente}"
+                                             update=":frmCabecera:pnlCliente, pnlBotones" 
+                                             icon="ui-icon-document" /> 
+
+                            <p:commandButton value="#{msg.guardar}" 
+                                             actionListener="#{clienteBean.guardar}"
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlCliente, pnlBotones" 
+                                             icon="ui-icon-disk"/>  
+                        
+                            <p:commandButton value="#{msg.buscar}"  
+                                             immediate="true"
+                                             icon="ui-icon-search"
+                                             actionListener="#{clienteBean.verBusquedaClientes}" >
+                              <p:ajax event="dialogReturn" 
+                                      listener="#{clienteBean.onClienteSelect}" 
+                                      update=":frmCabecera:pnlCliente, pnlBotones" />
+                            </p:commandButton>
+                            
+                            <p:commandButton value="#{msg.buscar} #{msg.notaMedica}"  
+                                             immediate="true"
+                                             icon="ui-icon-search"
+                                             actionListener="#{clienteBean.verBusquedaNotaMedica}" 
+                                             rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}"/>
+                            
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>
+                                
+                            <h:commandLink target="_blank" 
+                                           actionListener="#{clienteBean.generarReportePDF()}"
+                                           disabled="#{clienteBean.cliente.persona.codigo eq null}">
+                                <p:commandButton type="button" icon="ui-icon-print"/>
+                            </h:commandLink>
+                        </f:facet>
+                    </p:toolbar>
+                </div> 
+            </ui:define>
+            
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.clientes}"
+                         id="pnlCliente">
+                    <h:panelGrid columns="2">
+                        <h:panelGrid columns="4"
+                                     style="margin-bottom:10px" cellpadding="5">
+                            
+                            <p:selectOneMenu value="#{clienteBean.cliente.persona.tipoIdentificacion}"
+                                             style="width: 100px"
+                                             required="true"
+                                             converter="omnifaces.SelectItemsConverter">
+                                <f:selectItems value="#{clienteBean.listaTipoIdentificacion}" 
+                                               var="tipoId"
+                                               itemLabel="#{tipoId.nombre}"
+                                               itemValue="#{tipoId}"/>
+                                <p:ajax update="pnlCedula"/>
+                            </p:selectOneMenu>
+                            
+                            <h:panelGroup id="pnlCedula">
+                                <p:inputText value="#{clienteBean.cliente.persona.cedula}"
+                                             maxlength="#{clienteBean.cliente.persona.tipoIdentificacion.tipoValidacion.longitud}"
+                                             size="35"
+                                             rendered="#{clienteBean.cliente.persona.tipoIdentificacion.tipoValidacion.nombre eq 'CEDULA - RUC'}"
+                                             validator="com.jvc.factunet.validador.ValidarCedulaRucNulo"
+                                             required="true"
+                                             style="background-color: khaki ">
+                                    <p:keyFilter regEx="/[\d]/" 
+                                                 preventPaste="false"/>
+                                </p:inputText> 
+                                
+                                <p:inputText value="#{clienteBean.cliente.persona.cedula}"
+                                             maxlength="#{clienteBean.cliente.persona.tipoIdentificacion.tipoValidacion.longitud}"
+                                             size="35"
+                                             required="true"
+                                             style="background-color: khaki "
+                                             rendered="#{clienteBean.cliente.persona.tipoIdentificacion.tipoValidacion.nombre ne 'CEDULA - RUC'}">
+                                    <p:keyFilter regEx="#{clienteBean.cliente.persona.tipoIdentificacion.tipoValidacion.valor}" 
+                                                 preventPaste="false"/>
+                                </p:inputText> 
+                                
+                                <p:commandButton actionListener="#{clienteBean.verificarPersona()}"
+                                                 icon="ui-icon-search"
+                                                 title="#{msg.buscar}" 
+                                                 update=":frmCabecera:grMensajes, :frmCabecera:pnlCliente"
+                                                 partialSubmit="true"
+                                                 process="pnlCedula"/>
+                            </h:panelGroup>
+                            
+                            <h:outputLabel value="#{msg.nombres}" />
+                            <p:inputText value="#{clienteBean.cliente.persona.nombres}"
+                                         maxlength="50"
+                                         size="35"
+                                         required="true"
+                                         style="background-color: khaki "/>
+                            
+                            <h:outputLabel value="#{msg.apellidos}" />
+                            <p:inputText value="#{clienteBean.cliente.persona.apellidos}"
+                                         maxlength="50"
+                                         size="35"/>
+                            
+                            <h:outputLabel value="#{msg.correo}" />
+                            <p:inputText value="#{clienteBean.cliente.persona.email}"
+                                         size="35"
+                                         maxlength="50"
+                                         validatorMessage="#{msg.emailInvalido}">
+                                 <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail" />
+                            </p:inputText>
+                            
+                            <h:outputLabel value="#{msg.telefono}" />
+                            <p:inputText value="#{clienteBean.cliente.persona.telefono}"
+                                         maxlength="10"
+                                         size="35">
+                                <p:keyFilter regEx="/[\d]/"/>
+                            </p:inputText>
+                            
+                            <h:outputLabel value="#{msg.direccion}" />
+                            <p:inputTextarea rows="2" cols="30" 
+                                             autoResize="false" 
+                                             value="#{clienteBean.cliente.persona.direccion}"
+                                             required="true"
+                                             style="background-color: khaki "/>
+                            
+                            <h:outputLabel value="#{msg.descripcion}" />
+                            <p:inputTextarea rows="2" cols="30" 
+                                             autoResize="false" 
+                                             value="#{clienteBean.cliente.detalle}"/>
+                            
+                            <h:outputLabel value="#{msg.tipocliente}" />
+                            <h:panelGrid id="pnlTipoCliente"
+                                         columns="2">
+                                <p:selectOneMenu value="#{clienteBean.cliente.tipoCliente}"
+                                                 style="width: 147px"
+                                                 id="slcTipoCliente"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItems value="#{clienteBean.listaTipoCliente}" 
+                                                   var="tipoCliente"
+                                                   itemLabel="#{tipoCliente.nombre}"
+                                                   itemValue="#{tipoCliente}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton actionListener="#{clienteBean.refreshTipoCliente()}"
+                                                 icon="ui-icon-arrowrefresh-1-w"
+                                                 title="#{msg.recargar}" 
+                                                 update="slcTipoCliente"
+                                                 partialSubmit="true"
+                                                 process="pnlTipoCliente"/>
+                            </h:panelGrid>
+                            
+                            <h:outputLabel value="#{msg.ciudad}" />
+                            <h:panelGrid id="pnlCiudad"
+                                         columns="2">
+                                <p:selectOneMenu value="#{clienteBean.cliente.persona.ciudad}"
+                                                 style="width: 147px"
+                                                 id="slcCiudad"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 filter="true" filterMatchMode="startsWith">
+                                    <f:selectItems value="#{clienteBean.listaCiudad}" 
+                                                   var="ciudad"
+                                                   itemLabel="#{ciudad.nombre}"
+                                                   itemValue="#{ciudad}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton actionListener="#{clienteBean.refreshCiudad()}"
+                                                 icon="ui-icon-arrowrefresh-1-w"
+                                                 title="#{msg.recargar}" 
+                                                 update="slcCiudad"
+                                                 partialSubmit="true"
+                                                 process="pnlCiudad"/>
+
+                            </h:panelGrid>
+                            
+                            <h:outputLabel value="#{msg.estadocivil}" />
+                            <h:panelGrid id="pnlEstadoCivil"
+                                         columns="2">
+                                <p:selectOneMenu value="#{clienteBean.cliente.persona.estadoCivil}"
+                                                 style="width: 147px"
+                                                 id="slcEstadoCivil"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItems value="#{clienteBean.listaEstadoCivil}" 
+                                                   var="estadoCivil"
+                                                   itemLabel="#{estadoCivil.nombre}"
+                                                   itemValue="#{estadoCivil}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton actionListener="#{clienteBean.refreshEstadoCivil()}"
+                                                    icon="ui-icon-arrowrefresh-1-w"
+                                                    title="#{msg.recargar}" 
+                                                    update="slcEstadoCivil"
+                                                    partialSubmit="true"
+                                                    process="pnlEstadoCivil"/>
+                            </h:panelGrid>
+                            
+                            <h:outputLabel value="#{msg.sexo}" />
+                            <h:panelGrid id="pnlSexo"
+                                         columns="2">
+                                <p:selectOneMenu value="#{clienteBean.cliente.persona.sexo}"
+                                                 style="width: 147px"
+                                                 id="slcSexo"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItems value="#{clienteBean.listaSexo}" 
+                                                   var="sexo"
+                                                   itemLabel="#{sexo.nombre}"
+                                                   itemValue="#{sexo}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton actionListener="#{clienteBean.refreshSexo()}"
+                                                icon="ui-icon-arrowrefresh-1-w"
+                                                title="#{msg.recargar}" 
+                                                update="slcSexo"
+                                                partialSubmit="true"
+                                                process="pnlSexo"/>
+                            </h:panelGrid>
+                            
+                            <h:outputLabel value="#{msg.fechaNacimiento}" />
+                            <p:calendar value="#{clienteBean.cliente.persona.fechaNacimiento}" 
+                                        navigator="true" 
+                                        timeZone="#{parametrosApplication.timeZone}"
+                                        locale="#{parametrosApplication.local}" 
+                                        pattern="#{parametrosApplication.formatoFecha}"
+                                        size="25"/>
+                            
+                            <h:outputLabel value="#{msg.capacidadCredito}" />
+                            <p:inputText value="#{clienteBean.cliente.capacidadCredito}"
+                                         size="25"
+                                         maxlength="15">
+                                <f:validateDoubleRange minimum="0.0"/>
+                            </p:inputText> 
+                            
+                            <h:outputLabel value="Obligado Contabilidad"/> 
+                            <p:selectOneRadio value="#{clienteBean.cliente.persona.obligadoContabilidad}">
+                              <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                              <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                            </p:selectOneRadio>
+                        </h:panelGrid>
+                         
+                        <h:panelGrid columns="1" 
+                                     style="text-align: center">
+                            
+                            <h:outputLabel value="#{msg.foto}" />
+                            <p:graphicImage id="logo"
+                                            url="#{clienteBean.urlLogo}"
+                                            width="150px"
+                                            height="150px"
+                                            style="border: solid 1px"
+                                            cache="false" />
+                            <h:panelGrid columns="2">
+                              
+                                <p:fileUpload  mode="advanced" 
+                                               skinSimple="true"
+                                               sizeLimit="1000000"  
+                                               label="#{msg.seleccionar}"
+                                               auto="true"
+                                               listener="#{clienteBean.subirLogo}"
+                                               allowTypes="/(\.|\/)(gif|jpg|jpe?g|jpeg|gif|png|PNG|GIF|JPG|JPE?G|JPEG)$/"    
+                                               cancelLabel="#{msg.cancelar}" 
+                                               update=":frmCabecera:grMensajes, :frmCabecera:logo"/>
+                                
+                                <p:commandButton onclick="PF('dlgCamara').show();"
+                                                 icon="fa fa-fw fa-camera"
+                                                 style="width: 35px;height: 30px"
+                                                 title="#{msg.camara}"
+                                                 rendered="#{login.empleado.cuenta.camara ne 1}"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <!--
+                    <h:form  enctype = "multipart/form-data" 
+                             rendered="false"
+                             id="frmFile">
+                        <p:fileUpload  mode="advanced" 
+                                       skinSimple="true"
+                                       sizeLimit="10000000"  
+                                       label="#{msg.seleccionar} #{msg.archivo}"
+                                       auto="true"
+                                       listener="#{clienteBean.subirArchivo}"
+                                       allowTypes="/(\.|\/)(xlsx|xls)$/" 
+                                       cancelLabel="Cancelar" 
+                                       update=":frmCabecera:grMensajes"/>
+                    </h:form>
+                    -->
+                    <p:tabView id="tabDatos">
+                        <p:tab title="#{msg.mascotas}"
+                               rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}">
+                            <p:dataTable value="#{clienteBean.cliente.persona.mascotaPersonaList}"
+                                         id="tablaMascotas" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         var="mascota">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{clienteBean.verMascota(null)}" 
+                                                     update=":frmCabecera:grMensajes"
+                                                     icon="ui-icon-comment" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{clienteBean.onMascotaSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaMascotas"/>
+                                   </p:commandButton>
+                                </f:facet>
+                                
+                                <p:column headerText="#{msg.nombre}">
+                                    <h:outputLabel value="#{mascota.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.especie}"
+                                          width="80">
+                                    <h:outputLabel value="#{mascota.especie.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.raza}"
+                                          width="80">
+                                    <h:outputLabel value="#{mascota.raza.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.sexo}"
+                                          width="80">
+                                    <h:outputLabel value="#{mascota.sexo.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.fechaNacimiento}"
+                                          width="120">
+                                    <h:outputLabel value="#{mascota.fechaNacimiento}">
+                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                           pattern="#{parametrosApplication.formatoFecha}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="70"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaMascotas" 
+                                                      actionListener="#{clienteBean.eliminarMascota(mascota)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{clienteBean.verMascota(mascota)}">
+                                       <p:ajax event="dialogReturn"
+                                               listener="#{clienteBean.onMascotaSelect}"
+                                               update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaMascotas"/>
+                                   </p:commandButton>   
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.listaContactos}">
+                            <p:dataTable value="#{clienteBean.cliente.contactoPersonaList}"
+                                         id="tablaContactos" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         var="contacto">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{clienteBean.verContacto(null)}" 
+                                                     update=":frmCabecera:grMensajes, :frmCabecera:pnlCliente"
+                                                     icon="ui-icon-comment" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{clienteBean.onContactoSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactos"/>
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton value="#{msg.buscar}"  
+                                                     immediate="true"
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{clienteBean.verBusquedaPersonas}" >
+                                      <p:ajax event="dialogReturn" 
+                                              listener="#{clienteBean.onPersonaSelect}" 
+                                              update="tablaContactos" />
+                                    </p:commandButton>
+                                </f:facet>
+
+                                <p:column headerText="#{msg.cedula}"
+                                          width="100">
+                                    <h:outputLabel value="#{contacto.persona.cedula}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.nombres}">
+                                    <h:outputLabel value="#{contacto.persona.nombres} #{contacto.persona.apellidos}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.direccion}">
+                                    <h:outputLabel value="#{contacto.persona.direccion}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="70"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactos" 
+                                                      actionListener="#{clienteBean.eliminarContacto(contacto)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{clienteBean.verContacto(contacto)}">
+                                        <p:ajax event="dialogReturn" 
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactos"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.mediosContactar}">
+                            <p:dataTable value="#{clienteBean.cliente.contactarPersonaList}"
+                                         id="tablaContactosWeb" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         var="contactoWeb">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{clienteBean.verContactar(null)}" 
+                                                     update=":frmCabecera:grMensajes"
+                                                     icon="ui-icon-comment" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{clienteBean.onContactarSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactosWeb"/>
+                                   </p:commandButton>
+                                </f:facet>
+
+                                <p:column headerText="#{msg.nombre}">
+                                    <h:outputLabel value="#{contactoWeb.tipoContacto.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.descripcion}">
+                                    <h:outputLabel value="#{contactoWeb.descripcion}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.valor}">
+                                    <h:outputLabel value="#{contactoWeb.valor}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="70"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactosWeb" 
+                                                      actionListener="#{clienteBean.eliminarContactar(contactoWeb)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{clienteBean.verContactar(contactoWeb)}">
+                                       <p:ajax event="dialogReturn" 
+                                               update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaContactosWeb"/>
+                                   </p:commandButton>   
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.retencion}"
+                               rendered="false">
+                            <p:dataTable value="#{clienteBean.cliente.persona.retencionPersonaList}"
+                                         id="tablaRetencion" 
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         var="retencion">
+
+                                <f:facet name="header">
+                                    <p:commandButton value="#{msg.nuevo}"  
+                                                     actionListener="#{clienteBean.verRetencion(null)}" 
+                                                     update=":frmCabecera:grMensajes"
+                                                     icon="ui-icon-comment" >
+                                        <p:ajax event="dialogReturn" 
+                                                listener="#{clienteBean.onRetencionSelect}"
+                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaRetencion"/>
+                                   </p:commandButton>
+                                </f:facet>
+                                
+                                <p:column headerText="#{msg.tiporetencion}">
+                                    <h:outputLabel value="#{retencion.tipoRetencion.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.codigodeimpuesto}">
+                                    <h:outputLabel value="#{retencion.tipoRetencion.codigoImpuesto}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.observacion}">
+                                    <h:outputLabel value="#{retencion.observacion}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="70"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaRetencion" 
+                                                      actionListener="#{clienteBean.eliminarRetencion(retencion)}"
+                                                      immediate="true"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-pencil" 
+                                                     title="#{msg.editar}"
+                                                     action="#{clienteBean.verRetencion(retencion)}">
+                                       <p:ajax event="dialogReturn" 
+                                               update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaRetencion"/>
+                                   </p:commandButton>   
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>  
+                </p:panel>
+                <p:dialog header="#{msg.foto}" 
+                          widgetVar="dlgCamara"
+                          minHeight="40"
+                          rendered="#{login.empleado.cuenta.camara ne 1}">
+                  <h:panelGrid columns="1" cellpadding="5">
+                      <p:photoCam widgetVar="imagen" 
+                                  listener="#{clienteBean.onCapture}" 
+                                  update=":frmCabecera:logo" />
+                      <p:commandButton type="button" 
+                                       icon="fa fa-fw fa-camera"
+                                       title="#{msg.capturar}"
+                                       style="width: 35px;height: 30px"
+                                       onclick="PF('imagen').capture()"/>
+                  </h:panelGrid>
+               </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.cuenta}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="cuenta" 
+                         id="tablaDetalles"
+                         value="#{buscarCuentasBean.cuentaFacturaList}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         selection="#{buscarCuentasBean.cuentaFacturaListSelect}" 
+                         rowKey="#{cuenta}"
+                         rowsPerPageTemplate="10,15,20">
+                
+                <f:facet name="header">
+                    <p:commandButton value="#{msg.enviarCorreo}"  
+                                     icon="ui-icon-disk"
+                                     actionListener="#{buscarCuentasBean.envioNotificacionCuenta}"
+                                     update=":frmBusquedaDetalles:grMensajes" />
+                </f:facet>
+                
+                <p:column selectionMode="multiple"
+                          style="width:16px;text-align:center"/>
+                
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+                
+                 <p:column headerText="#{msg.numero}"
+                          width="100"
+                          filterBy="#{cuenta.facturaPago.factura.numero}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCuentasBean.numero}"
+                                     size="5"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                         </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarCuentasBean.generarReportePDF(cuenta.facturaPago.factura.codigo)}"
+                                   target="_blank" 
+                                   rendered="#{cuenta.facturaPago.factura.numero ne -1}">
+                        <h:outputLabel value="#{cuenta.facturaPago.factura.numero}" 
+                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                    </h:commandLink>
+                    <p:spacer width="10" height="20" />
+                    <h:commandLink actionListener="#{buscarCuentasBean.generarReporteCuentasPDF(cuenta.facturaPago)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{msg.cuenta}"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                    </h:commandLink>
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{cuenta.facturaPago.factura.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarCuentasBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.facturaPago.factura.fecha}"
+                                   style="font-size: 13px;font-style: normal;font-weight: bold">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.ruc}"
+                          filterBy="#{cuenta.facturaPago.factura.proveedor.persona.cedula}"
+                          width="110"
+                          rendered="#{buscarCuentasBean.tipo eq '1'}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCuentasBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.facturaPago.factura.proveedor.persona.cedula}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.proveedor}"
+                          filterBy="#{cuenta.facturaPago.factura.proveedor.persona.nombres}"
+                          rendered="#{buscarCuentasBean.tipo eq '1'}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCuentasBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.facturaPago.factura.proveedor.persona.nombres} #{cuenta.facturaPago.factura.proveedor.persona.apellidos}"
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.ruc}"
+                          filterBy="#{cuenta.facturaPago.factura.cliente.persona.cedula}"
+                          width="110"
+                          rendered="#{buscarCuentasBean.tipo ne '1'}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCuentasBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.facturaPago.factura.cliente.persona.cedula}"
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.cliente}"
+                          filterBy="#{cuenta.facturaPago.factura.cliente.persona.nombres}"
+                          rendered="#{buscarCuentasBean.tipo ne '1'}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarCuentasBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.facturaPago.factura.cliente.persona.nombres} #{cuenta.facturaPago.factura.cliente.persona.apellidos}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                        
+                <p:rowExpansion>
+                    <p:dataTable var="abono"
+                                 value="#{cuenta.abonoCuentaList}"
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 style="width: 50%">
+
+                        <p:column headerText="#{msg.pago}">
+                            <h:outputLabel value="#{abono.formaPago.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg.fecha} #{msg.pago}"
+                                  width="70">
+                            <h:outputLabel value="#{abono.fecha}" >
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="#{msg.valor}"
+                                  width="50"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{abono.valor}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+                        
+                <p:column headerText="#{msg.cuenta}"
+                          width="90">
+                    <h:outputLabel value="#{cuenta.formaPago.nombre}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.numero}"
+                          width="40"
+                          style="text-align: right">
+                    <h:outputLabel value="#{cuenta.numero}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.dias}"
+                          width="30"
+                          style="text-align: right">
+                  <h:outputText value="#{cuenta.dias}"
+                                style="font-size: 13px;font-style: normal;font-weight: bold"/>
+              </p:column>
+                
+                <p:column headerText="#{msg.vencimiento}"
+                          width="65"
+                          filterBy="#{cuenta.fechaVencimiento}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarCuentasBean.fechaV}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarCuentasBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{cuenta.fechaVencimiento}"
+                                   style="font-size: 13px;font-style: normal;font-weight: bold">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column headerText="#{msg.valor}"
+                          width="40"
+                          style="text-align: right">
+                    <h:outputLabel value="#{cuenta.valor}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+
+                <p:column headerText="#{msg.saldo}"
+                          width="40"
+                          style="text-align: right">
+                    <h:outputLabel value="#{cuenta.saldo}" 
+                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

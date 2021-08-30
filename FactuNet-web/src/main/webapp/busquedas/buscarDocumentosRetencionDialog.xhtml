@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <title>#{msg.buscar} #{msg.retencion}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmBusquedaDetalles">
+            
+            <p:growl id="grMensajes" 
+                     widgetVar="grMensajes" 
+                     showDetail="false"/>
+            
+            <p:dataTable var="pedido" 
+                         id="tablaDetalles"
+                         value="#{buscarDocumentosRetencionBean.listaDocumentoRetencion}" 
+                         paginator="true" 
+                         emptyMessage="#{msg.tablaVacia}"
+                         rows="10" 
+                         rowsPerPageTemplate="10,15,20"
+                         selection="#{buscarDocumentosRetencionBean.listaDocumentoRetencionSlc}"
+                         rowKey="#{pedido.codigo}">
+                
+                <f:facet name="header">
+                    <p:commandButton value="#{msg.agregarSeleccion}"  
+                                      icon="ui-icon-search"
+                                      actionListener="#{buscarDocumentosRetencionBean.seleccionarLista}" />
+                </f:facet>
+                
+                <p:column selectionMode="multiple" 
+                          style="width:16px;text-align:center"/>
+                
+                <p:column headerText="#{msg.numero}"
+                          width="100"
+                          filterBy="#{pedido.numero}"
+                          style="text-align: right">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarDocumentosRetencionBean.numero}"
+                                     size="8"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:keyFilter regEx="/[\d]/" />
+                            <p:ajax event="change" listener="#{buscarDocumentosRetencionBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:commandLink actionListener="#{buscarDocumentosRetencionBean.generarReportePDF(pedido.codigo)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{pedido.numero}" />
+                    </h:commandLink>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="#{msg.retencion}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.factura}"
+                          width="90"
+                          style="text-align: right">
+                    <h:commandLink actionListener="#{buscarDocumentosRetencionBean.generarReportePDF(pedido.factura.codigo ,21)}"
+                                   target="_blank" >
+                        <h:outputLabel value="#{pedido.factura.numero}" />
+                    </h:commandLink>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="#{msg.factura}"/>
+                </p:column>
+                
+                <p:column headerText="#{msg.fecha}"
+                          width="65"
+                          filterBy="#{pedido.fecha}">
+                    <f:facet name="filter">
+                        <p:calendar value="#{buscarDocumentosRetencionBean.fecha}" effect="fold" 
+                                    size="7">
+                            <p:ajax event="dateSelect" 
+                                    listener="#{buscarDocumentosRetencionBean.filtrar}"
+                                    update="tablaDetalles"/>
+                            
+                            <p:ajax event="change" 
+                                    listener="#{buscarDocumentosRetencionBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.fecha}">
+                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                            pattern="#{parametrosApplication.formatoFecha}"/>
+                    </h:outputLabel>
+                </p:column>
+                
+                <p:column headerText="#{msg.cedula}"
+                          filterBy="#{pedido.factura.proveedor.persona.cedula}"
+                          width="110">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarDocumentosRetencionBean.ruc}"
+                                     size="12"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarDocumentosRetencionBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.factura.proveedor.persona.cedula}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.proveedor}"
+                          filterBy="#{pedido.factura.proveedor.persona.nombres}">
+                    <f:facet name="filter">
+                        <p:inputText value="#{buscarDocumentosRetencionBean.nombre}"
+                                     size="20"
+                                     onkeypress="if(event.keyCode==13){onchange();return false;}">
+                            <p:ajax event="change" listener="#{buscarDocumentosRetencionBean.filtrar}"
+                                    update="tablaDetalles"/>
+                        </p:inputText>
+                    </f:facet>
+                    <h:outputLabel value="#{pedido.factura.proveedor.persona.nombres} #{pedido.factura.proveedor.persona.apellidos}" />
+                </p:column>
+                
+                <p:column headerText="#{msg.total}"
+                          width="40">
+                    <h:outputLabel value="#{pedido.totalRetencion}"/>
+                </p:column>
+                
+                <p:column headerText="SRI"
+                          width="100">
+                    <h:outputLabel value="#{pedido.estadoSri}"/><br/>
+                    <h:outputLabel value="#{pedido.estadoAutorizacionSri}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
