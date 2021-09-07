@@ -549,7 +549,7 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
     public void generarReporte(String tipoReporte) {
         try {
             super.getParametros().put("empresa", this.empresa.getCodigo());
-            super.getParametros().put("persona", this.cliente.getPersona().getCodigo());
+            super.getParametros().put("persona", this.cliente.getCodigo());
             super.getParametros().put("tipo", 1);
             super.getParametros().put("nombreReporte", "Ficha Cliente");
             super.getParametros().put("SUBREPORT_DIR", JasperReportUtil.PATH);

@@ -46,7 +46,7 @@
                 </p:column>
                 
                 <p:column headerText="#{msg.nombre}" sortBy="#{trans.persona.nombres}" filterBy="#{trans.persona.nombres}">
-                    <h:commandLink actionListener="#{buscarTransportistasBean.generarReportePDF(trans.persona.codigo)}"
+                    <h:commandLink actionListener="#{buscarTransportistasBean.generarReportePDF(trans.codigo)}"
                                    target="_blank" >
                         <h:outputLabel value="#{trans.persona.nombres}" />
                     </h:commandLink>

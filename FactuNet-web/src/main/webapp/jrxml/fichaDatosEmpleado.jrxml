@@ -24,23 +24,15 @@ mantenimiento_civil.codigo = estado_civil.codigo inner join sexo on
 sexo.codigo = persona.sexo inner join mantenimiento as mantenimiento_sexo  on
 mantenimiento_sexo.codigo = sexo.codigo
 where
-persona.codigo = $P{codigo}]]>
+cliente.codigo = $P{codigo}]]>
 	</queryString>
 	<field name="nombres" class="java.lang.String"/>
 	<field name="apellidos" class="java.lang.String"/>
 	<field name="cedula" class="java.lang.String"/>
-	<field name="direccion" class="java.lang.String">
-		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
-	</field>
-	<field name="email" class="java.lang.String">
-		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
-	</field>
-	<field name="ciudad" class="java.lang.String">
-		<fieldDescription><![CDATA[Ciudad dond esta la bodega.]]></fieldDescription>
-	</field>
-	<field name="cargo" class="java.lang.String">
-		<fieldDescription><![CDATA[Crago que desempeña en la empresa, dato heredado de la tabla cargo]]></fieldDescription>
-	</field>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="ciudad" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
 	<field name="estado_civil" class="java.lang.String"/>
 	<field name="sexo" class="java.lang.String"/>
 	<field name="fecha_nacimiento" class="java.sql.Date"/>

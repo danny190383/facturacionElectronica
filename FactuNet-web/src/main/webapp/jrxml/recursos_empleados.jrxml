@@ -20,24 +20,15 @@ on tipo_persona.persona = persona.codigo inner join cargo
 on cargo.codigo = proveedor.cargo inner join mantenimiento 
 on mantenimiento.codigo = cargo.codigo
 where
-empresa = $P{empresa}]]>
+tipo_persona.empresa = $P{empresa}]]>
 	</queryString>
-	<field name="codigo" class="java.lang.Integer">
-		<fieldDescription><![CDATA[Numero entero que indica la cuenta por cobrar a la que se esta realizando el abono o pago.
-]]></fieldDescription>
-	</field>
+	<field name="codigo" class="java.lang.Integer"/>
 	<field name="cedula" class="java.lang.String"/>
 	<field name="nombres" class="java.lang.String"/>
 	<field name="apellidos" class="java.lang.String"/>
-	<field name="direccion" class="java.lang.String">
-		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
-	</field>
-	<field name="email" class="java.lang.String">
-		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
-	</field>
-	<field name="cargo" class="java.lang.String">
-		<fieldDescription><![CDATA[Crago que desempeña en la empresa, dato heredado de la tabla cargo]]></fieldDescription>
-	</field>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
 	<field name="fecha_ingreso" class="java.sql.Date">
 		<fieldDescription><![CDATA[Fecha de ingreso a la empresa]]></fieldDescription>
 	</field>

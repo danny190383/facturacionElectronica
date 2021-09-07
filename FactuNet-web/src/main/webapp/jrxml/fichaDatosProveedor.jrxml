@@ -17,26 +17,16 @@ tipo_persona.persona = persona.codigo inner join ciudad on
 persona.ciudad = ciudad.codigo inner join mantenimiento on
 mantenimiento.codigo = ciudad.codigo 
 where
-persona.codigo = $P{codigo}]]>
+cliente.codigo = $P{codigo}]]>
 	</queryString>
 	<field name="nombres" class="java.lang.String"/>
 	<field name="apellidos" class="java.lang.String"/>
 	<field name="cedula" class="java.lang.String"/>
-	<field name="direccion" class="java.lang.String">
-		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
-	</field>
-	<field name="detalle" class="java.lang.String">
-		<fieldDescription><![CDATA[Campo para detallar o describir algun datos en particular adicional del cliente.]]></fieldDescription>
-	</field>
-	<field name="email" class="java.lang.String">
-		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
-	</field>
-	<field name="ciudad" class="java.lang.String">
-		<fieldDescription><![CDATA[Ciudad dond esta la bodega.]]></fieldDescription>
-	</field>
-	<field name="capacidad_credito" class="java.math.BigDecimal">
-		<fieldDescription><![CDATA[Detalla el credito maximo que se le asigna al cliente en sus compras a credito.]]></fieldDescription>
-	</field>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="detalle" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="ciudad" class="java.lang.String"/>
+	<field name="capacidad_credito" class="java.math.BigDecimal"/>
 	<field name="descuento" class="java.math.BigDecimal"/>
 	<field name="interes_mora" class="java.math.BigDecimal"/>
 	<field name="tiempo_max_credito" class="java.lang.Integer"/>

@@ -31,7 +31,7 @@
                 </p:column>
                 
                 <p:column headerText="#{msg.nombres}" sortBy="#{clie.persona.nombres}" filterBy="#{clie.persona.nombres}">
-                    <h:commandLink actionListener="#{buscarClientesBean.generarReportePDF(clie.persona.codigo)}"
+                    <h:commandLink actionListener="#{buscarClientesBean.generarReportePDF(clie.codigo)}"
                                    target="_blank" >
                         <h:outputLabel value="#{clie.persona.nombres} #{clie.persona.apellidos}" 
                                        style="font-size: 13px;font-style: normal;font-weight: bold"/>

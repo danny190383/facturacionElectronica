@@ -505,7 +505,7 @@ public class ProveedorBean extends CatalogosPersonaBean implements Serializable{
     public void generarReporte(String tipoReporte) {
         try {
             super.getParametros().put("empresa", this.empresa.getCodigo());
-            super.getParametros().put("persona", this.proveedor.getPersona().getCodigo());
+            super.getParametros().put("persona", this.proveedor.getCodigo());
             super.getParametros().put("tipo", 2);
             super.getParametros().put("nombreReporte", "Ficha Proveedor");
             super.getParametros().put("SUBREPORT_DIR", JasperReportUtil.PATH);

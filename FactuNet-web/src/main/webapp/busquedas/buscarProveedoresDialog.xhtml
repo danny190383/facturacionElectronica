@@ -42,7 +42,7 @@
                 </f:facet>
                 
                 <p:column headerText="#{msg.nombre}" sortBy="#{prov.persona.nombres}" filterBy="#{prov.persona.nombres}">
-                    <h:commandLink actionListener="#{buscarProveedoresBean.generarReportePDF(prov.persona.codigo)}"
+                    <h:commandLink actionListener="#{buscarProveedoresBean.generarReportePDF(prov.codigo)}"
                                    target="_blank" >
                         <h:outputLabel value="#{prov.persona.nombres}" />
                     </h:commandLink>

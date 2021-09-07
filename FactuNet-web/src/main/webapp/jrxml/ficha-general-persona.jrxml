@@ -40,7 +40,7 @@
 		<groupExpression><![CDATA[$V{PAGE_NUMBER}]]></groupExpression>
 		<groupHeader>
 			<band height="30">
-				<printWhenExpression><![CDATA[$P{tipo} == 1 || $P{tipo} == 2]]></printWhenExpression>
+				<printWhenExpression><![CDATA[$P{tipo} == 100]]></printWhenExpression>
 				<subreport>
 					<reportElement x="1" y="0" width="553" height="20" uuid="802cb276-6594-4b09-ae46-a77596537a94"/>
 					<subreportParameter name="SUBREPORT_DIR"/>

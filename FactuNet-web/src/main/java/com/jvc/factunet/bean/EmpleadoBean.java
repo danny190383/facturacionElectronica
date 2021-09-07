@@ -403,8 +403,8 @@ public class EmpleadoBean extends CatalogosPersonaBean implements Serializable{
     @Override
     public void generarReporte(String tipoReporte) {
         try {
-            super.getParametros().put("empresa", this.empresa);
-            super.getParametros().put("persona", this.empleado.getPersona().getCodigo());
+            super.getParametros().put("empresa", this.empresa.getCodigo());
+            super.getParametros().put("persona", this.empleado.getCodigo());
             super.getParametros().put("tipo", 4);
             super.getParametros().put("nombreReporte", "Ficha Transportista");
             super.getParametros().put("SUBREPORT_DIR", JasperReportUtil.PATH);

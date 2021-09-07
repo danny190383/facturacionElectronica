@@ -381,7 +381,7 @@ public class TransportistaBean extends CatalogosPersonaBean implements Serializa
     public void generarReporte(String tipoReporte) {
         try {
             super.getParametros().put("empresa", this.empresa.getCodigo());
-            super.getParametros().put("persona", this.transportista.getPersona().getCodigo());
+            super.getParametros().put("persona", this.transportista.getCodigo());
             super.getParametros().put("tipo", 3);
             super.getParametros().put("nombreReporte", "Ficha Transportista");
             super.getParametros().put("SUBREPORT_DIR", JasperReportUtil.PATH);

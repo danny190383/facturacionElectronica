@@ -16,23 +16,15 @@ tipo_persona.persona = persona.codigo inner join ciudad on
 persona.ciudad = ciudad.codigo inner join mantenimiento on
 mantenimiento.codigo = ciudad.codigo 
 where
-persona.codigo = $P{codigo}]]>
+cliente.codigo = $P{codigo}]]>
 	</queryString>
 	<field name="nombres" class="java.lang.String"/>
 	<field name="apellidos" class="java.lang.String"/>
 	<field name="cedula" class="java.lang.String"/>
-	<field name="direccion" class="java.lang.String">
-		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
-	</field>
-	<field name="descripcion" class="java.lang.String">
-		<fieldDescription><![CDATA[Descripcion adicional de la bodega de ser necesario.]]></fieldDescription>
-	</field>
-	<field name="email" class="java.lang.String">
-		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
-	</field>
-	<field name="ciudad" class="java.lang.String">
-		<fieldDescription><![CDATA[Ciudad dond esta la bodega.]]></fieldDescription>
-	</field>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="ciudad" class="java.lang.String"/>
 	<field name="foto" class="java.lang.Object"/>
 	<columnHeader>
 		<band height="101">
