@@ -50,13 +50,12 @@ public class Producto implements Serializable {
     @Size(max = 500)
     @Column(name = "descripcion")
     private String descripcion;
-//    @Size(max = 1)
-//    @Column(name = "iva")
-//    private String iva;
     @Column(name = "precio_ultima_compra")
     private BigDecimal precioUltimaCompra;
     @Column(name = "utilidad")
     private BigDecimal utilidad;
+    @Column(name = "descuento_venta")
+    private BigDecimal descuentoVenta;
     @Column(name = "pvp")
     private BigDecimal pvp;
     @JoinColumn(name = "grupo", referencedColumnName = "codigo")
@@ -71,13 +70,10 @@ public class Producto implements Serializable {
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoImpuestoTarifa> productoImpuestoTarifaList;
     
-    
     @Transient
     private FacturaDetalleSeries serie;
     @Transient
     private Bodega bodega;
-    @Transient
-    private Boolean ivaB;
 
     public Producto() {
     }
@@ -107,14 +103,6 @@ public class Producto implements Serializable {
         this.nombre = nombre;
     }
 
-//    public String getIva() {
-//        return this.iva;
-//    }
-//
-//    public void setIva(String ivaP) {
-//        this.iva = ivaP;
-//    }
-//
     public Boolean getIvaB() {
         for(ProductoImpuestoTarifa tarifa : this.productoImpuestoTarifaList){
             if((tarifa.getImpuestoTarifa().getImpuesto().getId() == 1) && (tarifa.getImpuestoTarifa().getPorcentaje().floatValue() > 0)){   
@@ -123,17 +111,6 @@ public class Producto implements Serializable {
         }
         return Boolean.FALSE;
     }
-//
-//    public void setIvaB(Boolean ivaB) {
-//        this.ivaB = ivaB;
-//        if(this.ivaB){
-//            this.setIva("1");
-//        }
-//        else
-//        {
-//            this.setIva("2");
-//        }
-//    }
 
     public GrupoProducto getGrupo() {
         return grupo;
@@ -221,6 +198,14 @@ public class Producto implements Serializable {
 
     public void setProductoImpuestoTarifaList(List<ProductoImpuestoTarifa> productoImpuestoTarifaList) {
         this.productoImpuestoTarifaList = productoImpuestoTarifaList;
+    }
+
+    public BigDecimal getDescuentoVenta() {
+        return descuentoVenta;
+    }
+
+    public void setDescuentoVenta(BigDecimal descuentoVenta) {
+        this.descuentoVenta = descuentoVenta;
     }
     
     @Override

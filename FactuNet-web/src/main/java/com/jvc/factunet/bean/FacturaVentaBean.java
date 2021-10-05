@@ -419,7 +419,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     {
         detalle.setFecha(new Date());
         detalle.setEmpleado(((Login)FacesUtils.getManagedBean("login")).getEmpleado());
-        detalle.setDescuento(super.getDescuento());
+        detalle.setDescuento(detalle.getProductoServicio().getDescuentoVenta());
         detalle.setComision(super.getComision());
         detalle.setPrecioVentaUnitario(BigDecimal.ZERO);
         detalle.setStock(BigDecimal.ZERO);
@@ -473,14 +473,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         detalle.setValorDescuento((((detalle.getPrecioVentaUnitarioDescuento().multiply(detalle.getDescuento())).divide(new BigDecimal(100))).multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));  
         detalle.setSubtotalConDescuento(detalle.getPrecioVentaUnitarioDescuento().multiply(detalle.getCantidad()));
         detalle.setValorComision((((detalle.getPvp().multiply(detalle.getComision())).divide(new BigDecimal(100))).multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));  
-//        if(detalle.getProductoServicio().getIvaB())
-//        {
-//            detalle.setIva((detalle.getSubtotalConDescuento().multiply(super.getIvaEmpresa().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
-//        }
-//        else
-//        {
-//            detalle.setIva(BigDecimal.ZERO);
-//        }
         for(ProductoImpuestoTarifa tarifaImpuesto : detalle.getProductoServicio().getProductoImpuestoTarifaList()){
             if(tarifaImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
                 detalle.setImpuestoTarifa(tarifaImpuesto.getImpuestoTarifa());

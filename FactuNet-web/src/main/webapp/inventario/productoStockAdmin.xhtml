@@ -81,7 +81,7 @@
                                         listener="#{productoStockBean.buscarDatosLote(producto)}"
                                         update="tablaLote"/>
                                 
-                                <p:column style="width:16px">
+                                <p:column width="2%">
                                     <p:rowToggler />
                                 </p:column>
                                 
@@ -110,7 +110,7 @@
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.fecha} #{msg.ingreso}" 
-                                                  width="100">
+                                                  width="80">
                                             <h:outputLabel value="#{lote.fecha}">
                                                 <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
                                                                     pattern="#{parametrosApplication.formatoFecha}"/>
@@ -126,39 +126,48 @@
                                                   width="50">
                                             <h:outputLabel value="#{lote.precioVentaUnitarioDescuento}" />
                                         </p:column>
+                                        
+                                        <p:column headerText="#{msg.stock} Actual" 
+                                                  width="80">
+                                            <h:outputLabel value="#{lote.stockActual} " />
+                                        </p:column>
                                     </p:dataTable>
                                 </p:rowExpansion>
                                 
                                 <p:column headerText="#{msg.codigoBarras}"  
                                           filterBy="#{producto.productoBodega.codigoBarras}"
-                                          width="110"
                                           visible="false">
                                     <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
                                 </p:column>
 
-                                <p:column headerText="#{msg.producto}" filterBy="#{producto.productoBodega.nombre}">
+                                <p:column headerText="#{msg.producto}" 
+                                          filterBy="#{producto.productoBodega.nombre}"
+                                          width="30%">
                                     <h:outputLabel value="#{producto.productoBodega.nombre}"
                                                    title="#{producto.productoBodega.grupo.nombre}"
                                                    style="font-size: 12px;font-style: normal;font-weight: bold"/>
                                 </p:column>
 
-                                <p:column headerText="#{msg.modelo}" filterBy="#{producto.productoBodega.modelo}"
-                                          width="105" visible="false">
+                                <p:column headerText="#{msg.modelo}" 
+                                          filterBy="#{producto.productoBodega.modelo}"
+                                          visible="false">
                                     <h:outputLabel value="#{producto.productoBodega.modelo}" />
                                 </p:column>
                                 
-                                <p:column headerText="#{msg.marca}" filterBy="#{producto.productoBodega.marca.nombre}"
-                                          width="105" visible="false">
+                                <p:column headerText="#{msg.marca}" 
+                                          filterBy="#{producto.productoBodega.marca.nombre}"
+                                          visible="false">
                                     <h:outputLabel value="#{producto.productoBodega.marca.nombre}" />
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.stock}" 
-                                          width="30">
+                                          width="10%"
+                                          style="text-align: right">
                                     <h:outputLabel value="#{producto.stock}" />
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.costo}" 
-                                          width="60">
+                                          width="10%">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <p:inputNumber value="#{producto.productoBodega.precioUltimaCompra}" 
@@ -180,7 +189,8 @@
                                 </p:column>
                                 
                                 <p:column headerText="% #{msg.utilidad}" 
-                                          width="30">
+                                          width="10%"
+                                          style="text-align: right">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputLabel value="#{producto.productoBodega.utilidad} %"/>
@@ -199,7 +209,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.pvp}"
-                                            width="60">
+                                            width="10%">
                                     <p:cellEditor>
                                         <f:facet name="output">
                                             <p:inputNumber value="#{producto.productoBodega.pvp}" 
@@ -220,7 +230,7 @@
                                     </p:cellEditor>
                                  </p:column>
                                 
-                                <p:column width="45"
+                                <p:column width="5%"
                                           style="text-align: center">
                                     
                                     <p:commandButton  icon="ui-icon-folder-open"

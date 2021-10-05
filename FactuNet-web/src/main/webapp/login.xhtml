@@ -10,6 +10,10 @@
         <h:outputStylesheet name="css/default.css"/>
     </h:head>
     <h:body>
+        <h:panelGroup id="background" layout="block">
+            <h:graphicImage url="/resources/imagenes/backgraund.jpg" 
+                            style="width: 100%;height: 100%"/>
+        </h:panelGroup>
         <div id="envoltura">
             <div id="contenedor" >
                 <div id="cabecera" >
@@ -23,18 +27,23 @@
                                  widgetVar="grMensajes" 
                                  showDetail="false"/>
                         <h:panelGrid columns="2"
-                                     id="pnlLogin">
+                                     id="pnlLogin"
+                                     width="100%"
+                                     style="text-align: center">
                             <h:outputLabel value="#{msg.usuario}: " />
                             <p:inputText value="#{crearSesion.identificador}"
                                          required="true"/>
                             <h:outputLabel value="#{msg.clave}: " />
                             <p:password value="#{crearSesion.clave}"
                                         required="true"/>
-
-                            <p:commandButton value="Entrar" 
-                                             action="#{crearSesion.validateUsernamePassword}"
-                                             update="pnlLogin,grMensajes"
-                                             ajax="false"/>
+                            <center>
+                                <p:commandButton value="Entrar" 
+                                                 icon="fa fa-hand-o-right" 
+                                                 style="height: 35px;width: 100px"
+                                                 action="#{crearSesion.validateUsernamePassword}"
+                                                 update="pnlLogin,grMensajes"
+                                                 ajax="false"/>
+                            </center>
                         </h:panelGrid>
                         
                         <p:dialog id="mdlFichaMedicaMilitar" 
@@ -51,8 +60,7 @@
                     </h:form>
                 </div>
                 <div id="pie" >
-                    <h:outputLabel value="#{msg.tipoSistema}"/><br/>
-                    <h:outputLabel value="#{msg.autorizacion}: COMPUNET RIOBAMBA"/>
+                    <h:outputLabel value="#{msg.tipoSistema}"/>
                 </div>
             </div>
               

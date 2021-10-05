@@ -22,7 +22,7 @@
                                              icon="ui-icon-disk"
                                              rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
                                              actionListener="#{facturaCompraBean.verPago}" 
-                                             update=":frmCabecera:grMensajes" >
+                                             update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal" >
                                <p:ajax event="dialogReturn" 
                                        oncomplete="document.getElementById('frmCabecera:btnPrint').click();"
                                        listener="#{facturaCompraBean.onPagoSelect}"
@@ -66,14 +66,16 @@
                                 
                             <p:commandButton value="#{msg.archivo}" ajax="false"
                                              icon="ui-icon-arrowthick-1-s"
+                                             immediate="true"
                                              title="#{msg.archivo} #{msg.muestra}">
                                 <p:fileDownload value="#{facturaCompraBean.file}" />
                             </p:commandButton>
                                 
                             <h:commandLink target="_blank" 
+                                           immediate="true"
                                            actionListener="#{facturaCompraBean.generarReportePOIXLS()}">
                                 <p:commandButton type="button" icon="ui-icon-arrowthick-1-s" 
-                                                 title="#{msg.cargaArchivo}"/>
+                                                 title="Generar Archivo Empresa"/>
                             </h:commandLink>
                                 
                             <h:commandLink target="_blank" 
@@ -166,16 +168,16 @@
                                                          maxlength="7"
                                                          size="6"
                                                          style="background-color: khaki "
-                                                         readonly="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                                         disabled="#{facturaCompraBean.facturaCompra.estado eq 3}"
                                                          required="true">
-                                                <p:keyFilter regEx="/[\d]/" />
+                                            <p:keyFilter regEx="/[\d]/" />
                                             </p:inputMask>
                                             <p:inputText value="#{facturaCompraBean.facturaCompra.numero}"
                                                          required="true"
                                                          size="8"
                                                          maxlength="9"
                                                          style="background-color: khaki "
-                                                         readonly="#{facturaCompraBean.facturaCompra.estado eq 3}">
+                                                         disabled="#{facturaCompraBean.facturaCompra.estado eq 3}">
                                                 <p:keyFilter regEx="/[\d]/" />
                                             </p:inputText>
                                         </h:panelGrid>
@@ -263,11 +265,12 @@
                                         <h:outputLabel value="#{msg.descuento}: "
                                                        styleClass="texto_etiquetas"/>
                                         <p:inputNumber value="#{facturaCompraBean.descuento}" 
-                                                        decimalPlaces="2" symbol="%" 
-                                                        symbolPosition="s" emptyValue="zero"
-                                                        minValue="0" maxValue="100"
-                                                        size="5"
-                                                        inputStyle="width: 50px;background-color: khaki;text-align: right">
+                                                       disabled="#{facturaCompraBean.facturaCompra.estado eq 3}"
+                                                       decimalPlaces="2" symbol="%" 
+                                                       symbolPosition="s" emptyValue="zero"
+                                                       minValue="0" maxValue="100"
+                                                       size="5"
+                                                       inputStyle="width: 50px;background-color: khaki;text-align: right">
                                             <p:ajax listener="#{facturaCompraBean.generalDescuento}"
                                                    update=":frmCabecera:tablaPedidoCompra"/>
                                         </p:inputNumber> 
@@ -474,6 +477,7 @@
                                             <f:facet name="footer" >
                                                     <p:commandButton icon="ui-icon-refresh" 
                                                                      title="#{msg.prorrateo}"
+                                                                     process="tablaGuia"
                                                                      rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
                                                                      actionListener="#{facturaCompraBean.prorratear}"
                                                                      update=":frmCabecera:tablaPedidoCompra, :frmCabecera:tabPrincipalDatos:tablaGuia"/>
@@ -542,7 +546,7 @@
                         </f:facet>
                         
                         <p:column headerText="#{msg.iva}"
-                                  width="60"
+                                  width="7%"
                                   style="text-align:center">
                             
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
@@ -559,18 +563,18 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.stock}"
-                                  width="30"
-                                  style="text-align:center">
+                                  width="5%"
+                                  style="text-align:right">
                             <h:outputLabel value="#{items.stock}" />
                         </p:column>
 
-                        <p:column headerText="#{msg.productos}">
+                        <p:column headerText="#{msg.productos}"
+                                  width="30%">
                             <h:outputLabel value="#{items.productoServicio.nombre}" />
                         </p:column>
                         
                         <p:column headerText="#{msg.fecha} #{msg.caducidad}"
-                                  width="35"
-                                  visible="false"
+                                  width="8%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
                             <h:outputLabel value="#{items.fechaCaducidad}">
@@ -580,9 +584,8 @@
                         </p:column>
 
                         <p:column headerText="#{msg.fecha} #{msg.caducidad}"
-                                  width="35"
+                                  width="8%"
                                   style="text-align:right"
-                                  visible="false"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
                                 <f:facet name="output">
@@ -603,14 +606,14 @@
                         </p:column>
                         
                         <p:column headerText="Cant."
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
                             <h:outputLabel value="#{items.cantidad}"/>
                         </p:column>
 
                         <p:column headerText="Cant."
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -631,14 +634,14 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
                             <h:outputLabel value="#{items.precioVentaUnitario}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -659,14 +662,14 @@
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado eq  3}">
                             <h:outputLabel value="#{items.descuento}"/>
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -687,7 +690,6 @@
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
                                   visible="false"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado eq 3}">
@@ -695,7 +697,7 @@
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
+                                  visible="false"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -715,26 +717,26 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalConDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalSinDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="#{msg.valor} #{msg.transporte}"
-                                  width="35"
                                   style="text-align:right"
+                                  visible="false"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
                                 <f:facet name="output">
@@ -753,8 +755,8 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.valor} #{msg.unitario} + #{msg.transporte}"
-                                  width="35"
                                   style="text-align:right"
+                                  visible="false"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
                                 <f:facet name="output">
@@ -773,7 +775,7 @@
                         </p:column>
                         
                         <p:column headerText="% #{msg.utilidad}"
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -794,7 +796,7 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.pvp} SIN #{msg.iva}"
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -815,13 +817,12 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.si}"
-                                  width="5"
                                   visible="false">
                             <h:outputLabel value="#{items.productoServicio.ivaB}"/>
                         </p:column>
                         
                         <p:column headerText="#{msg.pvp} #{msg.con} #{msg.iva}"
-                                  width="35"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
                             <p:cellEditor>
@@ -840,16 +841,35 @@
                                 </f:facet>
                             </p:cellEditor>
                         </p:column>
+                        
+                        <p:column headerText="#{msg.descuento} Venta"
+                                  width="5%"
+                                  style="text-align:right"
+                                  rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputLabel value="#{items.descuentoVentas} %"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputNumber value="#{items.descuentoVentas}"
+                                                   minValue="0.00" maxValue="1000"
+                                                   size="5"
+                                                   symbol="%" 
+                                                   symbolPosition="s"/> 
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="80"
+                                  width="10%"
                                   style="text-align: center">
 
-                            <p:commandButton  icon="ui-icon-close" 
-                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
-                                            actionListener="#{facturaCompraBean.eliminar(items)}"
-                                            title="#{msg.eliminar}"
-                                            rendered="#{facturaCompraBean.facturaCompra.estado ne 3}">
+                            <p:commandButton icon="ui-icon-close" 
+                                             update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
+                                             actionListener="#{facturaCompraBean.eliminar(items)}"
+                                             title="#{msg.eliminar}"
+                                             rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
+                                             process="tablaPedidoCompra">
                                 <p:confirm header="#{msg.confirmacion}" 
                                            message="#{msg.eliminar}" 
                                            icon="ui-icon-alert" />
@@ -857,10 +877,12 @@
                             
                             <p:commandButton  icon="ui-icon-folder-open" 
                                               title="#{msg.kardex}"
+                                              process="tablaPedidoCompra"
                                               actionListener="#{facturaCompraBean.verKardex(items.productoServicio)}"/>
                             
                             <p:commandButton  icon="ui-icon-comment" 
                                               title="#{msg.series}"
+                                              process="tablaPedidoCompra"
                                               actionListener="#{facturaCompraBean.verRegistroSeries(items)}" 
                                               update=":frmCabecera:grMensajes" >
                                 <p:ajax event="dialogReturn" 

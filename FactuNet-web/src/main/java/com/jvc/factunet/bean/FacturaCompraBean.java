@@ -3,6 +3,7 @@ package com.jvc.factunet.bean;
 import com.jvc.factunet.entidades.Bodega;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.CuentaFactura;
+import com.jvc.factunet.entidades.DetalleFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.FacturaCompra;
 import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.FacturaDetalleSeries;
@@ -11,6 +12,7 @@ import com.jvc.factunet.entidades.GuiaRemision;
 import com.jvc.factunet.entidades.PedidoCompra;
 import com.jvc.factunet.entidades.Producto;
 import com.jvc.factunet.entidades.ProductoBodega;
+import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.JasperReportUtil;
 import com.jvc.factunet.servicios.DocumentosServicios;
@@ -179,6 +181,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
             this.facturaCompra.setProveedor(pedido.getProveedor());
             this.facturaCompra.setContactoProveedor(pedido.getContactoProveedor());
             this.facturaCompra.setPedidoCompra(pedido.getCodigo());
+            this.facturaCompra.setCabeceraFacturaImpuestoTarifaList(pedido.getCabeceraFacturaImpuestoTarifaList());
             for(FacturaPago pago : pedido.getFacturaPagoList())
             {
                 pago.setCodigo(null);
@@ -597,7 +600,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
     }
     
     public void generarReportePOIXLS() {
-        List<ProductoBodega> lista = this.productoBodegaServicio.listarTodo(1);
+        List<ProductoBodega> lista = this.productoBodegaServicio.listarTodo(super.getEmpresa().getCodigo());
         FacesContext contex = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) contex.getExternalContext().getResponse();
         response.setContentType(JasperReportUtil.TIPO_XLS);

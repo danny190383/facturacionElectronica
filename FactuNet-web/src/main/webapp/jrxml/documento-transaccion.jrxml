@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inventario-proveedores" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="240"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
 			<style backcolor="#CCCCCC"/>
 		</conditionalStyle>
-	</style>   
+	</style>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="factura" class="java.lang.Integer"/>
 	<parameter name="nombreReporte" class="java.lang.String"/>

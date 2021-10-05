@@ -178,6 +178,8 @@ public class Factura implements Serializable {
     
     @Transient
     private SecuenciaDocumento secuenciaDocumento;
+    @Transient
+    private BigDecimal totalSinDescuento;
 
     public Factura() {
         // discriminador
@@ -629,6 +631,14 @@ public class Factura implements Serializable {
 
     public void setTipoNota(Integer tipoNota) {
         this.tipoNota = tipoNota;
+    }
+
+    public BigDecimal getTotalSinDescuento() {
+        return totalSinDescuento;
+    }
+
+    public void setTotalSinDescuento(BigDecimal totalSinDescuento) {
+        this.totalSinDescuento = totalSinDescuento;
     }
     
     @Override

@@ -41,6 +41,8 @@ public class FacturaDetalle implements Serializable {
     private BigDecimal cantidadPorFacturar;
     @Column(name = "stock_fecha")
     private BigDecimal stockFecha;
+    @Column(name = "stock_actual")
+    private BigDecimal stockActual;
     @Column(name = "stock_origen_fecha")
     private BigDecimal stockOrigenFecha;
     @Column(name = "precio_venta_unitario")
@@ -98,6 +100,9 @@ public class FacturaDetalle implements Serializable {
     @JoinColumn(name = "paquete", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private FacturaDetalle paquete;
+    @JoinColumn(name = "lote_venta", referencedColumnName = "codigo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private FacturaDetalle loteVenta;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "paquete", fetch = FetchType.LAZY,orphanRemoval = true)
     private List<FacturaDetalle> detallePaqueteList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "detalleFactura", fetch = FetchType.LAZY,orphanRemoval = true)
@@ -107,6 +112,8 @@ public class FacturaDetalle implements Serializable {
     private BigDecimal stock;
     @Transient
     private BigDecimal utilidad;
+    @Transient
+    private BigDecimal descuentoVentas;
     @Transient
     private BigDecimal pvp;
     @Transient
@@ -136,14 +143,6 @@ public class FacturaDetalle implements Serializable {
     public void setPrecioVentaUnitario(BigDecimal precioVentaUnitario) {
         this.precioVentaUnitario = precioVentaUnitario;
     }
-
-//    public BigDecimal getIva() {
-//        return iva;
-//    }
-//
-//    public void setIva(BigDecimal iva) {
-//        this.iva = iva;
-//    }
 
     public Date getFecha() {
         return fecha;
@@ -426,14 +425,6 @@ public class FacturaDetalle implements Serializable {
         this.subtotalPedido = subtotalPedido;
     }
 
-//    public Boolean getAplicaIva() {
-//        return aplicaIva;
-//    }
-//
-//    public void setAplicaIva(Boolean aplicaIva) {
-//        this.aplicaIva = aplicaIva;
-//    }
-
     public List<DetalleFacturaImpuestoTarifa> getDetalleFacturaImpuestoTarifaList() {
         return detalleFacturaImpuestoTarifaList;
     }
@@ -448,5 +439,54 @@ public class FacturaDetalle implements Serializable {
 
     public void setImpuestoTarifa(ImpuestoTarifa impuestoTarifa) {
         this.impuestoTarifa = impuestoTarifa;
+    }
+
+    public BigDecimal getStockActual() {
+        return stockActual;
+    }
+
+    public void setStockActual(BigDecimal stockActual) {
+        this.stockActual = stockActual;
+    }
+
+    public FacturaDetalle getLoteVenta() {
+        return loteVenta;
+    }
+
+    public void setLoteVenta(FacturaDetalle loteVenta) {
+        this.loteVenta = loteVenta;
+    }
+
+    public BigDecimal getDescuentoVentas() {
+        return descuentoVentas;
+    }
+
+    public void setDescuentoVentas(BigDecimal descuentoVentas) {
+        this.descuentoVentas = descuentoVentas;
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (codigo != null ? codigo.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof FacturaDetalle)) {
+            return false;
+        }
+        FacturaDetalle other = (FacturaDetalle) object;
+        if ((this.codigo == null && other.codigo != null) || (this.codigo != null && !this.codigo.equals(other.codigo))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.jvc.factunet.entidades.FacturaDetalle[ codigo=" + codigo + " ]";
     }
 }

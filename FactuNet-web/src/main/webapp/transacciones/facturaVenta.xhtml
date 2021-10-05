@@ -213,12 +213,19 @@
                                                      maxlength="800"
                                                      value="#{facturaVentaBean.facturaVenta.descripcion}"
                                                      readonly="#{facturaVentaBean.facturaVenta.estado ne 1}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">    
+                                        <h:outputLabel value="#{msg.total} Sin #{msg.descuento}: "
+                                                       style="color: #000;font-size: 18px;font-style: normal;font-weight: bold"/>
+                                        <h:outputLabel value="#{facturaVentaBean.facturaVenta.totalSinDescuento}"
+                                                       id="txtTotalFacturaSin"
+                                                       style="color: #f00;font-size: 18px;font-style: normal;font-weight: bold"/>
                                         
-                                        <h:outputLabel value="#{msg.total}: "
-                                                       style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                                        <h:outputLabel value="#{msg.total} Con #{msg.descuento}: "
+                                                       style="color: #000;font-size: 18px;font-style: normal;font-weight: bold"/>
                                         <h:outputLabel value="#{facturaVentaBean.facturaVenta.totalPagar}"
                                                        id="txtTotalFactura"
-                                                       style="color: #e9322d;font-size: 18px;font-style: normal;font-weight: bold"/>
+                                                       style="color: #f00;font-size: 18px;font-style: normal;font-weight: bold"/>
                                     </h:panelGrid>
                                 </p:fieldset>
                                 <p:fieldset legend="#{msg.cliente}"
@@ -242,11 +249,11 @@
                                                 <p:commandButton actionListener="#{facturaVentaBean.buscarCliente}"
                                                                  icon="ui-icon-search"
                                                                  title="#{msg.buscar}" 
-                                                                 update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                                 update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                                 
                                                 <p:selectBooleanCheckbox value="#{facturaVentaBean.consumidor}"
                                                                          title="#{msg.consumidorFinal}">
-                                                   <p:ajax update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                   <p:ajax update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                            listener="#{facturaVentaBean.consumidorFinal}"/>
                                                 </p:selectBooleanCheckbox>
                                                 </h:panelGrid>
@@ -280,7 +287,7 @@
                                                             required="true"
                                                             inputStyle="width: 35px;background-color: khaki;text-align: right">
                                                 <p:ajax listener="#{facturaVentaBean.generalDescuento}"
-                                                       update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                       update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                             </p:inputNumber> 
                                             <h:outputLabel value="#{msg.comision}: "
                                                            styleClass="texto_etiquetas"/>
@@ -293,7 +300,7 @@
                                                                 required="true"
                                                                 inputStyle="width: 35px;background-color: khaki;text-align: right">
                                                     <p:ajax listener="#{facturaVentaBean.generalRecargo}"
-                                                           update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                           update=":frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                                 </p:inputNumber> 
                                             </h:panelGrid>
                                         </h:panelGrid>
@@ -306,7 +313,7 @@
                                                             actionListener="#{facturaVentaBean.verBusquedaClientes}">
                                              <p:ajax event="dialogReturn" 
                                                      listener="#{facturaVentaBean.onClienteSelect}" 
-                                                     update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura" />
+                                                     update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin" />
                                             </p:commandButton>
 
                                             <p:commandButton value="#{msg.nuevo}"  
@@ -315,7 +322,7 @@
                                                              update=":frmCabecera:grMensajes">
                                                   <p:ajax event="dialogReturn" 
                                                           listener="#{facturaVentaBean.onClienteSelect}"
-                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                            </p:commandButton>
                                             
                                             <p:commandButton value="#{msg.editar}"  
@@ -324,7 +331,7 @@
                                                              update=":frmCabecera:grMensajes">
                                                   <p:ajax event="dialogReturn" 
                                                           listener="#{facturaVentaBean.onClienteSelect}"
-                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                                          update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                            </p:commandButton>
                                        </p:fragment>
                                     </h:panelGrid>
@@ -337,32 +344,32 @@
                                         <h:panelGrid columns="2">
                                             <h:outputLabel value="#{msg.efectivo}:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.efectivo}">
-                                              <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                              <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
                                             
                                             
                                             <h:outputLabel value="#{msg.tarjetaDebito}:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.debito}">
-                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                        listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
 
                                             <h:outputLabel value="#{msg.tarjetaCredito}:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.tarjeta}">
-                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                        listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
 
                                             <h:outputLabel value="#{msg.credito}:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.credito}">
-                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                        listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
                                             
                                             <h:outputLabel value="Otra Forma de Pago:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.otraFP}">
-                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                               <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                        listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
                                         </h:panelGrid>
@@ -373,7 +380,7 @@
                                                                  filter="true" filterMatchMode="startsWith"
                                                                  style="width: 90%"
                                                                  rendered="#{facturaVentaBean.tarjeta}">
-                                                    <p:ajax update="comisionTarjeta, :frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                    <p:ajax update="comisionTarjeta, :frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                             listener="#{facturaVentaBean.cargarComisiones}"/>
                                                     <f:selectItems value="#{facturaVentaBean.listaTarjetaEmpresa}" 
                                                                    var="tarjetaEmpresa"
@@ -388,7 +395,7 @@
                                                                  style="width: 90%"
                                                                  id="comisionTarjeta"
                                                                  rendered="#{facturaVentaBean.tarjeta}">
-                                                    <p:ajax update=":frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                                    <p:ajax update=":frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                             listener="#{facturaVentaBean.cambiarComision}"/>
                                                     <f:selectItems value="#{facturaVentaBean.listaComisionTarjeta}" 
                                                                    var="comision"
@@ -717,7 +724,7 @@
                                             placeholder="#{msg.codigoBarras} / #{msg.series}">
                                    <p:ajax event="change" 
                                            listener="#{facturaVentaBean.buscarProductoBarras}"
-                                           update="tablaFacturaVenta,:frmCabecera:grMensajes,@this,focus, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                           update="tablaFacturaVenta,:frmCabecera:grMensajes,@this,focus, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                                 </p:inputText>
 
                                 <p:commandButton value="#{msg.buscar}"  
@@ -725,7 +732,7 @@
                                                 actionListener="#{facturaVentaBean.verBusquedaProductosStock(null)}">
                                     <p:ajax event="dialogReturn" 
                                             listener="#{facturaVentaBean.onProductoSelect}" 
-                                            update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura" />
+                                            update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:pnlProductoVer, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin" />
                                 </p:commandButton>
                             
                                 <p:commandButton id="toggler" type="button" 
@@ -736,7 +743,7 @@
                             </p:fragment>
                         </f:facet>
                         
-                        <p:column style="width:16px">
+                        <p:column width="2%">
                             <p:rowToggler rendered="#{items.isPaquete}"/>
                         </p:column>
                         
@@ -890,7 +897,7 @@
                         </p:rowExpansion>
                         
                         <p:column headerText="#{msg.iva}"
-                                  width="60"
+                                  width="7%"
                                   style="text-align:center">
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
                                              converter="omnifaces.SelectItemsConverter"
@@ -906,27 +913,26 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.stock}"
-                                  width="30"
-                                  style="text-align:center">
+                                  width="5%"
+                                  style="text-align:right">
                             <h:outputLabel value="#{items.stock}" />
                         </p:column>
                         
                         <p:column headerText="#{msg.bodega}"
-                                  width="30"
-                                  visible="false"
                                   style="text-align:center"
-                                  rendered="#{facturaVentaBean.facturaVenta.estado ne 3}">
+                                  visible="false">
                             <h:outputLabel value="#{items.bodega.siglas}"
                                            title="#{items.bodega.nombre}"/>
                         </p:column>
 
-                        <p:column headerText="#{msg.productos}">
+                        <p:column headerText="#{msg.productos}"
+                                  width="30%">
                             <h:outputLabel value="#{items.productoServicio.nombre}" 
                                            style="font-size: 13px;font-style: normal;font-weight: bold"/>
                         </p:column>
                         
                         <p:column headerText="Cant."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
                             <h:outputLabel value="#{items.cantidad}"
@@ -934,7 +940,7 @@
                         </p:column>
 
                         <p:column headerText="Cant."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                             <p:cellEditor>
@@ -947,7 +953,7 @@
                                                    decimalPlaces="2"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditCantidad(items)}"/>
                                     </p:inputNumber>
                                 </f:facet>
@@ -955,14 +961,14 @@
                         </p:column>
                         
                         <p:column headerText="% Rec."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
                             <h:outputLabel value="#{items.descuento}"/>
                         </p:column>
                         
                         <p:column headerText="% Rec."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                             <p:cellEditor>
@@ -975,7 +981,7 @@
                                                     symbolPosition="s" emptyValue="zero"
                                                     minValue="0"
                                                     inputStyle="width:80%;text-align: right ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditComision(items, true)}"/>
                                     </p:inputNumber> 
                                 </f:facet>
@@ -983,7 +989,6 @@
                         </p:column>
                         
                         <p:column headerText="V. Rec."
-                                  width="40"
                                   visible="false"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
@@ -991,7 +996,6 @@
                         </p:column>
                         
                         <p:column headerText="V. Rec."
-                                  width="40"
                                   style="text-align:right"
                                   visible="false"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
@@ -1004,7 +1008,7 @@
                                                    decimalPlaces="2"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditValorComision(items)}"/>
                                     </p:inputNumber> 
                                 </f:facet>
@@ -1012,14 +1016,14 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
                             <h:outputLabel value="#{items.precioVentaUnitario}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                             <p:cellEditor>
@@ -1032,7 +1036,7 @@
                                                    decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditValorUnitario(items)}"/>
                                     </p:inputNumber> 
                                 </f:facet>
@@ -1040,15 +1044,14 @@
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="40"
-                                  visible="false"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
                             <h:outputLabel value="#{items.descuento}"/>
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                             <p:cellEditor>
@@ -1061,7 +1064,7 @@
                                                     symbolPosition="s" emptyValue="zero"
                                                     minValue="0"
                                                     inputStyle="width:80%;text-align: right ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditDescuento(items, true)}"/>
                                     </p:inputNumber> 
                                 </f:facet>
@@ -1069,14 +1072,14 @@
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
                             <h:outputLabel value="#{items.valorDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                             <p:cellEditor>
@@ -1088,7 +1091,7 @@
                                                    decimalPlaces="2"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right ">
-                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"
+                                        <p:ajax update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
                                                 listener="#{facturaVentaBean.onCellEditValorDescuento(items)}"/>
                                     </p:inputNumber> 
                                 </f:facet>
@@ -1096,31 +1099,31 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario} Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total} Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalConDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalSinDescuento}"
                                            style="font-size: 13px;font-style: normal;font-weight: bold"/>
                         </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="80"
+                                  width="10%"
                                   style="text-align: center"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
 
                             <p:commandButton  icon="ui-icon-close" 
-                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura" 
+                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin" 
                                             actionListener="#{facturaVentaBean.eliminar(items)}"
                                             title="#{msg.eliminar}">
                                 <p:confirm header="#{msg.confirmacion}" 
@@ -1138,14 +1141,14 @@
                                               update=":frmCabecera:grMensajes">
                                 <p:ajax event="dialogReturn" 
                                         listener="#{facturaVentaBean.onRegistroSeriesSelect}"
-                                        update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura"/>
+                                        update="tablaFacturaVenta, :frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
                             </p:commandButton> 
                         </p:column>
                         
                         <p:columnGroup type="footer">
                             <p:row>
                                 <p:column rowspan="11"
-                                          colspan="6">
+                                          colspan="7">
                                 </p:column>
                             </p:row>
                             <p:row>

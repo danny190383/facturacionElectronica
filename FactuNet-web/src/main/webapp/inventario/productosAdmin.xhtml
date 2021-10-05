@@ -104,7 +104,7 @@
                                     </p:fragment>
                                 </f:facet>
                                 
-                                <p:column style="width:16px">
+                                <p:column width="2%">
                                     <p:rowToggler rendered="#{producto.presentacion eq 2}"/>
                                 </p:column>
                         
@@ -182,31 +182,34 @@
                                 </p:rowExpansion>
                                 
                                 <p:column selectionMode="multiple" 
-                                          style="width:16px;text-align:center"/>
+                                          style="text-align:center"
+                                          width="2%"/>
                                 
                                 <p:column headerText="#{msg.codigoBarras}" 
                                           filterBy="#{producto.codigoBarras}"
-                                          width="105">
+                                          width="10%">
                                     <h:outputLabel value="#{producto.codigoBarras}" />
                                 </p:column>
 
-                                <p:column headerText="#{msg.producto}" filterBy="#{producto.nombre}">
+                                <p:column headerText="#{msg.producto}" 
+                                          filterBy="#{producto.nombre}"
+                                          width="30%">
                                     <h:outputLabel value="#{producto.nombre}" 
                                                    style="font-size: 12px;font-style: normal;font-weight: bold"/>
                                 </p:column>
 
                                 <p:column headerText="#{msg.modelo}" filterBy="#{producto.modelo}"
-                                          width="110">
+                                          width="10%">
                                     <h:outputLabel value="#{producto.modelo}" />
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.marca}" filterBy="#{producto.marca.nombre}"
-                                          width="110">
+                                          width="10%">
                                     <h:outputLabel value="#{producto.marca.nombre}" />
                                 </p:column>
                              
                                 <p:column headerText="#{msg.opcion}" 
-                                          width="80"
+                                          width="8%"
                                           style="text-align: center">
 
                                     <p:commandButton  icon="ui-icon-close" 

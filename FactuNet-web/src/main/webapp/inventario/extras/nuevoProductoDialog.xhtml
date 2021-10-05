@@ -132,6 +132,15 @@
                                    minValue="0.00" maxValue="1000"
                                    size="5"
                                    symbol="%" 
+                                   required="true"
+                                   symbolPosition="s"/> 
+                    
+                    <h:outputLabel value="#{msg.descuento} en Venta: "/> 
+                    <p:inputNumber value="#{nuevoProductoBean.productoBodega.descuentoVenta}"
+                                   minValue="0.00" maxValue="1000"
+                                   size="5"
+                                   symbol="%" 
+                                   required="true"
                                    symbolPosition="s"/> 
                     
                     <h:outputLabel value="#{msg.enlaceWeb}: "/>

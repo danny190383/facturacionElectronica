@@ -343,7 +343,7 @@
                         </f:facet>
                         
                         <p:column headerText="#{msg.iva}"
-                                  width="60"
+                                  width="5%"
                                   style="text-align:center">
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
                                              converter="omnifaces.SelectItemsConverter"
@@ -359,24 +359,25 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.stock}"
-                                  width="30"
-                                  style="text-align:center">
+                                  width="5%"
+                                  style="text-align:right">
                             <h:outputLabel value="#{items.stock}" />
                         </p:column>
 
-                        <p:column headerText="#{msg.productos}">
+                        <p:column headerText="#{msg.productos}"
+                                  width="30%">
                             <h:outputLabel value="#{items.productoServicio.nombre}" />
                         </p:column>
                         
                         <p:column headerText="Cant."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
                             <h:outputLabel value="#{items.cantidad}"/>
                         </p:column>
 
                         <p:column headerText="Cant."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
                             <p:cellEditor>
@@ -397,14 +398,14 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
                             <h:outputLabel value="#{items.precioVentaUnitario}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
                             <p:cellEditor>
@@ -426,14 +427,14 @@
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
                             <h:outputLabel value="#{items.descuento}"/>
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
                             <p:cellEditor>
@@ -455,14 +456,14 @@
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado ne 1}">
                             <h:outputLabel value="#{items.valorDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
                             <p:cellEditor>
@@ -482,25 +483,25 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalConDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalSinDescuento}"/>
                         </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="50"
+                                  width="5%"
                                   style="text-align: center"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
 

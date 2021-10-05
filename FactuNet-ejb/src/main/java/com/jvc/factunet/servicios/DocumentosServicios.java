@@ -525,6 +525,7 @@ public class DocumentosServicios {
                     stock.setProductoBodega((ProductoBodega)detalle.getProductoServicio()); 
                     this.productoStockServicio.insertar(stock);
                 }
+                detalle.setStockActual(detalle.getCantidad()); 
                 detalle.setStockFecha(stock.getStock());
                 detalle.setCostoFecha(detalle.getPrecioVentaUnitarioTransporte()); 
                 ProductoBodega producto = stock.getProductoBodega();
@@ -532,6 +533,7 @@ public class DocumentosServicios {
                 producto.setPvp(detalle.getPvp());
                 producto.setPrecioUltimaCompra(detalle.getPrecioVentaUnitarioTransporte());
                 producto.setFechaUltimaCompra(new Date());
+                producto.setDescuentoVenta(detalle.getDescuentoVentas()); 
                 this.productoBodegaServicio.actualizar(producto);
             }
             if(((FacturaCompra) parametro).getPedidoCompra() != null)

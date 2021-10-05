@@ -107,6 +107,14 @@
                             <p:ajax event="change" listener="#{nuevoServicioBean.editPVP}"
                                    update=":frmNuevo:txtUtilidad"/>
                         </p:inputNumber> 
+                        
+                        <h:outputLabel value="#{msg.descuento} en Venta: "/> 
+                        <p:inputNumber value="#{nuevoServicioBean.productoServicio.descuentoVenta}"
+                                       minValue="0.00" maxValue="1000"
+                                       size="5"
+                                       symbol="%" 
+                                       required="true"
+                                       symbolPosition="s"/> 
                     </h:panelGrid>
                     <h:panelGrid columns="1" 
                                  style="text-align: center">

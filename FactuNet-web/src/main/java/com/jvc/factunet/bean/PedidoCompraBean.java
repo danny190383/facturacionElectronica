@@ -282,8 +282,9 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         }
         detalle.setPrecioVentaUnitarioDescuento(detalle.getPrecioVentaUnitario().subtract(((detalle.getPrecioVentaUnitario().multiply(detalle.getDescuento())).divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP))));  
         detalle.setUtilidad(productoBodega.getUtilidad());
+        detalle.setDescuentoVentas(productoBodega.getDescuentoVenta()); 
         BigDecimal valorUtilidad = detalle.getPrecioVentaUnitario().multiply(productoBodega.getUtilidad().divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP));
-        detalle.setPvp(detalle.getPrecioVentaUnitario().add(valorUtilidad));
+        detalle.setPvp((detalle.getPrecioVentaUnitario().add(valorUtilidad)).setScale(2, BigDecimal.ROUND_HALF_UP));
         detalle.setStock(this.setStockBodega(productoBodega, this.bodegaSelect));
         detalle.setSubtotalSinDescuento((detalle.getPrecioVentaUnitario().multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
         detalle.setValorDescuento((detalle.getSubtotalSinDescuento().multiply(detalle.getDescuento().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP)); 
@@ -297,7 +298,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
             }
         }
         detalle.setValorProrrateo(BigDecimal.ZERO);
-        detalle.setPvpIva(detalle.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"),RoundingMode.HALF_UP)).add(BigDecimal.ONE)));
+        detalle.setPvpIva((detalle.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
         detalle.setBodega(new Bodega(this.bodegaSelect));
         return detalle;
     }
@@ -484,6 +485,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         factura.setDescuento(BigDecimal.ZERO);
         factura.setComision(BigDecimal.ZERO);
         factura.setTotalRetencion(BigDecimal.ZERO);
+        factura.setTotalSinDescuento(BigDecimal.ZERO);
         factura = this.calcularSubTotalales(factura);
         for (FacturaDetalle pago : factura.getFacturaDetalleList()) {
             factura.setSubtotal(factura.getSubtotal().add(pago.getSubtotalSinDescuento()));
@@ -526,6 +528,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         }
         factura.setTotal((subtotalConIva.add(factura.getIva()).add(subtotalSinIva)).setScale(2, BigDecimal.ROUND_HALF_UP));
         factura.setTotalPagar((factura.getTotal().subtract(factura.getTotalRetencion())).setScale(2, BigDecimal.ROUND_HALF_UP));
+        factura.setTotalSinDescuento((factura.getSubtotal().add(factura.getIva())).setScale(2, BigDecimal.ROUND_HALF_UP));
         return factura; 
     }
     
@@ -661,8 +664,8 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     }
     
     public void onCellEditUtilidad(FacturaDetalle event) {
-        event.setPvp(event.getPrecioVentaUnitarioTransporte().add(event.getPrecioVentaUnitarioTransporte().multiply(event.getUtilidad().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
-        event.setPvpIva(event.getPvp().add(event.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
+        event.setPvp((event.getPrecioVentaUnitarioTransporte().add(event.getPrecioVentaUnitarioTransporte().multiply(event.getUtilidad().divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        event.setPvpIva((event.getPvp().add(event.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
     
     public void onCellEditCantidad(FacturaDetalle event){
@@ -713,8 +716,8 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 this.calcularTotalProrrateo(event.getFactura());
             }
         }
-        event.setPvp(event.getPrecioVentaUnitarioDescuento().add(valorUtilidad));
-        event.setPvpIva(event.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"),RoundingMode.HALF_UP)).add(BigDecimal.ONE)));
+        event.setPvp((event.getPrecioVentaUnitarioDescuento().add(valorUtilidad)).setScale(2, BigDecimal.ROUND_HALF_UP));
+        event.setPvpIva((event.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
     
     public void calcularTotalProrrateo(Factura factura)
