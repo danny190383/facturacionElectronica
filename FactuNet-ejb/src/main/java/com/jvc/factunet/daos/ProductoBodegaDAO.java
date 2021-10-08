@@ -1,13 +1,10 @@
 package com.jvc.factunet.daos;
 
 import com.jvc.factunet.dao.GenericDAO;
-import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.FacturaDetalleSeries;
 import com.jvc.factunet.entidades.Producto;
 import com.jvc.factunet.entidades.ProductoBodega;
-import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
@@ -15,28 +12,12 @@ import org.apache.commons.lang.StringUtils;
 @Stateless
 public class ProductoBodegaDAO extends GenericDAO{
     
-    @EJB
-    private DocumentosDAO documentosDAO;
-    
     public Producto buscarBarras(String barras, Integer empresa, Integer bodega) {
         try {
             Query q = em.createQuery("select o from Producto o Where UPPER(o.codigoBarras) = ?1 and o.empresa.codigo = ?2 ").setMaxResults(1);
             q.setParameter(1, barras.toUpperCase());
             q.setParameter(2, empresa);
             Producto producto = (Producto)q.getSingleResult();
-            if(producto instanceof ProductoBodega)
-            {
-                ProductoBodega proBodega = (ProductoBodega) producto;
-                List<FacturaDetalle> listaLotesCompra = new ArrayList<>();
-                if(bodega != null)
-                {
-                    listaLotesCompra.addAll(this.documentosDAO.buscarLotesCompra(proBodega.getCodigo() ,bodega));
-                    if(!listaLotesCompra.isEmpty())
-                    {
-                        ((ProductoBodega) producto).setLote(listaLotesCompra.get(0));
-                    }
-                }
-            }
             return producto;
         } catch (Exception e) {
             return null;

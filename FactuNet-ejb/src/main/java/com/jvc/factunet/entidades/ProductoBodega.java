@@ -63,8 +63,6 @@ public class ProductoBodega extends Producto implements Serializable{
     
     @Transient
     private BigDecimal stock; 
-    @Transient
-    private FacturaDetalle lote;
     
     public ProductoBodega() {
     }
@@ -195,14 +193,6 @@ public class ProductoBodega extends Producto implements Serializable{
 
     public void setPacaProductoList(List<ProductoBodega> pacaProductoList) {
         this.pacaProductoList = pacaProductoList;
-    }
-
-    public FacturaDetalle getLote() {
-        return lote;
-    }
-
-    public void setLote(FacturaDetalle lote) {
-        this.lote = lote;
     }
 }
 

@@ -31,6 +31,8 @@ import com.jvc.factunet.icefacesUtil.JasperReportUtil;
 import com.jvc.factunet.print.Ticket;
 import com.jvc.factunet.servicios.ClienteServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
+import com.jvc.factunet.servicios.ProductoBodegaServicio;
+import com.jvc.factunet.servicios.ProductoStockServicio;
 import com.jvc.factunet.servicios.PuntoVentaServicio;
 import com.jvc.factunet.servicios.TarjetaEmpresaServicio;
 import com.jvc.factunet.session.Login;
@@ -70,6 +72,10 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private DocumentosServicios documentosServicios;
     @EJB
     private PuntoVentaServicio puntoVentaServicio;
+    @EJB
+    private ProductoBodegaServicio productoBodegaServicio;
+    @EJB
+    private ProductoStockServicio productoStockServicio;
     
     private FacturaVenta facturaVenta;
     private Cliente cliente;
@@ -88,12 +94,14 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private Integer comisionTarjetaSlc;
     private List<PuntoVenta> listaPuntoVenta;
     private final List<FacturaVenta> listaFacturaVentas = new ArrayList<>();
+    private List<FacturaDetalle> lotes;
 
     public FacturaVentaBean() {
         this.facturaVenta = new FacturaVenta();
         this.listaTarjetaEmpresa = new ArrayList<>();
         this.listaComisionTarjeta = new ArrayList<>();
         this.listaPuntoVenta = new ArrayList<>();
+        this.lotes = new ArrayList<>();
         this.efectivo = Boolean.TRUE;
         this.tarjeta = Boolean.FALSE;
         this.credito = Boolean.FALSE;
@@ -379,8 +387,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.generalDescuento();
     }
     
-    @Override
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.facturaVenta.getFacturaDetalleList().remove(parametro);
             this.calcularTotales();
@@ -446,6 +453,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             {    
                 detalle.setStock(productoBodega.getStock());
             }   
+            detalle.setLoteVenta(productoBodega.getLote()); 
         }
         else
         {
@@ -1548,6 +1556,62 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             }
         }
     }
+    
+    public void verificarLores(){
+        if(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta() != null)
+        {
+            super.setProductoVer(this.productoBodegaServicio.buscarCodigoBarras(super.getCodigoBarras(), super.getEmpresa().getCodigo(), ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta().getBodega().getCodigo()));
+        }
+        if(super.getProductoVer() != null)
+        {
+            if(super.getProductoVer() instanceof ProductoBodega){
+                this.lotes.clear();
+                this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCero(super.getProductoVer().getCodigo()));
+                this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCeroDestino(super.getProductoVer().getCodigo()));
+                if(lotes.size()>1){
+                    PrimeFaces.current().executeScript("PF('mdlLoteProducto').show();");
+                    PrimeFaces.current().executeScript("PF('mdlLoteProducto').update();");
+                    super.setCodigoBarras(StringUtils.EMPTY);
+                }
+                else
+                {
+                    if(lotes.size() == 1){
+                        super.buscarProductoBarras(this.lotes.get(0)); 
+                    }
+                    else
+                    {
+                        super.buscarProductoBarras(null);
+                    }
+                }
+            }
+            else
+            {
+                super.buscarProductoBarras(null);
+            }
+        }
+        else
+        {
+            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("productoNoEncontrado"));
+            super.setCodigoBarras(StringUtils.EMPTY);
+        }
+    }
+    
+    public void seleccionarLote(FacturaDetalle lote){
+        ProductoBodega producto;
+        if(lote.getFactura().getNumero() == -100){
+            producto = (ProductoBodega)lote.getProductoServicioDestino();
+        }
+        else
+        {
+            producto = (ProductoBodega)lote.getProductoServicio();   
+        }
+        producto.setLote(lote); 
+        List<Producto> lista = new ArrayList<>();
+        lista.add(producto);
+        super.setProductoVer(producto); 
+        this.agregarCalcular(lista);
+        PrimeFaces.current().executeScript("PF('mdlLoteProducto').hide();");
+    } 
 
     public List<TarjetaEmpresa> getListaTarjetaEmpresa() {
         return listaTarjetaEmpresa;
@@ -1676,6 +1740,13 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                                         mesa == null ? " " : mesa);
             ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
         }  
-        
+    }
+
+    public List<FacturaDetalle> getLotes() {
+        return lotes;
+    }
+
+    public void setLotes(List<FacturaDetalle> lotes) {
+        this.lotes = lotes;
     }
 }

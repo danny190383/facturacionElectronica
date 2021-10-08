@@ -239,10 +239,15 @@
                         </f:facet>
                         
                         <p:column selectionMode="multiple" 
-                                  style="width:16px;text-align:center"
+                                  style="text-align:center"
+                                  width="2%"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota == 2}"/>
                         
-                        <p:column style="width:16px">
+                        <p:column width="2%"
+                                  rendered="#{notaCreditoBean.notaCredito.tipoNota ne 2}">
+                        </p:column>
+                        
+                        <p:column width="2%">
                             <p:rowToggler rendered="#{items.isPaquete}"/>
                         </p:column>
                         
@@ -271,7 +276,7 @@
                         </p:rowExpansion>   
                         
                         <p:column headerText="#{msg.iva}"
-                                  width="100"
+                                  width="7%"
                                   style="text-align:center">
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
                                              converter="omnifaces.SelectItemsConverter"
@@ -289,31 +294,32 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.stock}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.stock}" />
                         </p:column>
                         
                         <p:column headerText="#{msg.bodega}"
-                                  width="30"
+                                  visible="false"
                                   style="text-align:center">
                             <h:outputLabel value="#{items.bodega.siglas}"
                                            title="#{items.bodega.nombre}"/>
                         </p:column>
 
-                        <p:column headerText="#{msg.productos}">
+                        <p:column headerText="#{msg.productos}"
+                                  width="30%">
                             <h:outputLabel value="#{items.productoServicio.nombre}" />
                         </p:column>
                         
                         <p:column headerText="Cant."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota != 2}">
                             <h:outputLabel value="#{items.cantidad}"/>
                         </p:column>
 
                         <p:column headerText="Cant."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota == 2}">
                             <p:cellEditor>
@@ -333,7 +339,7 @@
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota == 1 ||
                                               notaCreditoBean.notaCredito.tipoNota == 2}">
@@ -341,7 +347,7 @@
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota == 3 ||
                                               notaCreditoBean.notaCredito.tipoNota == 4}">
@@ -363,37 +369,37 @@
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.descuento} %"/>
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.valorDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalConDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalSinDescuento}"/>
                         </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="60"
+                                  width="7%"
                                   style="text-align: center">
 
                             <p:commandButton  icon="ui-icon-close" 

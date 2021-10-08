@@ -60,19 +60,33 @@ public class DocumentosDAO extends GenericDAO{
         }
     }
     
-    public List<FacturaDetalle> buscarLotesCompra(Integer producto, Integer bodega) {
+    public List<FacturaDetalle> buscarLotesCompraOrigen(Integer producto, Integer bodega) {
         try {
             Query q = em.createQuery("select o from FacturaDetalle o where "
                     + "o.productoServicio.codigo = ?1 and "
                     + "o.bodega.codigo = ?2  and "
-                    + "o.stockFecha > 0 and "
-                    + "o.factura.proveedor != null "
+                    + "o.factura.proveedor != null and "
+                    + "o.factura.numero <> -100 "
                     + "order by o.fecha desc").setMaxResults(5);
             q.setParameter(1, producto);
             q.setParameter(2, bodega);
             return q.getResultList(); 
         } catch (Exception e) {
-            return null;
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraDestino(Integer producto, Integer bodega) {
+        try {
+            Query q = em.createQuery("select o from FacturaDetalle o where "
+                    + "o.productoServicioDestino.codigo = ?1 and "
+                    + "o.bodega.codigo = ?2 "
+                    + "order by o.fecha desc").setMaxResults(5);
+            q.setParameter(1, producto);
+            q.setParameter(2, bodega);
+            return q.getResultList(); 
+        } catch (Exception e) {
+            return new ArrayList<>();
         }
     }
     
@@ -1240,6 +1254,72 @@ public class DocumentosDAO extends GenericDAO{
                 q.setParameter("cedula", cedula);
             }
             return q.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCero(Integer producto, Integer bodega) {
+        try {
+            Query q = em.createQuery("select o from FacturaDetalle o where "
+                    + "o.fechaCaducidad != null and "
+                    + "o.productoServicio.codigo = ?1 and "
+                    + "o.bodega.codigo = ?2  and "
+                    + "o.stockActual > 0 and "
+                    + "o.factura.proveedor != null and "
+                    + "o.factura.numero <> -100 "
+                    + "order by o.fecha desc");
+            q.setParameter(1, producto);
+            q.setParameter(2, bodega);
+            return q.getResultList(); 
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCeroDestino(Integer producto, Integer bodega) {
+        try {
+            Query q = em.createQuery("select o from FacturaDetalle o where "
+                    + "o.fechaCaducidad != null and "
+                    + "o.productoServicioDestino.codigo = ?1 and "
+                    + "o.bodega.codigo = ?2  and "
+                    + "o.stockActual > 0 and "
+                    + "o.factura.proveedor != null "
+                    + "order by o.fecha desc");
+            q.setParameter(1, producto);
+            q.setParameter(2, bodega);
+            return q.getResultList(); 
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCero(Integer producto) {
+        try {
+            Query q = em.createQuery("select o from FacturaDetalle o where "
+                    + "o.fechaCaducidad != null and "
+                    + "o.productoServicio.codigo = ?1 and "
+                    + "o.stockActual > 0 and "
+                    + "o.factura.proveedor != null and "
+                    + "o.factura.numero <> -100 "
+                    + "order by o.fecha desc");
+            q.setParameter(1, producto);
+            return q.getResultList(); 
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCeroDestino(Integer producto) {
+        try {
+            Query q = em.createQuery("select o from FacturaDetalle o where "
+                    + "o.fechaCaducidad != null and "
+                    + "o.productoServicioDestino.codigo = ?1 and "
+                    + "o.stockActual > 0 and "
+                    + "o.factura.proveedor != null "
+                    + "order by o.fecha desc");
+            q.setParameter(1, producto);
+            return q.getResultList(); 
         } catch (Exception e) {
             return null;
         }

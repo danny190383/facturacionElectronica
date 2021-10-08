@@ -84,7 +84,6 @@
                                          value="#{cuentasAdminBean.listaCuentas}"
                                          id="tablaCuentas"
                                          emptyMessage="#{msg.tablaVacia}"
-                                         style="width: 98%"
                                          editable="true" 
                                          editMode="cell"
                                          resizableColumns="true"
@@ -124,14 +123,16 @@
                                 </f:facet>
                                 
                                 <p:column selectionMode="multiple" 
-                                          style="width:16px;text-align:center"/>
+                                          style="text-align:center"
+                                          width="2%"/>
 
-                               <p:column style="width:16px">
+                               <p:column width="2%">
                                    <p:rowToggler />
                                </p:column>
 
                                <p:column headerText="#{msg.cuenta}"
-                                         width="50">
+                                         width="3%"
+                                         style="text-align: center">
                                    <h:commandLink actionListener="#{cuentasAdminBean.generarReporteCuentasPDF(cuenta.facturaPago)}"
                                                   target="_blank" 
                                                   immediate="true">
@@ -141,7 +142,8 @@
                                </p:column>
 
                                <p:column headerText="#{msg.factura}"
-                                         width="50">
+                                         width="3%"
+                                         style="text-align: center">
                                    <h:commandLink actionListener="#{cuentasAdminBean.generarReportePDF(cuenta.facturaPago.factura)}"
                                                   target="_blank" 
                                                   immediate="true"
@@ -154,25 +156,27 @@
                                </p:column>
 
                                <p:column headerText="#{msg.tipo}"
-                                         width="120">
+                                         width="8%">
                                    <h:outputText value="#{cuenta.formaPago.nombre}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
 
                                <p:column headerText="#{msg.valor}"
-                                         width="50">
+                                         width="5%"
+                                         style="text-align: right">
                                    <h:outputText value="#{cuenta.valor}" 
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
 
                                <p:column headerText="#{msg.saldo}"
-                                         width="50">
+                                         width="5%"
+                                         style="text-align: right">
                                    <h:outputText value="#{cuenta.saldo}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
 
                                <p:column headerText="#{msg.vencimiento}"
-                                         width="100">
+                                         width="5%">
                                    <h:outputText value="#{cuenta.fechaVencimiento}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold">
                                        <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
@@ -181,13 +185,15 @@
                                </p:column>
 
                                <p:column headerText="#{msg.dias}"
-                                         width="30">
+                                         width="5%"
+                                         style="text-align: right">
                                    <h:outputText value="#{cuenta.dias}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
 
                                <p:column headerText="#{msg.interes}"
-                                         width="50">
+                                         width="5%"
+                                         style="text-align: right">
                                    <p:cellEditor>
                                        <f:facet name="output">
                                            <h:outputText value="#{cuenta.interes} %"
@@ -208,12 +214,14 @@
                                </p:column>
 
                                <p:column headerText="#{msg.valor}"
-                                         width="50">
+                                         width="5%"
+                                         style="text-align: right">
                                    <h:outputText value="#{cuenta.valorInteres}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
 
-                               <p:column headerText="#{msg.observacion}">
+                               <p:column headerText="#{msg.observacion}"
+                                         width="15%">
                                    <p:cellEditor>
                                        <f:facet name="output">
                                            <h:outputText value="#{cuenta.detalle}"
@@ -228,7 +236,8 @@
                                </p:column>
 
                                <p:column headerText="#{msg.opcion}"
-                                         width="50">
+                                         width="5%"
+                                         style="text-align: center">
                                     <p:commandButton icon="fa fa-fw fa-money"
                                                      actionListener="#{cuentasAdminBean.verPago(cuenta)}"
                                                      style="width: 45px;height: 25px"

@@ -196,7 +196,7 @@
                                             placeholder="#{msg.codigoBarras} / #{msg.series}"
                                             onkeypress="if(event.keyCode==13){onchange();return false;}">
                                    <p:ajax event="change" 
-                                           listener="#{proformaAdminBean.buscarProductoBarras}"
+                                           listener="#{proformaAdminBean.buscarProductoBarras(null)}"
                                            update="tablaProforma,:frmCabecera:grMensajes,@this,focus"/>
                                 </p:inputText>
 

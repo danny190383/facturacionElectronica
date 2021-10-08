@@ -74,6 +74,8 @@ public class Producto implements Serializable {
     private FacturaDetalleSeries serie;
     @Transient
     private Bodega bodega;
+    @Transient
+    private FacturaDetalle lote;
 
     public Producto() {
     }
@@ -206,6 +208,14 @@ public class Producto implements Serializable {
 
     public void setDescuentoVenta(BigDecimal descuentoVenta) {
         this.descuentoVenta = descuentoVenta;
+    }
+    
+    public FacturaDetalle getLote() {
+        return lote;
+    }
+
+    public void setLote(FacturaDetalle lote) {
+        this.lote = lote;
     }
     
     @Override

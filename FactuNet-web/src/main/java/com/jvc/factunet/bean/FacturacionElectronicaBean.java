@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -175,6 +176,10 @@ public class FacturacionElectronicaBean implements Serializable{
     }
     
     public void procesarFacturasRecepcion(){
+        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
+             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
+             return;
+        }
         for(Factura documento : this.listaDocumentos){
             if(documento.getEstadoAutorizacionSri() == null || !documento.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
@@ -193,7 +198,14 @@ public class FacturacionElectronicaBean implements Serializable{
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = documento.getCodigoBarras() + "Firmado.xml";
                         procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
-                        RespuestaRecepcion respuesta = consumoSRI.consumirRecepcion(url+nombreResultado); 
+                        RespuestaRecepcion respuesta;
+                        if(documento.getEmpresa().getAmbienteElectronica().equals("1")){
+                            respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
+                        }
+                        else
+                        {
+                            respuesta = consumoSRI.consumirRecepcionProduccion(url+nombreResultado); 
+                        }
                         if(respuesta == null){
                             FacesUtils.addErrorMessage("Error de conexión con el SRI");
                             return;
@@ -231,7 +243,14 @@ public class FacturacionElectronicaBean implements Serializable{
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = guia.getCodigoBarras() + "Firmado.xml";
                         procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
-                        RespuestaRecepcion respuesta = consumoSRI.consumirRecepcion(url+nombreResultado); 
+                        RespuestaRecepcion respuesta;
+                        if(guia.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                            respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
+                        }
+                        else
+                        {
+                            respuesta = consumoSRI.consumirRecepcionProduccion(url+nombreResultado); 
+                        }
                         if(respuesta == null){
                             FacesUtils.addErrorMessage("Error de conexión con el SRI");
                             return;
@@ -269,7 +288,14 @@ public class FacturacionElectronicaBean implements Serializable{
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = retencion.getCodigoBarras() + "Firmado.xml";
                         procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
-                        RespuestaRecepcion respuesta = consumoSRI.consumirRecepcion(url+nombreResultado); 
+                        RespuestaRecepcion respuesta;
+                        if(retencion.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                            respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
+                        }
+                        else
+                        {
+                            respuesta = consumoSRI.consumirRecepcionProduccion(url+nombreResultado); 
+                        }
                         if(respuesta == null){
                             FacesUtils.addErrorMessage("Error de conexión con el SRI");
                             return;
@@ -300,10 +326,21 @@ public class FacturacionElectronicaBean implements Serializable{
     }
     
     public void procesarFacturasAutorizacion(){
+        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
+             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
+             return;
+        }
         for(Factura factura : this.listaDocumentos){
             if(factura.getEstadoAutorizacionSri() == null || !factura.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
-                    RespuestaAutorizacion respuesta = consumoSRI.consumirAutorizacion(factura.getCodigoBarras()); 
+                    RespuestaAutorizacion respuesta;
+                    if(factura.getEmpresa().getAmbienteElectronica().equals("1")){
+                        respuesta = consumoSRI.consumirAutorizacionPruebas(factura.getCodigoBarras()); 
+                    }
+                    else
+                    {
+                        respuesta = consumoSRI.consumirAutorizacionProduccion(factura.getCodigoBarras()); 
+                    }
                     if(respuesta == null){
                         FacesUtils.addErrorMessage("Error de conexión con el SRI");
                         return;
@@ -347,7 +384,14 @@ public class FacturacionElectronicaBean implements Serializable{
         for(GuiaRemision guia : this.listaGuiasRemision){
             if(guia.getEstadoAutorizacionSri() == null || !guia.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
-                    RespuestaAutorizacion respuesta = consumoSRI.consumirAutorizacion(guia.getCodigoBarras()); 
+                    RespuestaAutorizacion respuesta;
+                    if(guia.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                        respuesta = consumoSRI.consumirAutorizacionPruebas(guia.getCodigoBarras()); 
+                    }
+                    else
+                    {
+                        respuesta = consumoSRI.consumirAutorizacionProduccion(guia.getCodigoBarras()); 
+                    }
                     if(respuesta == null){
                         FacesUtils.addErrorMessage("Error de conexión con el SRI");
                         return;
@@ -382,7 +426,14 @@ public class FacturacionElectronicaBean implements Serializable{
         for(DocumentoRetencion retencion : this.listaDocumentoRetencion){
             if(retencion.getEstadoAutorizacionSri() == null || !retencion.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
-                    RespuestaAutorizacion respuesta = consumoSRI.consumirAutorizacion(retencion.getCodigoBarras()); 
+                    RespuestaAutorizacion respuesta;
+                    if(retencion.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                        respuesta = consumoSRI.consumirAutorizacionPruebas(retencion.getCodigoBarras()); 
+                    }
+                    else
+                    {
+                        respuesta = consumoSRI.consumirAutorizacionProduccion(retencion.getCodigoBarras()); 
+                    }
                     if(respuesta == null){
                         FacesUtils.addErrorMessage("Error de conexión con el SRI");
                         return;

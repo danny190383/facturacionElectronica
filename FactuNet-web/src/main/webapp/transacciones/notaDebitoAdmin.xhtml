@@ -246,7 +246,7 @@
                             </p:fragment>
                         </f:facet>
                         
-                        <p:column style="width:16px">
+                        <p:column width="2%">
                             <p:rowToggler rendered="#{items.isPaquete}"/>
                         </p:column>
                         
@@ -275,7 +275,7 @@
                         </p:rowExpansion>   
                         
                         <p:column headerText="#{msg.iva}"
-                                  width="100"
+                                  width="7%"
                                   style="text-align:center">
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
                                              converter="omnifaces.SelectItemsConverter"
@@ -291,39 +291,39 @@
                         </p:column>
                         
                         <p:column headerText="#{msg.stock}"
-                                  width="50"
+                                  width="5%"
                                   style="text-align:right"
                                   visible="false">
                             <h:outputLabel value="#{items.stock}" />
                         </p:column>
                         
                         <p:column headerText="#{msg.bodega}"
-                                  width="30"
                                   style="text-align:center"
                                   visible="false">
                             <h:outputLabel value="#{items.bodega.siglas}"
                                            title="#{items.bodega.nombre}"/>
                         </p:column>
 
-                        <p:column headerText="#{msg.productos}">
+                        <p:column headerText="#{msg.productos}"
+                                  width="30%">
                             <h:outputLabel value="#{items.productoServicio.nombre}" />
                         </p:column>
                         
                         <p:column headerText="Cant."
-                                  width="60"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.cantidad}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="60"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaDebitoBean.notaDebito.codigo ne null}">
                             <h:outputLabel value="#{items.precioVentaUnitario}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="60"
+                                  width="5%"
                                   style="text-align:right"
                                   rendered="#{notaDebitoBean.notaDebito.codigo eq null}">
                             <p:cellEditor>
@@ -344,41 +344,41 @@
                         </p:column>
                         
                         <p:column headerText="% Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   visible="false">
                             <h:outputLabel value="#{items.descuento} %"/>
                         </p:column>
                         
                         <p:column headerText="V. Des."
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   visible="false">
                             <h:outputLabel value="#{items.valorDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   visible="false">
                             <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total}"
-                                  width="40"
+                                  width="5%"
                                   style="text-align:right"
                                   visible="false">
                             <h:outputLabel value="#{items.subtotalConDescuento}"/>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
-                                  width="60"
+                                  width="5%"
                                   style="text-align:right">
                             <h:outputLabel value="#{items.subtotalSinDescuento}"/>
                         </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="60"
+                                  width="8%"
                                   style="text-align: center">
 
                             <p:commandButton  icon="ui-icon-close" 

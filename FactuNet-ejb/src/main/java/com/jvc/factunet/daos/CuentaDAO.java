@@ -49,7 +49,7 @@ public class CuentaDAO extends GenericDAO{
     
     public List<Cuenta> listarConPuntoVenta(Integer empresa) {
         try {
-            Query q = em.createQuery("select o from Cuenta o where o.puntoVenta != null and "
+            Query q = em.createQuery("select o from Cuenta o where o.empleado.puntoVenta != null and "
                     + "o.empleado.empresa.codigo = ?1 ");
             q.setParameter(1, empresa);
             return q.getResultList(); 

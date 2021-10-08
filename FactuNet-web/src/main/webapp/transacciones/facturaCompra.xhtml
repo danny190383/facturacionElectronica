@@ -516,7 +516,7 @@
                                              placeholder="#{msg.codigoBarras}"
                                              autocomplete="off">
                                    <p:ajax event="change" 
-                                           listener="#{facturaCompraBean.buscarProductoBarras}"
+                                           listener="#{facturaCompraBean.buscarProductoBarras(null)}"
                                            update="tablaPedidoCompra,:frmCabecera:grMensajes,@this,focus"/>
                                 </p:inputText>
 

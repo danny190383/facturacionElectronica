@@ -319,7 +319,7 @@
                                              autocomplete="off"
                                              placeholder="#{msg.codigoBarras}">
                                    <p:ajax event="change" 
-                                           listener="#{pedidoCompraBean.buscarProductoBarras}"
+                                           listener="#{pedidoCompraBean.buscarProductoBarras(null)}"
                                            update="tablaPedidoCompra,:frmCabecera:grMensajes,@this,focus"/>
                                 </p:inputText>
 

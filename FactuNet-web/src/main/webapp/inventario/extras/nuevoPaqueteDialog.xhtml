@@ -73,6 +73,14 @@
                                          autoResize="false" 
                                          maxlength="500"
                                          value="#{nuevoPaqueteBean.productoPaquete.descripcion}"/>
+                        
+                        <h:outputLabel value="#{msg.descuento} en Venta: "/> 
+                        <p:inputNumber value="#{nuevoPaqueteBean.productoPaquete.descuentoVenta}"
+                                       minValue="0.00" maxValue="1000"
+                                       size="5"
+                                       symbol="%" 
+                                       required="true"
+                                       symbolPosition="s"/> 
 
                     </h:panelGrid>
                     <h:panelGrid columns="1" 

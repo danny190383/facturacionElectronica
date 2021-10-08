@@ -120,7 +120,9 @@
                                            <p:fragment autoUpdate="true">
                                                <p:commandButton value="#{msg.nuevo}"  
                                                                 actionListener="#{productoAdminBean.verNuevoProductoPaca(producto)}" 
-                                                                icon="ui-icon-comment">
+                                                                icon="ui-icon-comment"
+                                                                process="tablaProductosPaca"
+                                                                update=":frmCabecera:grMensajes">
                                                       <p:ajax event="dialogReturn" 
                                                               listener="#{productoAdminBean.onProductoSelect}"
                                                               update=":frmCabecera:grMensajes, tablaProductosPaca"/>

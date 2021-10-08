@@ -139,6 +139,7 @@ public class NuevoProductoBean extends CatalogosProducto implements Serializable
         this.productoBodega.setPrecioUltimaCompra(BigDecimal.ZERO);
         this.productoBodega.setPvp(BigDecimal.ZERO);
         this.productoBodega.setUtilidad(BigDecimal.ZERO);
+        this.productoBodega.setDescuentoVenta(BigDecimal.ZERO);
         this.productoBodega.setStock(BigDecimal.ZERO);
         this.productoBodega.setCodigoBarras(StringUtils.EMPTY);
         this.buscarNombreGrupo();

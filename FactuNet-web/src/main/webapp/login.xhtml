@@ -36,15 +36,15 @@
                             <h:outputLabel value="#{msg.clave}: " />
                             <p:password value="#{crearSesion.clave}"
                                         required="true"/>
-                            <center>
-                                <p:commandButton value="Entrar" 
-                                                 icon="fa fa-hand-o-right" 
-                                                 style="height: 35px;width: 100px"
-                                                 action="#{crearSesion.validateUsernamePassword}"
-                                                 update="pnlLogin,grMensajes"
-                                                 ajax="false"/>
-                            </center>
                         </h:panelGrid>
+                        <center>
+                            <p:commandButton value="Entrar" 
+                                             icon="fa fa-hand-o-right" 
+                                             style="height: 35px;width: 150px"
+                                             action="#{crearSesion.validateUsernamePassword}"
+                                             update="pnlLogin,grMensajes"
+                                             ajax="false"/>
+                        </center>
                         
                         <p:dialog id="mdlFichaMedicaMilitar" 
                                   widgetVar="mdlFichaMedicaMilitar" 

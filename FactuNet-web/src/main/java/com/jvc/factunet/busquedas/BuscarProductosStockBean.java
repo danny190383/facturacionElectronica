@@ -1,6 +1,7 @@
 package com.jvc.factunet.busquedas;
 
 import com.jvc.factunet.bean.ProductoStockBean;
+import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.GrupoProducto;
 import com.jvc.factunet.entidades.Producto;
 import com.jvc.factunet.entidades.ProductoBodega;
@@ -8,6 +9,7 @@ import com.jvc.factunet.entidades.ProductoPaquete;
 import com.jvc.factunet.entidades.ProductoServicio;
 import com.jvc.factunet.entidades.ProductoStock;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
+import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.ProductoPaqueteServicio;
 import com.jvc.factunet.servicios.ProductoServiciosServicio;
 import com.jvc.factunet.session.Login;
@@ -38,6 +40,8 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     private ProductoServiciosServicio productoServiciosServicio;
     @EJB
     private ProductoPaqueteServicio productoPaqueteServicio;
+    @EJB
+    private DocumentosServicios documentosServicios;
     
     private Producto productoSelc;
     private ProductoStock productoStockSelc;
@@ -46,10 +50,12 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     private String opcion;
     private List<GrupoProducto> listaPadres;
     private List<Producto> listaProductosTodosSelc;
+    private List<FacturaDetalle> lotes;
 
     public BuscarProductosStockBean() {
         this.listaPadres = new ArrayList<>();
         this.listaProductosTodosSelc = new ArrayList<>();
+        this.lotes = new ArrayList<>();
     }
     
     @Override
@@ -237,12 +243,29 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     }
     
     public void onRowSelect(SelectEvent event) {
+        this.productoSelc = ((ProductoStock) event.getObject()).getProductoBodega();
         if(event.getObject() instanceof ProductoStock){
-            ProductoBodega producto = new ProductoBodega();
-            producto = ((ProductoStock)event.getObject()).getProductoBodega();
+            ProductoBodega producto = ((ProductoStock)event.getObject()).getProductoBodega();
             producto.setStock(((ProductoStock)event.getObject()).getStock());
             producto.setBodega(((ProductoStock)event.getObject()).getBodega());
-            this.listaProductosTodosSelc.add(producto);
+            this.lotes.clear();
+            this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCero(producto.getCodigo() ,producto.getBodega().getCodigo()));
+            this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCeroDestino(producto.getCodigo() ,producto.getBodega().getCodigo()));
+            if(!lotes.isEmpty() && lotes.size()>0){
+                if(lotes.size()>1){
+                    PrimeFaces.current().executeScript("PF('mdlLoteProducto').show();");
+                    PrimeFaces.current().executeScript("PF('mdlLoteProducto').update();");
+                }
+                else
+                {
+                    producto.setLote(this.lotes.get(0)); 
+                    this.listaProductosTodosSelc.add(producto);
+                }
+            }
+            else
+            {
+                this.listaProductosTodosSelc.add(producto);
+            }
         }
         else
         {
@@ -310,6 +333,24 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
         }
     }
     
+    public void seleccionarLote(FacturaDetalle lote){
+        ProductoBodega producto;
+        if(lote.getFactura().getNumero() == -100){
+            producto = (ProductoBodega)lote.getProductoServicioDestino();
+        }
+        else
+        {
+            producto = (ProductoBodega)lote.getProductoServicio();   
+        }
+        producto.setLote(lote); 
+        this.listaProductosTodosSelc.add(producto);
+        PrimeFaces.current().executeScript("PF('mdlLoteProducto').hide();");
+    } 
+    
+    public Integer getLoteTotal() {
+        return this.lotes.stream().mapToInt(FacturaDetalle::getStockActualInt).sum();
+    }
+    
     public LazyDataModel<ProductoServicio> getLazyModelServicios() {
         return lazyModelServicios;
     }
@@ -356,5 +397,21 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
 
     public void setListaProductosTodosSelc(List<Producto> listaProductosTodosSelc) {
         this.listaProductosTodosSelc = listaProductosTodosSelc;
+    }
+
+    public List<FacturaDetalle> getLotes() {
+        return lotes;
+    }
+
+    public void setLotes(List<FacturaDetalle> lotes) {
+        this.lotes = lotes;
+    }
+
+    public Producto getProductoSelc() {
+        return productoSelc;
+    }
+
+    public void setProductoSelc(Producto productoSelc) {
+        this.productoSelc = productoSelc;
     }
 }

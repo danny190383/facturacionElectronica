@@ -42,7 +42,6 @@ import com.jvc.factunet.servicios.TipoTarifaImpuestoServicio;
 import com.jvc.factunet.session.Login;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,7 +52,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -99,7 +97,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     private Empresa empresa = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getEmpresa();
     private Producto productoVer;
     private List<ImpuestoTarifa> listaTarifas;
-    
+   
     public PedidoCompraBean() {
         if(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta() == null){
             FacesUtils.addErrorMessage("El empleado no tiene asignado un punto de venta.");
@@ -367,12 +365,35 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 banNoExiste = Boolean.TRUE;
                 for(FacturaDetalle detalle: factura.getFacturaDetalleList())
                 {
-                    if(Objects.equals(detalle.getProductoServicio().getCodigo(), producto.getCodigo()))
-                    {
-                        if(this.verificarDetalle(detalle, producto)) 
+                    if(detalle.getFactura() instanceof FacturaVenta){
+                        if(detalle.getLoteVenta() == null){
+                            if(Objects.equals(detalle.getProductoServicio().getCodigo(), producto.getCodigo()))
+                            {
+                                if(this.verificarDetalle(detalle, producto)) 
+                                {
+                                    banNoExiste = Boolean.FALSE;
+                                    break;
+                                }
+                            }
+                        }
+                        if(Objects.equals(detalle.getProductoServicio().getCodigo(), producto.getCodigo()) &&
+                           Objects.equals(detalle.getLoteVenta().getCodigo(), producto.getLote().getCodigo()))
                         {
-                            banNoExiste = Boolean.FALSE;
-                            break;
+                            if(this.verificarDetalle(detalle, producto)) 
+                            {
+                                banNoExiste = Boolean.FALSE;
+                                break;
+                            }
+                        }
+                    }
+                    else{
+                        if(Objects.equals(detalle.getProductoServicio().getCodigo(), producto.getCodigo()))
+                        {
+                            if(this.verificarDetalle(detalle, producto)) 
+                            {
+                                banNoExiste = Boolean.FALSE;
+                                break;
+                            }
                         }
                     }
                 }
@@ -411,15 +432,23 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         {
             if(producto instanceof ProductoBodega)
             {
-                if(detalle.getFechaCaducidad() == null)
-                {
+                if(detalle.getFactura() instanceof FacturaVenta){
                     detalle.setCantidad(detalle.getCantidad().add(BigDecimal.ONE));
                     this.onCellEditCantidad(detalle);
                     return true;
                 }
                 else
                 {
-                    return false;
+                    if(detalle.getFechaCaducidad() == null)
+                    {
+                        detalle.setCantidad(detalle.getCantidad().add(BigDecimal.ONE));
+                        this.onCellEditCantidad(detalle);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             detalle.setCantidad(detalle.getCantidad().add(BigDecimal.ONE));
@@ -580,7 +609,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         factura.setTotalPagar((factura.getTotal().subtract(factura.getTotalRetencion())).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
     
-    public void buscarProductoBarras()
+    public void buscarProductoBarras(FacturaDetalle lote)
     {
         Producto proTMP;
         if(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta() != null)
@@ -598,6 +627,9 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         if(proTMP != null)
         {
             List<Producto> lista = new ArrayList<>();
+            if(lote != null){
+                proTMP.setLote(lote); 
+            }
             this.productoVer = proTMP;
             lista.add(proTMP);
             this.agregarCalcular(lista);
@@ -669,6 +701,13 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     }
     
     public void onCellEditCantidad(FacturaDetalle event){
+        if(event.getLoteVenta() != null){
+            if(event.getCantidad().floatValue() > event.getLoteVenta().getStockActual().floatValue() ){
+                FacesUtils.addErrorMessage("No puede registrar una cantidad mayor a la del lote seleccionado.");
+                event.setCantidad(BigDecimal.ONE); 
+                return;
+            }
+        }
         event.setSubtotalSinDescuento((event.getPrecioVentaUnitario().multiply(event.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
         event.setSubtotalConDescuento((event.getPrecioVentaUnitarioDescuento().multiply(event.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
         event.setValorDescuento((event.getSubtotalSinDescuento().multiply(event.getDescuento().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));  

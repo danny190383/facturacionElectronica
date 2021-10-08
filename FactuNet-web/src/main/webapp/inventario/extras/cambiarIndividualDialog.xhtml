@@ -54,8 +54,30 @@
                     <h:outputLabel value="#{msg.unidadmedida}: "/>
                     <h:outputLabel value="#{cambiarIndividualBean.productoStock.productoBodega.unidadMedida.nombre}"/>
                     
-                    <h:outputLabel value="#{msg.stock} #{msg.actual}: "/>
+                    <h:outputLabel value="#{msg.lote} :"
+                                   rendered="#{cambiarIndividualBean.listaLotesCompra.size() > 0}"/>
+                    <p:selectOneMenu value="#{cambiarIndividualBean.loteSlc}"
+                                     style="width:200px"
+                                     panelStyle="width:200px"
+                                     required="true"
+                                     rendered="#{cambiarIndividualBean.listaLotesCompra.size() > 0}"
+                                     converter="omnifaces.SelectItemsConverter">
+                        <f:selectItem itemLabel="--Seleccione--"  itemValue=""  noSelectionOption="true"/>
+                        <f:selectItems value="#{cambiarIndividualBean.listaLotesCompra}" 
+                                       var="lote"
+                                       itemLabel="#{lote.codigo} #{lote.factura.proveedor.persona.nombres}"
+                                       itemValue="#{lote}"/>
+                        <p:ajax update=":frmNuevo:txtStockLote"/>
+                    </p:selectOneMenu>
+                    
+                    <h:outputLabel value="#{msg.stock} #{msg.total}: "/>
                     <h:outputLabel value="#{cambiarIndividualBean.productoStock.stock}"/>
+                    
+                    <h:outputLabel value="#{msg.stock} #{msg.lote}: "
+                                   rendered="#{cambiarIndividualBean.listaLotesCompra.size() > 0}"/>
+                    <h:outputLabel value="#{cambiarIndividualBean.loteSlc.stockActual}"
+                                   id="txtStockLote"
+                                   rendered="#{cambiarIndividualBean.listaLotesCompra.size() > 0}"/>
                     
                     <h:outputLabel value="#{msg.cantidad}: "/>
                     <p:inputText value="#{cambiarIndividualBean.cantidad}"

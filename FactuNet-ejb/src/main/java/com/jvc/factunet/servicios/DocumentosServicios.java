@@ -83,8 +83,12 @@ public class DocumentosServicios {
         return this.documentosDAO.buscarDocumento(codigo);
     }
     
-    public List<FacturaDetalle> buscarLotesCompra(Integer producto, Integer bodega){
-        return this.documentosDAO.buscarLotesCompra(producto, bodega);
+    public List<FacturaDetalle> buscarLotesCompraOrigen(Integer producto, Integer bodega){
+        return this.documentosDAO.buscarLotesCompraOrigen(producto, bodega);
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraDestino(Integer producto, Integer bodega){
+        return this.documentosDAO.buscarLotesCompraDestino(producto, bodega);
     }
     
     public List<PedidoCompra> listarPedidosCompra(Integer empresa, String estado){
@@ -394,6 +398,11 @@ public class DocumentosServicios {
                         this.productoStockServicio.actualizar(stock);
                         detalle.setStockFecha(stock.getStock());
                     }
+                    if(detalle.getLoteVenta() != null){
+                        FacturaDetalle lote = detalle.getLoteVenta();
+                        lote.setStockActual(lote.getStockActual().subtract(detalle.getCantidad())); 
+                        this.actualizar(lote);
+                    }
                 }
                 if(detalle.getProductoServicio() instanceof ProductoPaquete)
                 {
@@ -641,6 +650,11 @@ public class DocumentosServicios {
                     this.productoStockServicio.actualizar(stock);
                     this.actualizarKardexAnular(detalle);
                 }
+                if(detalle.getLoteVenta() != null){
+                    FacturaDetalle lote = detalle.getLoteVenta();
+                    lote.setStockActual(lote.getStockActual().add(detalle.getCantidad())); 
+                    this.actualizar(lote);
+                }
             }
             if(detalle.getProductoServicio() instanceof ProductoPaquete)
             {
@@ -862,6 +876,11 @@ public class DocumentosServicios {
                     this.productoStockServicio.actualizar(stock);
                     this.actualizarKardexAnular(detalle);
                 }
+                if(detalle.getLoteVenta() != null){
+                    FacturaDetalle lote = detalle.getLoteVenta();
+                    lote.setStockActual(lote.getStockActual().add(detalle.getCantidad())); 
+                    this.actualizar(lote);
+                }
             }
             if(detalle.getProductoServicio() instanceof ProductoPaquete)
             {
@@ -1067,5 +1086,21 @@ public class DocumentosServicios {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Factura actualizarDocumento(Factura parametro) throws Exception {
         return (Factura) this.documentosDAO.actualizar(parametro);
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCero(Integer producto, Integer bodega){
+        return this.documentosDAO.buscarLotesCompraMayorCero(producto, bodega);
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCeroDestino(Integer producto, Integer bodega){
+        return this.documentosDAO.buscarLotesCompraMayorCeroDestino(producto, bodega);
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCero(Integer producto){
+        return this.documentosDAO.buscarLotesCompraMayorCero(producto);
+    }
+    
+    public List<FacturaDetalle> buscarLotesCompraMayorCeroDestino(Integer producto){
+        return this.documentosDAO.buscarLotesCompraMayorCeroDestino(producto);
     }
 }

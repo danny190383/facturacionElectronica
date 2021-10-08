@@ -98,11 +98,17 @@
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.proveedor}">
+                                            <h:outputLabel value="#{msg.individual} " rendered="#{lote.factura.numero eq -100}"
+                                                           style="color: red"/>
+                                            <h:outputLabel value="#{lote.loteVenta.codigo} " rendered="#{lote.factura.numero eq -100 and
+                                                                                                         lote.loteVenta ne null}"
+                                                           style="color: red"/>
                                             <h:outputLabel value="#{lote.factura.proveedor.persona.nombres} #{lote.factura.proveedor.persona.apellidos}" />
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.fecha} #{msg.caducidad}" 
-                                                  width="100">
+                                                  width="100"
+                                                  style="text-align: center">
                                             <h:outputLabel value="#{lote.fechaCaducidad}">
                                                 <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
                                                                     pattern="#{parametrosApplication.formatoFecha}"/>
@@ -110,7 +116,8 @@
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.fecha} #{msg.ingreso}" 
-                                                  width="80">
+                                                  width="80"
+                                                  style="text-align: center">
                                             <h:outputLabel value="#{lote.fecha}">
                                                 <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
                                                                     pattern="#{parametrosApplication.formatoFecha}"/>
@@ -118,25 +125,29 @@
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.cantidad}" 
-                                                  width="50">
+                                                  width="50"
+                                                  style="text-align: right">
                                             <h:outputLabel value="#{lote.cantidad}" />
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.costo} #{msg.unitario}" 
-                                                  width="50">
+                                                  width="50"
+                                                  style="text-align: right">
                                             <h:outputLabel value="#{lote.precioVentaUnitarioDescuento}" />
                                         </p:column>
                                         
                                         <p:column headerText="#{msg.stock} Actual" 
-                                                  width="80">
-                                            <h:outputLabel value="#{lote.stockActual} " />
+                                                  width="80"
+                                                  style="text-align: right">
+                                            <h:outputLabel value="#{lote.stockActual} " 
+                                                           rendered="#{lote.fechaCaducidad ne null}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </p:rowExpansion>
                                 
                                 <p:column headerText="#{msg.codigoBarras}"  
                                           filterBy="#{producto.productoBodega.codigoBarras}"
-                                          visible="false">
+                                          width="10%">
                                     <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
                                 </p:column>
 
@@ -161,7 +172,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.stock}" 
-                                          width="10%"
+                                          width="5%"
                                           style="text-align: right">
                                     <h:outputLabel value="#{producto.stock}" />
                                 </p:column>
@@ -189,7 +200,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="% #{msg.utilidad}" 
-                                          width="10%"
+                                          width="5%"
                                           style="text-align: right">
                                     <p:cellEditor>
                                         <f:facet name="output">

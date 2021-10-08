@@ -101,7 +101,7 @@ public class ProductoStockServicio {
     }
     
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void actualizarIndividualizacion(Empleado responsable ,ProductoStock origen, ProductoStock destino) throws Exception {
+    public void actualizarIndividualizacion(Empleado responsable ,ProductoStock origen, ProductoStock destino, FacturaDetalle lote) throws Exception {
         this.actualizar(origen);
         this.actualizar(destino);
         this.productoBodegaServicio.actualizar(destino.getProductoBodega());
@@ -111,7 +111,7 @@ public class ProductoStockServicio {
         transferencia.setEmpresa(responsable.getEmpresa());
         transferencia.setEstado("1");
         transferencia.setFecha(new Date());
-        transferencia.setFacturaDetalleList(new ArrayList<FacturaDetalle>());
+        transferencia.setFacturaDetalleList(new ArrayList<>());
         FacturaDetalle detalle = new FacturaDetalle();
         detalle.setProductoServicio(origen.getProductoBodega());
         detalle.setProductoServicioDestino(destino.getProductoBodega());
@@ -124,6 +124,14 @@ public class ProductoStockServicio {
         detalle.setStockOrigenFecha(origen.getStock());
         detalle.setPrecioVentaUnitarioDescuento(destino.getProductoBodega().getPrecioUltimaCompra()); 
         detalle.setCostoFecha(destino.getProductoBodega().getPrecioUltimaCompra()); 
+        detalle.setStockActual(destino.getCantidad()); 
+        if(lote != null){
+            transferencia.setProveedor(lote.getFactura().getProveedor()); 
+            detalle.setLoteVenta(lote); 
+            detalle.setFechaCaducidad(lote.getFechaCaducidad()); 
+            lote.setStockActual(lote.getStockActual().subtract(origen.getCantidad())); 
+            this.documentosServicios.actualizar(lote);
+        }
         transferencia.getFacturaDetalleList().add(detalle);
         this.documentosServicios.insertarDocumento(transferencia);
     }

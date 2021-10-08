@@ -217,6 +217,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                 ProductoBodega productoBodega = (ProductoBodega) detalle.getProductoServicio();
                 detalle.setStock(this.setStockBodega(productoBodega, super.getBodegaSelect()));
                 detalle.setUtilidad(productoBodega.getUtilidad());
+                detalle.setDescuentoVentas(productoBodega.getDescuentoVenta()); 
                 detalle.setValorProrrateo(BigDecimal.ZERO);
                 detalle.setPrecioVentaUnitarioTransporte(detalle.getPrecioVentaUnitarioDescuento()); 
                 detalle.setPvp(detalle.getPrecioVentaUnitario().add(detalle.getPrecioVentaUnitario().multiply(productoBodega.getUtilidad().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 public class IndividualizacionProducto extends Factura implements Serializable{
     
     public IndividualizacionProducto() {
+        super.setNumero(-100); 
         //estado
         //1 ejecutado
         //2 anulado

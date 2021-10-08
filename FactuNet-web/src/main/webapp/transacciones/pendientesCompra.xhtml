@@ -107,7 +107,7 @@
                                             autocomplete="off"
                                             placeholder="#{msg.codigoBarras}">
                                    <p:ajax event="change" 
-                                           listener="#{pendientesCompraBean.buscarProductoBarras}"
+                                           listener="#{pendientesCompraBean.buscarProductoBarras(null)}"
                                            update="tablaProductosPendientes,:frmCabecera:grMensajes,@this,focus"/>
                                 </p:inputText>
                                 <p:commandButton value="#{msg.buscar}"  

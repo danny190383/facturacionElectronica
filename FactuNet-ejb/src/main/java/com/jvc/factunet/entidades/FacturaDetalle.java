@@ -444,6 +444,10 @@ public class FacturaDetalle implements Serializable {
     public BigDecimal getStockActual() {
         return stockActual;
     }
+    
+    public Integer getStockActualInt() {
+        return stockActual.intValue();
+    }
 
     public void setStockActual(BigDecimal stockActual) {
         this.stockActual = stockActual;

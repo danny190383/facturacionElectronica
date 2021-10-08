@@ -6,9 +6,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -27,9 +24,6 @@ public class Controles extends Mantenimiento implements Serializable{
     @Size(max = 800)
     @Column(name = "detalle")
     private String detalle;
-    @JoinColumn(name = "empresa", referencedColumnName = "codigo")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Empresa empresa;
     
     public Controles() {
     }
@@ -40,14 +34,6 @@ public class Controles extends Mantenimiento implements Serializable{
 
     public void setValor(BigDecimal valor) {
         this.valor = valor;
-    }
-
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
     }
 
     public String getDetalle() {

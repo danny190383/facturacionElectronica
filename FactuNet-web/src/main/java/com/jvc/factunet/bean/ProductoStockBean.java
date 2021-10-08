@@ -290,7 +290,8 @@ public class ProductoStockBean implements Serializable{
     public void buscarDatosLote(ProductoStock productoStock)
     {
         this.listaLotesCompra.clear();
-        this.listaLotesCompra.addAll(this.documentosServicios.buscarLotesCompra(productoStock.getProductoBodega().getCodigo() ,productoStock.getBodega().getCodigo()));
+        this.listaLotesCompra.addAll(this.documentosServicios.buscarLotesCompraOrigen(productoStock.getProductoBodega().getCodigo() ,productoStock.getBodega().getCodigo()));
+        this.listaLotesCompra.addAll(this.documentosServicios.buscarLotesCompraDestino(productoStock.getProductoBodega().getCodigo() ,productoStock.getBodega().getCodigo()));
     }
     
     public void cerrarGrupos(){
