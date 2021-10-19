@@ -137,7 +137,7 @@ where codigo = $P{factura}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{iva}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="165" y="15" width="60" height="15" uuid="fb0ea238-9618-4cc6-bd85-7b604331c77a"/>
 				<box>
 					<pen lineWidth="0.5"/>

@@ -44,6 +44,9 @@ public class PaqueteVenta implements Serializable {
     @JoinColumn(name = "producto_padre", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductoPaquete productoPadre;
+    @JoinColumn(name = "lote_venta", referencedColumnName = "codigo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private FacturaDetalle lote;
     
     @Transient
     private BigDecimal stock;
@@ -157,6 +160,12 @@ public class PaqueteVenta implements Serializable {
     public void setComision(BigDecimal comision) {
         this.comision = comision;
     }
-    
-    
+
+    public FacturaDetalle getLote() {
+        return lote;
+    }
+
+    public void setLote(FacturaDetalle lote) {
+        this.lote = lote;
+    }
 }

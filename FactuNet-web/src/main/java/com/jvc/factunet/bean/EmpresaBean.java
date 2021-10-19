@@ -6,8 +6,11 @@ import com.jvc.factunet.entidades.Canton;
 import com.jvc.factunet.entidades.Ciudad;
 import com.jvc.factunet.entidades.Controles;
 import com.jvc.factunet.entidades.Empresa;
+import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.MascotaNotaMedica;
 import com.jvc.factunet.entidades.Parroquia;
+import com.jvc.factunet.entidades.Producto;
+import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import com.jvc.factunet.entidades.Provincia;
 import com.jvc.factunet.entidades.PuntoVenta;
 import com.jvc.factunet.entidades.Seccion;
@@ -23,6 +26,7 @@ import com.jvc.factunet.servicios.EmpresaServicio;
 import com.jvc.factunet.servicios.ParroquiaServicio;
 import com.jvc.factunet.servicios.ProvinciaServicio;
 import com.jvc.factunet.servicios.TipoEmpresaServicio;
+import com.jvc.factunet.servicios.TipoTarifaImpuestoServicio;
 import com.jvc.factunet.session.Login;
 import com.jvc.factunet.utilitarios.EmailSenderThread;
 import java.io.File;
@@ -83,6 +87,8 @@ public class EmpresaBean implements Serializable{
     private ProvinciaServicio servicioProvincias;
     @Inject
     private ParametrosApplication parametrosApplication;
+    @EJB
+    private TipoTarifaImpuestoServicio tipoTarifaImpuestoServicio;
     
     private Integer zoom;
     private Empresa empresa;
@@ -98,6 +104,7 @@ public class EmpresaBean implements Serializable{
     private List<Parroquia> listaParroquias;
     private MapModel simpleModel;
     private Marker marker;
+    private List<ImpuestoTarifa> listaTarifaImpuesto;
     
     public EmpresaBean() {
         this.empresa = new Empresa();
@@ -105,11 +112,13 @@ public class EmpresaBean implements Serializable{
         this.listaTipoEmpresa = new ArrayList<>();
         this.listaCantones = new ArrayList<>();
         this.listaParroquias = new ArrayList<>();
+        this.listaTarifaImpuesto = new ArrayList<>();
     }
     
     @PostConstruct
     public void init()
     {
+        this.listaTarifaImpuesto.addAll(this.tipoTarifaImpuestoServicio.listar());
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         if (request.getParameter("empresa") != null && request.getParameter("empresa") != "") {
             Integer empresaVar = new Integer(request.getParameter("empresa"));
@@ -435,6 +444,23 @@ public class EmpresaBean implements Serializable{
         this.listaCiudad.addAll(this.ciudadServicio.listar());
     }
     
+    public void cambiarIvaProductos()
+    {
+        List<Producto> listaProductosEmpresa = this.empresaServicio.listarProductosEmpresa(this.empresa.getCodigo());
+        for(Producto productoObjeto : listaProductosEmpresa){
+            for(ProductoImpuestoTarifa productoImpuesto : productoObjeto.getProductoImpuestoTarifaList()){
+                if(productoImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
+                    try {
+                        productoImpuesto.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+                        this.empresaServicio.actualizar(productoImpuesto);
+                    } catch (Exception ex) {
+                        LOG.log(Level.SEVERE, "NO se puede actualizar la tarifa.", ex);
+                    }
+                }
+            }
+        }
+    }
+    
     private void llenarCantones() {
         this.listaCantones.clear();
         this.listaCantones = this.servicioCantones.listarCantonesPorProvincia(provincia.getId());
@@ -618,5 +644,13 @@ public class EmpresaBean implements Serializable{
 
     public void setZoom(Integer zoom) {
         this.zoom = zoom;
+    }
+
+    public List<ImpuestoTarifa> getListaTarifaImpuesto() {
+        return listaTarifaImpuesto;
+    }
+
+    public void setListaTarifaImpuesto(List<ImpuestoTarifa> listaTarifaImpuesto) {
+        this.listaTarifaImpuesto = listaTarifaImpuesto;
     }
 }

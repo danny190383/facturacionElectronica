@@ -103,7 +103,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
     }
     
     @Override
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.facturaCompra.getFacturaDetalleList().remove(parametro);
             this.calcularTotales();

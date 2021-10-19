@@ -230,7 +230,8 @@
                                  resizableColumns="true"
                                  resizeMode="expand"
                                  rowKey="#{items}"
-                                 widgetVar="items">
+                                 widgetVar="items"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header">
                             
@@ -383,8 +384,9 @@
 
                             <p:commandButton  icon="ui-icon-close" 
                                               update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
-                                              actionListener="#{notaDebitoBean.eliminar(items)}"
+                                              actionListener="#{notaDebitoBean.eliminar(indexVar)}"
                                               title="#{msg.eliminar}"
+                                              process="tablaProforma"
                                               disabled="#{notaDebitoBean.notaDebito.codigo ne null}">
                                 <p:confirm header="#{msg.confirmacion}" 
                                            message="#{msg.eliminar}" 

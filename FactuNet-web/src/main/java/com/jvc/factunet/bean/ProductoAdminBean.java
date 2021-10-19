@@ -586,7 +586,7 @@ public class ProductoAdminBean implements Serializable{
                 FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
             } catch (Exception ex) {
                LOG.log(Level.SEVERE, "No se puede guardar.", ex);
-               FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registroNoGuardado"));
+               FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("productoDuplicado"));
             }
         }
     }

@@ -110,6 +110,9 @@ public class Empresa implements Serializable {
     @JoinColumn(name = "ciudad", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private Ciudad ciudad;
+    @JoinColumn(name = "id_impuesto_tarifa", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ImpuestoTarifa impuestoTarifa;
     @JoinColumn(name = "id_tipo_empresa", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private TipoEmpresa tipoEmpresaWeb;
@@ -463,6 +466,14 @@ public class Empresa implements Serializable {
 
     public void setUsaTablet(Boolean usaTablet) {
         this.usaTablet = usaTablet;
+    }
+
+    public ImpuestoTarifa getImpuestoTarifa() {
+        return impuestoTarifa;
+    }
+
+    public void setImpuestoTarifa(ImpuestoTarifa impuestoTarifa) {
+        this.impuestoTarifa = impuestoTarifa;
     }
     
     @Override

@@ -183,7 +183,8 @@
                                  editMode="cell"
                                  emptyMessage="#{msg.tablaVacia}"
                                  resizableColumns="true"
-                                 resizeMode="expand">
+                                 resizeMode="expand"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header">
                             <p:fragment autoUpdate="true">
@@ -369,10 +370,11 @@
                                   width="60"
                                   style="text-align: center">
 
-                            <p:commandButton  icon="ui-icon-close" 
-                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
-                                            actionListener="#{proformaAdminBean.eliminar(items)}"
-                                            title="#{msg.eliminar}">
+                            <p:commandButton icon="ui-icon-close" 
+                                             update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
+                                             actionListener="#{proformaAdminBean.eliminar(indexVar)}"
+                                             title="#{msg.eliminar}"
+                                             process="tablaProforma">
                                 <p:confirm header="#{msg.confirmacion}" 
                                            message="#{msg.eliminar}" 
                                            icon="ui-icon-alert" />

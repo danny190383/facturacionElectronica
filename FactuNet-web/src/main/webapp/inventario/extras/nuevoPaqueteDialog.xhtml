@@ -5,7 +5,7 @@
       xmlns:f="http://java.sun.com/jsf/core">
 
     <h:head>
-        <title>#{msg.producto}</title>
+        <title>#{msg.producto} #{msg.paquete}</title>
         <h:outputStylesheet name="css/default.css"/>
     </h:head>
 
@@ -178,6 +178,12 @@
                             <h:outputText value="#{pro.producto.nombre}" />
                         </p:column>
                         
+                        <p:column headerText="#{msg.lote}"
+                                  style="text-align:right">
+                            <h:outputLabel value="Lote: #{pro.lote.codigo}"/><br/>
+                            <h:outputLabel value="Stock: #{pro.lote.stockActual}"/>
+                        </p:column>
+                        
                         <p:column headerText="#{msg.cantidad}"
                                   width="40"
                                   style="text-align: right">
@@ -292,7 +298,7 @@
                         <p:columnGroup type="footer">
                             <p:row>
                                 <p:column footerText="#{msg.pvp} #{msg.normal}" 
-                                          colspan="2" 
+                                          colspan="3" 
                                           style="text-align:right"/>
                                 <p:column footerText="#{nuevoPaqueteBean.pvpNormal}" 
                                           style="text-align:right"/>

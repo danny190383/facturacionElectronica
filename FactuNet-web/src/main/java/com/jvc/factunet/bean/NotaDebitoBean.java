@@ -80,7 +80,7 @@ public class NotaDebitoBean extends FacturaVentaBean{
     }
     
     @Override
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.notaDebito.getFacturaDetalleList().remove(parametro);
             this.calcularTotales();

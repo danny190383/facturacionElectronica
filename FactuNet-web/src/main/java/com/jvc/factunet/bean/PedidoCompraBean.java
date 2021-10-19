@@ -642,7 +642,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         this.codigoBarras = StringUtils.EMPTY;
     }
     
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.pedidoCompra.getFacturaDetalleList().remove(parametro);
             this.calcularTotales();

@@ -215,7 +215,7 @@ public class PendientesCompraBean extends ImprimirReportesBean implements Serial
         this.codigoBarras = StringUtils.EMPTY;
     }
     
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.pendientesCompra.getFacturaDetalleList().remove(parametro);
             this.calcularTotal();

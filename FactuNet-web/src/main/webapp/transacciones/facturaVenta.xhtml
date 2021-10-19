@@ -835,6 +835,13 @@
                                     </p:selectOneMenu>
                                 </p:column>
                                 
+                                <p:column headerText="#{msg.lote}"
+                                          width="120"
+                                          style="text-align: right">
+                                    <h:outputLabel value="Lote: #{paqueteP.lote.codigo}"/><br/>
+                                    <h:outputLabel value="Stock: #{paqueteP.lote.stockActual}"/>
+                                </p:column>
+                                
                                 <p:column headerText="#{msg.opcion}" 
                                           width="60"
                                           style="text-align: center">

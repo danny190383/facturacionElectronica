@@ -4,6 +4,7 @@ import com.jvc.factunet.dao.GenericDAO;
 import com.jvc.factunet.entidades.CantonPK;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.ParroquiaPK;
+import com.jvc.factunet.entidades.Producto;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
@@ -59,6 +60,12 @@ public class EmpresaDAO extends GenericDAO{
     
     public List<Empresa> listar() {
         Query q = em.createQuery("select o from Empresa o");
+        return q.getResultList();
+    }
+    
+    public List<Producto> listarProductosEmpresa(Integer empresa) {
+        Query q = em.createQuery("select o from Producto o where o.empresa.codigo = ?1");
+        q.setParameter(1, empresa);
         return q.getResultList();
     }
 }

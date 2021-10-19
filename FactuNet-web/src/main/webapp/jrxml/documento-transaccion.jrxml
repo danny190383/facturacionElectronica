@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="inventario-proveedores" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="27"/>
 	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
@@ -234,7 +234,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{precio_venta_unitario}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="385" y="0" width="55" height="13" uuid="c9cd7fd1-fa97-4776-8a6a-606eddc63fda"/>
 					<box>
 						<pen lineWidth="0.5"/>
@@ -248,7 +248,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{precio_venta_unitario_descuento}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="440" y="0" width="55" height="13" uuid="6abd2fa4-554c-4f14-a807-8ed1038fe459"/>
 					<box>
 						<pen lineWidth="0.5"/>
@@ -290,7 +290,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="330" y="0" width="55" height="13" uuid="3837c0ca-6d29-4a26-b39d-03316837ce67"/>
 					<box>
 						<pen lineWidth="0.5"/>

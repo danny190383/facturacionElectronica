@@ -243,8 +243,8 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     }
     
     public void onRowSelect(SelectEvent event) {
-        this.productoSelc = ((ProductoStock) event.getObject()).getProductoBodega();
         if(event.getObject() instanceof ProductoStock){
+            this.productoSelc = ((ProductoStock) event.getObject()).getProductoBodega();
             ProductoBodega producto = ((ProductoStock)event.getObject()).getProductoBodega();
             producto.setStock(((ProductoStock)event.getObject()).getStock());
             producto.setBodega(((ProductoStock)event.getObject()).getBodega());

@@ -76,7 +76,7 @@ public class ProformaAdminBean extends FacturaVentaBean {
     }
     
     @Override
-    public void eliminar(FacturaDetalle parametro) {
+    public void eliminar(int parametro) {
         try {
             this.proforma.getFacturaDetalleList().remove(parametro);
             this.calcularTotales();

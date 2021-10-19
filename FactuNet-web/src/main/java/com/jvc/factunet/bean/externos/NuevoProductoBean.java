@@ -142,6 +142,12 @@ public class NuevoProductoBean extends CatalogosProducto implements Serializable
         this.productoBodega.setDescuentoVenta(BigDecimal.ZERO);
         this.productoBodega.setStock(BigDecimal.ZERO);
         this.productoBodega.setCodigoBarras(StringUtils.EMPTY);
+        this.productoBodega.setProductoImpuestoTarifaList(new ArrayList<>()); 
+        ProductoImpuestoTarifa impuestoTarifaPaca = new ProductoImpuestoTarifa();
+        impuestoTarifaPaca.setEstado(true);
+        impuestoTarifaPaca.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+        impuestoTarifaPaca.setProducto(this.productoBodega); 
+        this.productoBodega.getProductoImpuestoTarifaList().add(impuestoTarifaPaca);
         this.buscarNombreGrupo();
         this.cargarBodega();
     }
@@ -274,7 +280,6 @@ public class NuevoProductoBean extends CatalogosProducto implements Serializable
                 productoPaca.setPadrePaca(this.productoBodega);
                 productoPaca.setMarca(this.productoBodega.getMarca());
                 productoPaca.setModelo(this.productoBodega.getModelo());
-//                productoPaca.setIva(this.productoBodega.getIva());
                 productoPaca.setUtilidad(BigDecimal.ZERO);
                 productoPaca.setUnidadMedida(this.productoBodega.getUnidadMedida());
                 productoPaca.setFoto(foto);
@@ -284,7 +289,6 @@ public class NuevoProductoBean extends CatalogosProducto implements Serializable
                 productoPaca.setEmpresa(this.empresa);
                 productoPaca.setPrecioUltimaCompra(BigDecimal.ZERO);
                 productoPaca.setPvp(BigDecimal.ZERO);
-                
                 ProductoStock productoStock = new ProductoStock();
                 productoStock.setBodega(this.bodegaServicio.bodegaPrincipal(this.empresa.getCodigo()));
                 productoStock.setEmpresa(this.empresa);
@@ -292,10 +296,17 @@ public class NuevoProductoBean extends CatalogosProducto implements Serializable
                 productoStock.setStock(BigDecimal.ZERO);
                 productoStock.setStockMin(BigDecimal.ZERO);
                 productoStock.setStockMax(BigDecimal.ZERO);
-                productoPaca.setProductoStockList(new ArrayList<ProductoStock>());
+                productoPaca.setProductoStockList(new ArrayList<>());
                 productoPaca.getProductoStockList().add(productoStock);
-                
-                this.productoBodega.setPacaProductoList(new ArrayList<ProductoBodega>());
+                productoPaca.setProductoImpuestoTarifaList(new ArrayList<>()); 
+                for(ProductoImpuestoTarifa impuesto : this.productoBodega.getProductoImpuestoTarifaList()){
+                    ProductoImpuestoTarifa impuestoTarifaPaca = new ProductoImpuestoTarifa();
+                    impuestoTarifaPaca.setEstado(true);
+                    impuestoTarifaPaca.setImpuestoTarifa(impuesto.getImpuestoTarifa());
+                    impuestoTarifaPaca.setProducto(productoPaca); 
+                    productoPaca.getProductoImpuestoTarifaList().add(impuestoTarifaPaca);
+                }
+                this.productoBodega.setPacaProductoList(new ArrayList<>());
                 this.productoBodega.getPacaProductoList().add(productoPaca);
             }
             if(this.tipo == 2)

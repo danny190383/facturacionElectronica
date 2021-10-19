@@ -86,6 +86,13 @@ public class NuevoServicioBean implements Serializable{
         this.productoServicio.setPrecioUltimaCompra(BigDecimal.ZERO);
         this.productoServicio.setUtilidad(BigDecimal.ZERO);
         this.productoServicio.setPvp(BigDecimal.ZERO);
+        this.productoServicio.setDescuentoVenta(BigDecimal.ZERO);
+        this.productoServicio.setProductoImpuestoTarifaList(new ArrayList<>()); 
+        ProductoImpuestoTarifa impuestoTarifaPaca = new ProductoImpuestoTarifa();
+        impuestoTarifaPaca.setEstado(true);
+        impuestoTarifaPaca.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+        impuestoTarifaPaca.setProducto(this.productoServicio); 
+        this.productoServicio.getProductoImpuestoTarifaList().add(impuestoTarifaPaca);
     }
     
     public void subirLogo(FileUploadEvent event) {

@@ -65,6 +65,33 @@ public class Ticket {
                                      "\n"+
                                      "\n";
 
+     private String contentTicketComprobante = 
+                                 "\n"+
+                                 "\n"+
+                                 "\n"+
+                                 "         {{numero}}\n"+
+                                 "--------------------------------\n"+
+                                 "{{empresa}}\n"+
+                                 "--------------------------------\n"+
+                                 "{{ciudadFecha}}\n"+
+                                 "CLIENTE: {{cliente}}\n"+
+                                 "DIRECCION: {{direccion}}\n"+
+                                 "TELEFONO: {{telefono}}\n"+
+                                 "RUC: {{cedula}}\n"+
+                                 "--------------------------------\n"+
+                                 "CANT. DESCRIPCION        V.TOTAL\n"+
+                                 "--------------------------------\n"+
+                                 "{{items}}"+
+                                 "--------------------------------\n"+
+                                 "   SUBTOTAL:        {{subTotal}}\n"+
+                                 "   DESCUENTO:       {{descuento}}\n"+
+                                 "   IMPORTE DEL IVA: {{iva}}\n"+
+                                 "   SUMA TOTAL:      {{total}}\n"+
+                                 "\n"+
+                                 "REVICE SU FACTURA ELECTRÓNICA \n"+
+                                 "INGRESANDO A SU CORREO        \n"+
+                                 "\n"+
+                                 "\n";
     
     public Ticket(String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula,String items, String subTotal, String siniva, String coniva, String iva, String total,String mesa) {
       this.contentTicket = this.contentTicket.replace("{{numero}}", numero);
@@ -82,7 +109,7 @@ public class Ticket {
       this.contentTicket = this.contentTicket.replace("{{mesa}}", mesa);
     }
     
-     public Ticket(String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula, String items, String total,String mesa) {
+    public Ticket(String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula, String items, String total,String mesa) {
       this.contentTicketRise = this.contentTicketRise.replace("{{numero}}", numero);
       this.contentTicketRise = this.contentTicketRise.replace("{{ciudadFecha}}", ciudadFecha);
       this.contentTicketRise = this.contentTicketRise.replace("{{cliente}}", cliente);
@@ -94,17 +121,36 @@ public class Ticket {
       this.contentTicketRise = this.contentTicketRise.replace("{{mesa}}", mesa);
     }
     
+    public Ticket(String empresa, String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula,String items, String subTotal,String iva, String total, String descuento) {
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{empresa}}", empresa);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{numero}}", numero);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudadFecha}}", ciudadFecha);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{cliente}}", cliente);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{direccion}}", direccion);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{telefono}}", telefono);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{cedula}}", cedula);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{items}}", items);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{subTotal}}", subTotal);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{iva}}", iva);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{total}}", total);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{descuento}}", descuento);
+    }
+    
     public void print(String impresora, String rise) {
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         byte[] bytes;
-        if(rise.equals("2")){
-            bytes = this.contentTicket.getBytes();
-        }
-        else
-        {
-            bytes = this.contentTicketRise.getBytes();
-        }
+      switch (rise) {
+          case "2":
+              bytes = this.contentTicket.getBytes();
+              break;
+          case "1":
+              bytes = this.contentTicketRise.getBytes();
+              break;
+          default:
+              bytes = this.contentTicketComprobante.getBytes();
+              break;
+      }
         Doc doc = new SimpleDoc(bytes,flavor,null);
         DocPrintJob job = null;
         DocPrintJob jobCorte = null;

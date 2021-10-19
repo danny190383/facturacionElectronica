@@ -387,6 +387,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.generalDescuento();
     }
     
+    @Override
     public void eliminar(int parametro) {
         try {
             this.facturaVenta.getFacturaDetalleList().remove(parametro);
@@ -1686,13 +1687,37 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         return cantidad+temp[0]+nombre+temp[0]+precio+temp[0]+total;
     }
     
+    public String generaItemComprobante(String cantidad, String nombre, String total){
+        for(int i = cantidad.length() ; i<=4 ; i++){
+            cantidad = cantidad +temp[0];
+        }
+        if(nombre.length()<21){
+            for(int i = nombre.length() ; i<=20 ; i++){
+                nombre = nombre +temp[0];
+            }
+        }
+        else
+        {
+            nombre = nombre.substring(0, 20)+temp[0];
+        }
+        return cantidad+nombre+total;
+    }
+    
     public void imprimirTiket(FacturaVenta factura){
         String items = StringUtils.EMPTY;
-        for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
-            items = items + this.generaItem(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getPrecioVentaUnitario().toString(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+        if(factura.getPuntoVenta().getRise().equals("3")){
+            for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
+                items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            }
         }
-        for(int i = factura.getFacturaDetalleList().size() ; i<=factura.getSecuenciaDocumento().getMaxItems() ; i++){
-            items = items + "\n";
+        else
+        {
+            for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
+                items = items + this.generaItem(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getPrecioVentaUnitario().toString(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            }
+            for(int i = factura.getFacturaDetalleList().size() ; i<=factura.getSecuenciaDocumento().getMaxItems() ; i++){
+                items = items + "\n";
+            }
         }
         String nombreCompleto = factura.getCliente().getPersona().getNombres() + " " + (factura.getCliente().getPersona().getApellidos() == null ? " " : factura.getCliente().getPersona().getApellidos());
         if(nombreCompleto.length()>30){
@@ -1708,38 +1733,59 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 mesa = mesa + pedido.getValue() + " ";
             }
         }
-        if(factura.getPuntoVenta().getRise().equals("2")){
-            Ticket ticket = new Ticket(factura.getNumero().toString(), 
-                                       super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
-                                       nombreCompleto,
-                                       direccionCompleta,
-                                       factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(), 
-                                       factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
-                                       items, 
-                                       factura.getSubtotal().toString(),
-                                       
-                                       BigDecimal.ZERO.toString(),
-                                       BigDecimal.ZERO.toString(),
-//                                       factura.getSubtotalSinIva().setScale(2,RoundingMode.FLOOR).toString(), 
+        switch (factura.getPuntoVenta().getRise()) {
+            case "2":
+                {
+                    Ticket ticket = new Ticket(factura.getNumero().toString(),
+                            super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
+                            nombreCompleto,
+                            direccionCompleta,
+                            factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(),
+                            factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
+                            items,
+                            factura.getSubtotal().toString(),
+                            BigDecimal.ZERO.toString(),
+                            BigDecimal.ZERO.toString(),
+//                                       factura.getSubtotalSinIva().setScale(2,RoundingMode.FLOOR).toString(),
 //                                       factura.getSubtotalConIva().setScale(2,RoundingMode.FLOOR).toString(),
-                                       factura.getIva().toString(),
-                                       factura.getTotal().toString(),
-                                       mesa == null ? " " : mesa);
-            ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
+                            factura.getIva().toString(),
+                            factura.getTotal().toString(),
+                            mesa == null ? " " : mesa);
+                    ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
+                    break;
+                }
+            case "1":
+                {
+                    Ticket ticket = new Ticket(factura.getNumero().toString(),
+                            super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
+                            nombreCompleto,
+                            direccionCompleta,
+                            factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(),
+                            factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
+                            items,
+                            factura.getTotal().toString(),
+                            mesa == null ? " " : mesa);
+                    ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
+                    break;
+                }
+            default:
+                {
+                    Ticket ticket = new Ticket(factura.getEmpresa().getNombreAbreviado(),
+                            factura.getNumero().toString(),
+                            super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
+                            nombreCompleto,
+                            direccionCompleta,
+                            factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(),
+                            factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
+                            items,
+                            factura.getSubtotal().toString(),
+                            factura.getIva().toString(),
+                            factura.getTotal().toString(),
+                            factura.getDescuento().toString());
+                    ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
+                    break;
+                }
         }
-        else
-        {
-            Ticket ticket = new Ticket(factura.getNumero().toString(), 
-                                        super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
-                                        nombreCompleto,
-                                        direccionCompleta,
-                                        factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(), 
-                                        factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
-                                        items, 
-                                        factura.getTotal().toString(),
-                                        mesa == null ? " " : mesa);
-            ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
-        }  
     }
 
     public List<FacturaDetalle> getLotes() {

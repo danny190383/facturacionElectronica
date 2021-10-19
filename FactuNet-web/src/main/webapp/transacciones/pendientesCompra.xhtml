@@ -95,7 +95,8 @@
                                  id="tablaProductosPendientes"
                                  value="#{pendientesCompraBean.pendientesCompra.facturaDetalleList}"
                                  editable="true" 
-                                 editMode="cell">
+                                 editMode="cell"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header">
                             <p:fragment autoUpdate="true">
@@ -178,8 +179,8 @@
 
                           <p:commandButton  icon="ui-icon-close" 
                                             update=":frmCabecera:grMensajes, :frmCabecera:tablaProductosPendientes, :frmCabecera:totalPendientes" 
-                                            actionListener="#{pendientesCompraBean.eliminar(items)}"
-                                            immediate="true"
+                                            actionListener="#{pendientesCompraBean.eliminar(indexVar)}"
+                                            process="tablaProductosPendientes"
                                             title="#{msg.eliminar}">
                                 <p:confirm header="#{msg.confirmacion}" 
                                            message="#{msg.eliminar}" 

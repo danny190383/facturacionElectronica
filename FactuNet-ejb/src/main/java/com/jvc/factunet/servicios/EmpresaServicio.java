@@ -4,6 +4,8 @@ import com.jvc.factunet.daos.EmpresaDAO;
 import com.jvc.factunet.entidades.CantonPK;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.ParroquiaPK;
+import com.jvc.factunet.entidades.Producto;
+import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -55,5 +57,13 @@ public class EmpresaServicio {
 
     public Empresa actualizar(Empresa parametro) throws Exception {
         return (Empresa) this.empresaDAO.actualizar(parametro);
+    }
+    
+    public List<Producto> listarProductosEmpresa(Integer empresa) {
+        return this.empresaDAO.listarProductosEmpresa(empresa);
+    }
+    
+    public ProductoImpuestoTarifa actualizar(ProductoImpuestoTarifa parametro) throws Exception {
+        return (ProductoImpuestoTarifa) this.empresaDAO.actualizar(parametro);
     }
 }

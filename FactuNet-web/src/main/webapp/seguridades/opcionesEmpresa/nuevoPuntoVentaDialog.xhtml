@@ -80,11 +80,12 @@
                         <f:selectItem itemLabel="#{msg.tiket}" itemValue="2" />
                     </p:selectOneMenu>
                     
-                    <h:outputLabel value="#{msg.rise}: "/>  
+                    <h:outputLabel value="#{msg.tipo} #{msg.tiket}: "/>  
                     <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.rise}" 
                                      style="width: 50px">
-                        <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
-                        <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                        <f:selectItem itemLabel="#{msg.rise}" itemValue="1" />
+                        <f:selectItem itemLabel="#{msg.factura}" itemValue="2" />
+                        <f:selectItem itemLabel="Comprobamte" itemValue="3" />
                     </p:selectOneMenu>
                     
                     <h:outputLabel value="#{msg.movil}: "/>  

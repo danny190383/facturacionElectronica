@@ -503,7 +503,8 @@
                                  editMode="cell"
                                  emptyMessage="#{msg.tablaVacia}"
                                  resizableColumns="true"
-                                 resizeMode="expand">
+                                 resizeMode="expand"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header" >
                             <p:fragment autoUpdate="true"
@@ -866,7 +867,7 @@
 
                             <p:commandButton icon="ui-icon-close" 
                                              update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
-                                             actionListener="#{facturaCompraBean.eliminar(items)}"
+                                             actionListener="#{facturaCompraBean.eliminar(indexVar)}"
                                              title="#{msg.eliminar}"
                                              rendered="#{facturaCompraBean.facturaCompra.estado ne 3}"
                                              process="tablaPedidoCompra">

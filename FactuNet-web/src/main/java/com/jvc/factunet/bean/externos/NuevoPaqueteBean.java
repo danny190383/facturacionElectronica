@@ -5,6 +5,7 @@ import com.jvc.factunet.entidades.Impuesto;
 import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.PaqueteVenta;
 import com.jvc.factunet.entidades.Producto;
+import com.jvc.factunet.entidades.ProductoBodega;
 import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import com.jvc.factunet.entidades.ProductoPaquete;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
@@ -91,7 +92,14 @@ public class NuevoPaqueteBean implements Serializable{
         this.productoPaquete.setNombre((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("nombregrupo"));
         this.productoPaquete.setEmpresa(this.empresa);
         this.productoPaquete.setPvp(BigDecimal.ZERO);
-        this.productoPaquete.setPaqueteVentaList(new ArrayList<PaqueteVenta>());
+        this.productoPaquete.setDescuentoVenta(BigDecimal.ZERO);
+        this.productoPaquete.setPaqueteVentaList(new ArrayList<>());
+        this.productoPaquete.setProductoImpuestoTarifaList(new ArrayList<>()); 
+        ProductoImpuestoTarifa impuestoTarifaPaca = new ProductoImpuestoTarifa();
+        impuestoTarifaPaca.setEstado(true);
+        impuestoTarifaPaca.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+        impuestoTarifaPaca.setProducto(this.productoPaquete); 
+        this.productoPaquete.getProductoImpuestoTarifaList().add(impuestoTarifaPaca);
     }
     
     public void subirLogo(FileUploadEvent event) {
@@ -227,6 +235,10 @@ public class NuevoPaqueteBean implements Serializable{
                     paquete.setDescuento(BigDecimal.ZERO);
                     paquete.setComision(BigDecimal.ZERO);
                     paquete.setProductoPadre(this.productoPaquete);
+                    if(producto instanceof ProductoBodega)
+                    {
+                        paquete.setLote(producto.getLote());
+                     }
                     this.productoPaquete.getPaqueteVentaList().add(paquete);
                 }
             }

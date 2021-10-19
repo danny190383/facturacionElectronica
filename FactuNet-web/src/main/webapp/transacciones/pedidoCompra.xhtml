@@ -306,7 +306,8 @@
                                  editMode="cell"
                                  emptyMessage="#{msg.tablaVacia}"
                                  resizableColumns="true"
-                                 resizeMode="expand">
+                                 resizeMode="expand"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header">
                             <p:fragment autoUpdate="true"
@@ -505,10 +506,11 @@
                                   style="text-align: center"
                                   rendered="#{pedidoCompraBean.pedidoCompra.estado eq 1}">
 
-                            <p:commandButton  icon="ui-icon-close" 
-                                            update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
-                                            actionListener="#{pedidoCompraBean.eliminar(items)}"
-                                            title="#{msg.eliminar}">
+                            <p:commandButton icon="ui-icon-close" 
+                                             update=":frmCabecera:grMensajes, :frmCabecera:tablaPedidoCompra" 
+                                             actionListener="#{pedidoCompraBean.eliminar(indexVar)}"
+                                             title="#{msg.eliminar}"
+                                             process="tablaPedidoCompra">
                                 <p:confirm header="#{msg.confirmacion}" 
                                            message="#{msg.eliminar}" 
                                            icon="ui-icon-alert" />

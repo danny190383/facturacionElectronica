@@ -419,6 +419,11 @@ public class DocumentosServicios {
                                 stock.setStock(stock.getStock().subtract(proPaquete.getCantidad().multiply(detalle.getCantidad())));
                                 this.productoStockServicio.actualizar(stock);
                             }
+                            if(proPaquete.getLote() != null){
+                                FacturaDetalle lote = proPaquete.getLote();
+                                lote.setStockActual(lote.getStockActual().subtract(proPaquete.getCantidad().multiply(detalle.getCantidad()))); 
+                                this.actualizar(lote);
+                            }
                             FacturaDetalle detallePaquete = new FacturaDetalle();
                             detallePaquete.setCostoFecha(proPaquete.getProducto().getPrecioUltimaCompra());
                             detallePaquete.setBodega(proPaquete.getBodega());
@@ -668,6 +673,11 @@ public class DocumentosServicios {
                             stock.setStock(stock.getStock().add(proPaquete.getCantidad()));
                             this.productoStockServicio.actualizar(stock);
                             this.actualizarKardexAnular(proPaquete);
+                        }
+                        if(proPaquete.getLoteVenta() != null){
+                            FacturaDetalle lote = proPaquete.getLoteVenta();
+                            lote.setStockActual(lote.getStockActual().add(proPaquete.getCantidad())); 
+                            this.actualizar(lote);
                         }
                     }
                 }

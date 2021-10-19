@@ -208,7 +208,8 @@
                                  resizeMode="expand"
                                  selection="#{notaCreditoBean.listaDetalleSlc}"
                                  rowKey="#{items}"
-                                 widgetVar="items">
+                                 widgetVar="items"
+                                 rowIndexVar="indexVar">
 
                         <f:facet name="header">
                             
@@ -404,8 +405,9 @@
 
                             <p:commandButton  icon="ui-icon-close" 
                                               update=":frmCabecera:grMensajes, :frmCabecera:tablaProforma" 
-                                              actionListener="#{notaCreditoBean.eliminar(items)}"
+                                              actionListener="#{notaCreditoBean.eliminar(indexVar)}"
                                               title="#{msg.eliminar}"
+                                              process="tablaProforma"
                                               disabled="#{notaCreditoBean.notaCredito.codigo ne null}"
                                               rendered="#{notaCreditoBean.notaCredito.tipoNota == 3 ||
                                                           notaCreditoBean.notaCredito.tipoNota == 4 }">

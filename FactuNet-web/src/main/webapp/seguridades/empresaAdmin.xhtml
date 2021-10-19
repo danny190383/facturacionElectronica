@@ -124,6 +124,30 @@
                                                  required="true">
                                         <p:keyFilter regEx="/[\d\-\.]/" />
                                     </p:inputText> 
+                                    
+                                    <p:outputLabel value="#{msg.tarifa} IVA:" 
+                                                   for="txtTarifaSRI"/>
+                                    <h:panelGrid columns="3">
+                                         <p:selectOneMenu id="txtTarifaSRI"
+                                                          style="width: 150px" 
+                                                          value="#{empresaBean.empresa.impuestoTarifa}"
+                                                          required="true"  
+                                                          converter="omnifaces.SelectItemsConverter">
+                                            <f:selectItem itemLabel="--Seleccione--"
+                                                          itemValue="" 
+                                                          noSelectionOption="true"/>
+                                            <f:selectItems value="#{empresaBean.listaTarifaImpuesto}"
+                                                           var="tarifa" 
+                                                           itemLabel="#{tarifa.impuesto.nombre} - #{tarifa.descripcion}" 
+                                                           itemValue="#{tarifa}" />
+                                        </p:selectOneMenu>
+                                        <p:commandButton actionListener="#{empresaBean.cambiarIvaProductos}"
+                                                         icon="ui-icon-arrowrefresh-1-w"
+                                                         title="#{msg.cambiar}" 
+                                                         update=":frmCabecera:grMensajes"
+                                                         process="@this"/>
+                                        <p:message display="text" for="txtTarifaSRI" />
+                                    </h:panelGrid>
 
                                     <h:outputLabel value="#{msg.ciudad}"/>
                                     <h:panelGrid id="pnlCiudad"

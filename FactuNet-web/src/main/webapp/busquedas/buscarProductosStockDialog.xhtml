@@ -92,29 +92,26 @@
                     <p:column headerText="#{msg.producto}" 
                               filterBy="#{producto.productoBodega.nombre}">
                         <h:outputLabel value="#{producto.productoBodega.nombre}"
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                       style="font-size: 12px;font-style: normal;font-weight: bold"/>
                     </p:column>
 
                     <p:column headerText="#{msg.grupo}" 
                               filterBy="#{producto.productoBodega.grupo.nombre}"
                               width="100"
                               rendered="#{!buscarProductosStockBean.visible}">
-                         <h:outputLabel value="#{producto.productoBodega.grupo.nombre}" 
-                                        style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                         <h:outputLabel value="#{producto.productoBodega.grupo.nombre}" />
                     </p:column>
 
                     <p:column headerText="#{msg.modelo}" 
                               filterBy="#{producto.productoBodega.modelo}"
                               width="110">
-                        <h:outputLabel value="#{producto.productoBodega.modelo}"
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        <h:outputLabel value="#{producto.productoBodega.modelo}"/>
                     </p:column>
 
                     <p:column headerText="#{msg.marca}" 
                               filterBy="#{producto.productoBodega.marca.nombre}"
                               width="110">
-                        <h:outputLabel value="#{producto.productoBodega.marca.nombre}"
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        <h:outputLabel value="#{producto.productoBodega.marca.nombre}"/>
                     </p:column>
 
                     <p:column headerText="#{msg.stock}" 
