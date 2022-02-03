@@ -67,6 +67,7 @@
                             <p:commandButton value="#{msg.archivo}" ajax="false"
                                              icon="ui-icon-arrowthick-1-s"
                                              immediate="true"
+                                             rendered="false"
                                              title="#{msg.archivo} #{msg.muestra}">
                                 <p:fileDownload value="#{facturaCompraBean.file}" />
                             </p:commandButton>
@@ -75,7 +76,8 @@
                                            immediate="true"
                                            actionListener="#{facturaCompraBean.generarReportePOIXLS()}">
                                 <p:commandButton type="button" icon="ui-icon-arrowthick-1-s" 
-                                                 title="Generar Archivo Empresa"/>
+                                                 title="Generar Archivo Empresa"
+                                                 value="#{msg.archivo}"/>
                             </h:commandLink>
                                 
                             <h:commandLink target="_blank" 
@@ -809,7 +811,7 @@
                                                    decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right "
-                                                   readonly="#{items.productoServicio.ivaB}">
+                                                   readonly="#{items.ivaB}">
                                         <p:ajax update="tablaPedidoCompra"
                                                 listener="#{facturaCompraBean.onCellEditPVP(items)}"/>
                                     </p:inputNumber> 
@@ -835,7 +837,7 @@
                                                    decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
                                                    minValue="0"
                                                    inputStyle="width:80%;text-align: right "
-                                                   readonly="#{not items.productoServicio.ivaB}">
+                                                   readonly="#{not items.ivaB}">
                                         <p:ajax update="tablaPedidoCompra"
                                                 listener="#{facturaCompraBean.onCellEditPVPIVA(items)}"/>
                                     </p:inputNumber> 

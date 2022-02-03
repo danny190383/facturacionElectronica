@@ -117,7 +117,9 @@
                             <p:inputText value="#{clienteBean.cliente.persona.email}"
                                          size="35"
                                          maxlength="50"
-                                         validatorMessage="#{msg.emailInvalido}">
+                                         validatorMessage="#{msg.emailInvalido}"
+                                         required="true"
+                                         style="background-color: khaki;font-size: 13px ">
                                  <f:validator validatorId="com.jvc.factunet.validador.ValidarEmail" />
                             </p:inputText>
                             

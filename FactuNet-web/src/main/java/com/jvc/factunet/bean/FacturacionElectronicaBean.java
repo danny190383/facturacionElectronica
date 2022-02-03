@@ -509,6 +509,27 @@ public class FacturacionElectronicaBean implements Serializable{
         return null;
     }
     
+    public void enviarFacturaEmail(Factura factura){
+        String nombreDocumento = null;
+        if(factura instanceof FacturaVenta){
+            nombreDocumento = "Factura de Venta";
+        }
+        if(factura instanceof NotaCredito){
+            nombreDocumento = "Nota de Crédito";
+        }
+        if(factura instanceof NotaDebito){
+            nombreDocumento = "Nota de Débito";
+        }
+        
+        if(factura.getCliente().getPersona().getEmail() != null){
+            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getCliente().getPersona().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+        }
+        else
+        {
+            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+        }
+    }
+    
     public void envioFacturaEmail(String xml, String destinatarioFactura, Integer factura, String nombreDocumento, Integer tipo) {
         try {
             String asunto = "Documento Eléctronico ";

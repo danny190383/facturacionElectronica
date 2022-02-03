@@ -264,7 +264,7 @@ public class ProductoStockBean implements Serializable{
             if(event.getProductoBodega().getPrecioUltimaCompra().floatValue() == 0){
                 event.getProductoBodega().setUtilidad(BigDecimal.ZERO);
             }
-            event.getProductoBodega().setPvp(event.getProductoBodega().getPrecioUltimaCompra().add(event.getProductoBodega().getPrecioUltimaCompra().multiply(event.getProductoBodega().getUtilidad().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
+            event.getProductoBodega().setPvp((event.getProductoBodega().getPrecioUltimaCompra().add(event.getProductoBodega().getPrecioUltimaCompra().multiply(event.getProductoBodega().getUtilidad().divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
             event.setProductoBodega(this.productoBodegaServicio.actualizar(event.getProductoBodega()));
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
         } catch (Exception ex) {

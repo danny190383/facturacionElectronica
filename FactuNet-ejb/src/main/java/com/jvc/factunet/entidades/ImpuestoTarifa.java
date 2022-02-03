@@ -56,6 +56,10 @@ public class ImpuestoTarifa implements Serializable {
     public ImpuestoTarifa() {
     }
 
+    public ImpuestoTarifa(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

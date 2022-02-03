@@ -91,6 +91,13 @@
 
                     <p:column headerText="#{msg.producto}" 
                               filterBy="#{producto.productoBodega.nombre}">
+                        <p:tooltip for="imgHelp">
+                            <p:outputLabel value="#{producto.productoBodega.grupo.nombre} - #{producto.productoBodega.descripcion}"/>
+                        </p:tooltip>
+                        <p:graphicImage url="/resources/imagenes/help2.png"
+                                        id="imgHelp"
+                                        width="15"/>
+                        <p:spacer width="10"/>
                         <h:outputLabel value="#{producto.productoBodega.nombre}"
                                        style="font-size: 12px;font-style: normal;font-weight: bold"/>
                     </p:column>

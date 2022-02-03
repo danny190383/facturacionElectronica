@@ -32,7 +32,6 @@ import com.jvc.factunet.print.Ticket;
 import com.jvc.factunet.servicios.ClienteServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.ProductoBodegaServicio;
-import com.jvc.factunet.servicios.ProductoStockServicio;
 import com.jvc.factunet.servicios.PuntoVentaServicio;
 import com.jvc.factunet.servicios.TarjetaEmpresaServicio;
 import com.jvc.factunet.session.Login;
@@ -74,8 +73,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private PuntoVentaServicio puntoVentaServicio;
     @EJB
     private ProductoBodegaServicio productoBodegaServicio;
-    @EJB
-    private ProductoStockServicio productoStockServicio;
     
     private FacturaVenta facturaVenta;
     private Cliente cliente;
@@ -95,8 +92,10 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private List<PuntoVenta> listaPuntoVenta;
     private final List<FacturaVenta> listaFacturaVentas = new ArrayList<>();
     private List<FacturaDetalle> lotes;
+    private BigDecimal recepcion;
 
     public FacturaVentaBean() {
+        this.recepcion = BigDecimal.ZERO;
         this.facturaVenta = new FacturaVenta();
         this.listaTarjetaEmpresa = new ArrayList<>();
         this.listaComisionTarjeta = new ArrayList<>();
@@ -1787,6 +1786,14 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 }
         }
     }
+    
+    public BigDecimal getRetorno(){
+        if(this.recepcion != null && this.recepcion.floatValue()>0)
+        {
+            return this.recepcion.subtract(this.facturaVenta.getTotalPagar());
+        }
+        return BigDecimal.ZERO;
+    }
 
     public List<FacturaDetalle> getLotes() {
         return lotes;
@@ -1794,5 +1801,13 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
 
     public void setLotes(List<FacturaDetalle> lotes) {
         this.lotes = lotes;
+    }
+
+    public BigDecimal getRecepcion() {
+        return recepcion;
+    }
+
+    public void setRecepcion(BigDecimal recepcion) {
+        this.recepcion = recepcion;
     }
 }

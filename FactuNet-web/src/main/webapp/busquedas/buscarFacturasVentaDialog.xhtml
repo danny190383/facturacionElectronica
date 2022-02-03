@@ -265,11 +265,17 @@
                 </p:column>
                 
                 <p:column style="text-align: center"
-                          width="30"
+                          width="60"
                           rendered="#{buscarFacturasVenta.tipoSeleccion eq 1}">
                     <p:commandButton  actionListener="#{buscarFacturasVenta.seleccionar(pedido)}"
                                       title="#{msg.seleccionar}" 
                                       icon="ui-icon-check" />
+                    
+                    <p:commandButton  icon="ui-icon-mail-closed" 
+                                      update=":frmBusquedaDetalles:grMensajes" 
+                                      process="tablaDetalles"
+                                      rendered="#{pedido.estadoAutorizacionSri eq 'AUTORIZADO'}"
+                                      actionListener="#{facturacionElectronicaBean.enviarFacturaEmail(pedido)}"/>
                 </p:column>
             </p:dataTable>
         </h:form>

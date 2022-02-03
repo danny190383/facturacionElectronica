@@ -9,6 +9,7 @@ import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.FacturaDetalleSeries;
 import com.jvc.factunet.entidades.FacturaPago;
 import com.jvc.factunet.entidades.GuiaRemision;
+import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.PedidoCompra;
 import com.jvc.factunet.entidades.Producto;
 import com.jvc.factunet.entidades.ProductoBodega;
@@ -566,6 +567,23 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                 }
                 if(detalle.getProductoServicio() != null)
                 {
+                    Integer impuesto = (int)((XSSFCell) cellTempList.get(8)).getNumericCellValue();
+                    for(ImpuestoTarifa tarifa : this.getListaTarifas()){
+                        if(impuesto == 1){//no grava iva
+                            if(tarifa.getId() == 1){
+                                detalle.setImpuestoTarifa(tarifa);
+                                break;
+                            }
+                        }
+                        else//grava iva
+                        {
+                            if(tarifa.getPorcentaje().floatValue()>0){
+                                detalle.setImpuestoTarifa(tarifa);
+                                break;
+                            }
+                        }
+                    }
+//                    detalle.setImpuestoTarifa(new ImpuestoTarifa((int)((XSSFCell) cellTempList.get(8)).getNumericCellValue()));
                     detalle.setFecha(new Date());
                     detalle.setCantidad((new BigDecimal((((XSSFCell) cellTempList.get(2)).getNumericCellValue()))).setScale(2, RoundingMode.DOWN));
                     detalle.setPrecioVentaUnitario((new BigDecimal(((XSSFCell) cellTempList.get(3)).getNumericCellValue())).setScale(2, RoundingMode.DOWN));
@@ -576,6 +594,12 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                     detalle.setComision(BigDecimal.ZERO);
                     detalle.setValorComision(BigDecimal.ZERO);
                     detalle.setValorProrrateo(BigDecimal.ZERO);
+                    try {
+                        detalle.setFechaCaducidad(((XSSFCell) cellTempList.get(6)).getDateCellValue()); 
+                    } catch (Exception e) {
+                        
+                    }
+                    detalle.setDescuentoVentas((new BigDecimal(((XSSFCell) cellTempList.get(7)).getNumericCellValue())).setScale(2, RoundingMode.DOWN));
                     detalle.setSubtotalSinDescuento((detalle.getPrecioVentaUnitario().multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
                     detalle.setSubtotalConDescuento(detalle.getSubtotalSinDescuento());
                     ProductoBodega productoBodega = (ProductoBodega) detalle.getProductoServicio();
@@ -643,6 +667,15 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                 
                 celda = filaDatos.createCell(5);
                 celda.setCellValue(0);
+                
+                celda = filaDatos.createCell(6);
+                celda.setCellValue("s/c");
+                
+                celda = filaDatos.createCell(7);
+                celda.setCellValue(0);
+                
+                celda = filaDatos.createCell(8);
+                celda.setCellValue(1);
                 
                 fila ++;
             }

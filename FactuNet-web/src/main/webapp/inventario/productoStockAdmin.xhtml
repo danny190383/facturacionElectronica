@@ -193,6 +193,7 @@
                                                            minValue="0"
                                                            inputStyle="width:80%;text-align: right;font-size: 13px;font-style: normal;font-weight: bold ">
                                                 <p:ajax update="tablaProductos, :frmCabecera:grMensajes"
+                                                        process="@this"
                                                         listener="#{productoStockBean.onCellEditUtilidad(producto)}"/>
                                             </p:inputNumber>  
                                         </f:facet>
@@ -213,6 +214,7 @@
                                                            minValue="0"
                                                            inputStyle="width:80%;text-align: right ">
                                                 <p:ajax update="tablaProductos, :frmCabecera:grMensajes"
+                                                        process="@this"
                                                         listener="#{productoStockBean.onCellEditUtilidad(producto)}"/>
                                             </p:inputNumber>  
                                         </f:facet>

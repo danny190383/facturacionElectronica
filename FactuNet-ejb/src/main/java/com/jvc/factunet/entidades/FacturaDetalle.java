@@ -469,6 +469,13 @@ public class FacturaDetalle implements Serializable {
         this.descuentoVentas = descuentoVentas;
     }
     
+    public Boolean getIvaB() {
+        if((this.impuestoTarifa.getImpuesto().getId() == 1) && (this.impuestoTarifa.getPorcentaje().floatValue() > 0)){   
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

@@ -374,59 +374,77 @@
                                             </p:selectBooleanCheckbox>
                                         </h:panelGrid>
                                         <h:panelGrid columns="2">
-                                                <h:outputLabel value="#{msg.tipo} :" 
-                                                               rendered="#{facturaVentaBean.tarjeta}"/>
-                                                <p:selectOneMenu value="#{facturaVentaBean.tarjetaEmpresaSlc}"
-                                                                 filter="true" filterMatchMode="startsWith"
-                                                                 style="width: 90%"
-                                                                 rendered="#{facturaVentaBean.tarjeta}">
-                                                    <p:ajax update="comisionTarjeta, :frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
-                                                            listener="#{facturaVentaBean.cargarComisiones}"/>
-                                                    <f:selectItems value="#{facturaVentaBean.listaTarjetaEmpresa}" 
-                                                                   var="tarjetaEmpresa"
-                                                                   itemLabel="#{tarjetaEmpresa.tipoTarjeta.nombre} #{msg.banco} #{tarjetaEmpresa.banco.nombre}"
-                                                                   itemValue="#{tarjetaEmpresa.codigo}"/>
-                                                </p:selectOneMenu>
+                                            
+                                            <h:outputLabel value="#{msg.recepcion}:" 
+                                                           rendered="#{facturaVentaBean.efectivo}"/>
+                                            <p:inputNumber value="#{facturaVentaBean.recepcion}" 
+                                                           decimalPlaces="2"
+                                                           rendered="#{facturaVentaBean.efectivo}"
+                                                           minValue="0"
+                                                           inputStyle="width:30%;text-align: right;font-size: 15px;font-style: normal;font-weight: bold ">
+                                                <p:ajax update=":frmCabecera:tabPrincipalDatos:txtRetorno"/>
+                                            </p:inputNumber> 
+                                            
+                                            <h:outputLabel value="Retorno :" 
+                                                           rendered="#{facturaVentaBean.efectivo}"/>
+                                            <h:outputLabel value="#{facturaVentaBean.retorno}"
+                                                           id="txtRetorno"
+                                                           rendered="#{facturaVentaBean.efectivo}"
+                                                           style="color: #f00;font-size: 18px;font-style: normal;font-weight: bold"/>
 
-                                                <h:outputLabel value="#{msg.pago}:" 
-                                                               rendered="#{facturaVentaBean.tarjeta}"/>
-                                                <p:selectOneMenu value="#{facturaVentaBean.comisionTarjetaSlc}"
-                                                                 filter="true" filterMatchMode="startsWith"
-                                                                 style="width: 90%"
-                                                                 id="comisionTarjeta"
-                                                                 rendered="#{facturaVentaBean.tarjeta}">
-                                                    <p:ajax update=":frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
-                                                            listener="#{facturaVentaBean.cambiarComision}"/>
-                                                    <f:selectItems value="#{facturaVentaBean.listaComisionTarjeta}" 
-                                                                   var="comision"
-                                                                   itemLabel="#{comision.nombre} #{comision.valor}"
-                                                                   itemValue="#{comision.codigo}"/>
-                                                </p:selectOneMenu>
-                                                
-                                                <h:outputLabel value="#{msg.numeroCuentas}:" 
-                                                               rendered="#{facturaVentaBean.credito}"/>
-                                                <p:inputText value="#{facturaVentaBean.numeroCuentas}"
-                                                             style="background-color: khaki;text-align: right"
-                                                             required="true"
-                                                             size="5"
-                                                             maxlength="2"
-                                                             rendered="#{facturaVentaBean.credito}">
-                                                    <p:keyFilter regEx="/[\d\.]/"/>
-                                                    <f:validateDoubleRange minimum="1" /> 
-                                                </p:inputText>
-                                                <h:outputLabel value="#{msg.dias} #{msg.credito} :" 
-                                                               rendered="#{facturaVentaBean.credito}"/>
-                                                <p:inputText value="#{facturaVentaBean.diasCredito}"       
-                                                             rendered="#{facturaVentaBean.credito}"
-                                                             style="background-color: khaki;text-align: right"
-                                                             required="true"
-                                                             size="5"
-                                                             maxlength="4">
-                                                     <p:keyFilter regEx="/[\d\.]/"/>
-                                                     <f:validateDoubleRange minimum="0" /> 
-                                                </p:inputText> 
-                                            </h:panelGrid>
+                                            <h:outputLabel value="#{msg.tipo} :" 
+                                                           rendered="#{facturaVentaBean.tarjeta}"/>
+                                            <p:selectOneMenu value="#{facturaVentaBean.tarjetaEmpresaSlc}"
+                                                             filter="true" filterMatchMode="startsWith"
+                                                             style="width: 90%"
+                                                             rendered="#{facturaVentaBean.tarjeta}">
+                                                <p:ajax update="comisionTarjeta, :frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
+                                                        listener="#{facturaVentaBean.cargarComisiones}"/>
+                                                <f:selectItems value="#{facturaVentaBean.listaTarjetaEmpresa}" 
+                                                               var="tarjetaEmpresa"
+                                                               itemLabel="#{tarjetaEmpresa.tipoTarjeta.nombre} #{msg.banco} #{tarjetaEmpresa.banco.nombre}"
+                                                               itemValue="#{tarjetaEmpresa.codigo}"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputLabel value="#{msg.pago}:" 
+                                                           rendered="#{facturaVentaBean.tarjeta}"/>
+                                            <p:selectOneMenu value="#{facturaVentaBean.comisionTarjetaSlc}"
+                                                             filter="true" filterMatchMode="startsWith"
+                                                             style="width: 90%"
+                                                             id="comisionTarjeta"
+                                                             rendered="#{facturaVentaBean.tarjeta}">
+                                                <p:ajax update=":frmCabecera:tablaFacturaVenta, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
+                                                        listener="#{facturaVentaBean.cambiarComision}"/>
+                                                <f:selectItems value="#{facturaVentaBean.listaComisionTarjeta}" 
+                                                               var="comision"
+                                                               itemLabel="#{comision.nombre} #{comision.valor}"
+                                                               itemValue="#{comision.codigo}"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputLabel value="#{msg.numeroCuentas}:" 
+                                                           rendered="#{facturaVentaBean.credito}"/>
+                                            <p:inputText value="#{facturaVentaBean.numeroCuentas}"
+                                                         style="background-color: khaki;text-align: right"
+                                                         required="true"
+                                                         size="5"
+                                                         maxlength="2"
+                                                         rendered="#{facturaVentaBean.credito}">
+                                                <p:keyFilter regEx="/[\d\.]/"/>
+                                                <f:validateDoubleRange minimum="1" /> 
+                                            </p:inputText>
+                                            <h:outputLabel value="#{msg.dias} #{msg.credito} :" 
+                                                           rendered="#{facturaVentaBean.credito}"/>
+                                            <p:inputText value="#{facturaVentaBean.diasCredito}"       
+                                                         rendered="#{facturaVentaBean.credito}"
+                                                         style="background-color: khaki;text-align: right"
+                                                         required="true"
+                                                         size="5"
+                                                         maxlength="4">
+                                                 <p:keyFilter regEx="/[\d\.]/"/>
+                                                 <f:validateDoubleRange minimum="0" /> 
+                                            </p:inputText> 
                                         </h:panelGrid>
+                                    </h:panelGrid>
                                 </p:fieldset>
                             </h:panelGrid>
                         </p:tab>
