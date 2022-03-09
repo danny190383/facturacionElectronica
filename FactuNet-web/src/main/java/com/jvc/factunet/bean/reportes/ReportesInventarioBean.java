@@ -88,6 +88,9 @@ public class ReportesInventarioBean extends ImprimirReportesBean implements Seri
                     this.getParametros().put("stock", this.stockReporte);
                     jasperBean.jasperReport(JasperReportUtil.PATH_REPORTE_INVENTARIO_PRODUCTO_STOCK_TODOS,tipoReporte, null, this.getParametros());
                     break;
+                case "2.3":
+                    jasperBean.jasperReport(JasperReportUtil.PATH_REPORTE_INVENTARIO_PRODUCTO_CADUCIDAD,tipoReporte, null, this.getParametros());
+                    break;
                 default:
                     FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("reporteNoEncontrado"));
                     break;

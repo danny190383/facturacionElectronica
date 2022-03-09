@@ -12,6 +12,5 @@
     <module>FactuNet-vet</module>
     <module>FactuNet-pedidos-web</module>
     <module>FactuNet-sri-ejb</module>
-    <module>ejemploConsumo</module>
   </modules>
 </project>

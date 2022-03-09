@@ -71,6 +71,7 @@ public class JasperReportUtil extends FacesUtils {
     public final static String PATH_REPORTE_INVENTARIO_PROVEEDORES;
     public final static String PATH_REPORTE_INVENTARIO_TRANSPORTISTAS;
     public final static String PATH_REPORTE_INVENTARIO_PRODUCTO_STOCK_TODOS;
+    public final static String PATH_REPORTE_INVENTARIO_PRODUCTO_CADUCIDAD;
     
     //reportes de rr-hh
     public final static String PATH_REPORTE_RECURSOS_EMPLEADOS;
@@ -144,6 +145,7 @@ public class JasperReportUtil extends FacesUtils {
         PATH_REPORTE_INVENTARIO_TRANSPORTISTAS = PATH + "inventario-transportistas.jasper";
         PATH_REPORTE_INVENTARIO_PRODUCTO_STOCK = PATH + "inventario-producto-stock.jasper";
         PATH_REPORTE_INVENTARIO_PRODUCTO_STOCK_TODOS = PATH + "inventario-producto-stock-todos.jasper";
+        PATH_REPORTE_INVENTARIO_PRODUCTO_CADUCIDAD = PATH + "inventario-producto-stock-caducidad.jasper";
         
         PATH_REPORTE_RECURSOS_EMPLEADOS = PATH + "recursos_empleados.jasper";
         
