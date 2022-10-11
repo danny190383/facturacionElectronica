@@ -93,10 +93,6 @@ public class Empresa implements Serializable {
     private String moneda;
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "facturacion_electronica")
-    private Boolean facturacionElectronica;
-    @Column(name = "ambiente_electronica")
-    private String ambienteElectronica;
     @Column(name = "estado")
     private Boolean estado;
     @Basic(optional = false)
@@ -136,11 +132,6 @@ public class Empresa implements Serializable {
     private List<Seccion> seccionList;
     @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bodega> bodegaList;
-    @Lob
-    @Column(name = "firma_electronica")
-    private byte[] firmaElectronica;
-    @Column(name = "clave_firma")
-    private String claveFirma;
     @Column(name = "obligado_contabilidad ")
     private Boolean obligadoContabilidad ;
     @Column(name = "usa_tablet ")
@@ -386,38 +377,6 @@ public class Empresa implements Serializable {
 
     public void setMoneda(String moneda) {
         this.moneda = moneda;
-    }
-
-    public Boolean getFacturacionElectronica() {
-        return facturacionElectronica;
-    }
-
-    public void setFacturacionElectronica(Boolean facturacionElectronica) {
-        this.facturacionElectronica = facturacionElectronica;
-    }
-
-    public String getAmbienteElectronica() {
-        return ambienteElectronica;
-    }
-
-    public void setAmbienteElectronica(String ambienteElectronica) {
-        this.ambienteElectronica = ambienteElectronica;
-    }
-
-    public byte[] getFirmaElectronica() {
-        return firmaElectronica;
-    }
-
-    public void setFirmaElectronica(byte[] firmaElectronica) {
-        this.firmaElectronica = firmaElectronica;
-    }
-
-    public String getClaveFirma() {
-        return claveFirma;
-    }
-
-    public void setClaveFirma(String claveFirma) {
-        this.claveFirma = claveFirma;
     }
 
     public Boolean getObligadoContabilidad() {

@@ -176,10 +176,10 @@ public class FacturacionElectronicaBean implements Serializable{
     }
     
     public void procesarFacturasRecepcion(){
-        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
-             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
-             return;
-        }
+//        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
+//             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
+//             return;
+//        }
         for(Factura documento : this.listaDocumentos){
             if(documento.getEstadoAutorizacionSri() == null || !documento.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
@@ -197,9 +197,9 @@ public class FacturacionElectronicaBean implements Serializable{
                         XAdESBESSignature procesoFirma = new XAdESBESSignature(archivoFirmar);
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = documento.getCodigoBarras() + "Firmado.xml";
-                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
+                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(documento.getPuntoVenta().getFirmaElectronica()), documento.getPuntoVenta().getClaveFirma(), url, nombreResultado);
                         RespuestaRecepcion respuesta;
-                        if(documento.getEmpresa().getAmbienteElectronica().equals("1")){
+                        if(documento.getPuntoVenta().getAmbienteElectronica().equals("1")){
                             respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
                         }
                         else
@@ -242,9 +242,9 @@ public class FacturacionElectronicaBean implements Serializable{
                         XAdESBESSignature procesoFirma = new XAdESBESSignature(archivoFirmar);
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = guia.getCodigoBarras() + "Firmado.xml";
-                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
+                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(guia.getFactura().getPuntoVenta().getFirmaElectronica()), guia.getFactura().getPuntoVenta().getClaveFirma(), url, nombreResultado);
                         RespuestaRecepcion respuesta;
-                        if(guia.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                        if(guia.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
                             respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
                         }
                         else
@@ -287,9 +287,9 @@ public class FacturacionElectronicaBean implements Serializable{
                         XAdESBESSignature procesoFirma = new XAdESBESSignature(archivoFirmar);
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = retencion.getCodigoBarras() + "Firmado.xml";
-                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(this.empresa.getFirmaElectronica()), this.empresa.getClaveFirma(), url, nombreResultado);
+                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(retencion.getFactura().getPuntoVenta().getFirmaElectronica()), retencion.getFactura().getPuntoVenta().getClaveFirma(), url, nombreResultado);
                         RespuestaRecepcion respuesta;
-                        if(retencion.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                        if(retencion.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
                             respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
                         }
                         else
@@ -326,15 +326,15 @@ public class FacturacionElectronicaBean implements Serializable{
     }
     
     public void procesarFacturasAutorizacion(){
-        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
-             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
-             return;
-        }
+//        if(Objects.equals(this.empresa.getFacturacionElectronica(), Boolean.FALSE)){
+//             FacesUtils.addErrorMessage("El consultorio no tiene activada facturación electrónica, revice Mi Perfil");
+//             return;
+//        }
         for(Factura factura : this.listaDocumentos){
             if(factura.getEstadoAutorizacionSri() == null || !factura.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
                     RespuestaAutorizacion respuesta;
-                    if(factura.getEmpresa().getAmbienteElectronica().equals("1")){
+                    if(factura.getPuntoVenta().getAmbienteElectronica().equals("1")){
                         respuesta = consumoSRI.consumirAutorizacionPruebas(factura.getCodigoBarras()); 
                     }
                     else
@@ -385,7 +385,7 @@ public class FacturacionElectronicaBean implements Serializable{
             if(guia.getEstadoAutorizacionSri() == null || !guia.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
                     RespuestaAutorizacion respuesta;
-                    if(guia.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                    if(guia.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
                         respuesta = consumoSRI.consumirAutorizacionPruebas(guia.getCodigoBarras()); 
                     }
                     else
@@ -427,7 +427,7 @@ public class FacturacionElectronicaBean implements Serializable{
             if(retencion.getEstadoAutorizacionSri() == null || !retencion.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
                     RespuestaAutorizacion respuesta;
-                    if(retencion.getFactura().getEmpresa().getAmbienteElectronica().equals("1")){
+                    if(retencion.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
                         respuesta = consumoSRI.consumirAutorizacionPruebas(retencion.getCodigoBarras()); 
                     }
                     else
@@ -581,7 +581,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getEmpresa().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 
@@ -914,7 +914,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getEmpresa().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 
@@ -1198,7 +1198,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getEmpresa().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 
@@ -1461,7 +1461,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getFactura().getEmpresa().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getFactura().getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 
@@ -1689,7 +1689,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getFactura().getEmpresa().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getFactura().getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 

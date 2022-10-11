@@ -221,34 +221,6 @@
                                       <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
                                       <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
                                     </p:selectOneRadio>
-
-                                    <h:outputLabel value="#{msg.factura} #{msg.electronica}"/> 
-                                    <p:selectOneRadio value="#{empresaBean.empresa.facturacionElectronica}"
-                                                      required="true">
-                                      <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
-                                      <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
-                                    </p:selectOneRadio>
-
-                                    <h:outputLabel value="#{msg.ambiente}"/> 
-                                    <p:selectOneRadio value="#{empresaBean.empresa.ambienteElectronica}"
-                                                      required="true">
-                                      <f:selectItem itemLabel="#{msg.pruebas}" itemValue="1" />
-                                      <f:selectItem itemLabel="#{msg.produccion}" itemValue="2" />
-                                    </p:selectOneRadio>
-
-                                    <h:outputLabel value="Archivo Firma"/> 
-                                    <p:fileUpload  mode="advanced" 
-                                                   skinSimple="true"
-                                                   sizeLimit="1000000"  
-                                                   label="Seleccionar"
-                                                   auto="true"
-                                                   listener="#{empresaBean.subirFirma}"
-                                                   allowTypes="/(\.|\/)(p12|pfx)$/"    
-                                                   cancelLabel="Cancelar" 
-                                                   update=":frmCabecera:grMensajes"/>
-
-                                    <h:outputLabel value="#{msg.clave} Firma"/>   
-                                    <p:inputText value="#{empresaBean.empresa.claveFirma}"/>
                                     
                                     <h:outputLabel value="#{msg.estado}" />
                                     <p:selectBooleanButton onLabel="#{msg.activo}" 

@@ -88,7 +88,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     private List<PedidoVenta> listaPedidos;
     private Mesa mesaSelec;
     private PedidoVenta pedidoVentaSelc;
-    private LazyDataModel<Persona> lazyModel;
+    private LazyDataModel<Cliente> lazyModel;
     private LazyDataModel<Mascota> lazyModelMascotas;
     private List<Mascota> listaMascotasSelct;
     private Cliente cliente;
@@ -183,7 +183,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.cliente.setTipoCliente(super.getListaTipoCliente().get(0));
         this.cliente.getPersona().setEstadoCivil(super.getListaEstadoCivil().get(0));
         this.cliente.setCapacidadCredito(BigDecimal.ZERO);
-        this.cliente.getPersona().setEmpresa(new Empresa(1));
+        this.cliente.setEmpresa(new Empresa(1));
         this.nombreLogo = "foto_hombre.jpg";
         this.pathLogo = getServletContext().getRealPath("/") + File.separator + "resources" + File.separator + "imagenes";
     }
@@ -237,7 +237,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     {
         try {
             this.cliente.getPersona().setCedula(this.cliente.getPersona().getCedula().trim());
-            Cliente clienteTmp = this.clienteServicio.buscarCedula(this.cliente.getPersona().getCedula());
+            Cliente clienteTmp = this.clienteServicio.buscarCedula(this.cliente.getPersona().getCedula(), empresa.getCodigo());
             if(clienteTmp == null)
             {
                 Persona personaTmp = this.personaServicio.buscarCedula(this.cliente.getPersona().getCedula());
@@ -290,12 +290,12 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     private String cedula = StringUtils.EMPTY;
     public void listarClientes(){
         try {
-            this.lazyModel = new LazyDataModel<Persona>()
+            this.lazyModel = new LazyDataModel<Cliente>()
             {
                 @Override
-                public List<Persona> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) 
+                public List<Cliente> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) 
                 {
-                    List<Persona> result = clienteServicio.listarBuscar(nombres,cedula,empresa.getCodigo(), pageSize, first);
+                    List<Cliente> result = clienteServicio.listarBuscar(nombres,cedula,empresa.getCodigo(), pageSize, first);
                     lazyModel.setRowCount(clienteServicio.contar(nombres,cedula,empresa.getCodigo()).intValue());
                     return result;
                 }
@@ -359,8 +359,10 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                     }
                     else
                     {
-                         List<ProductoStock> result = productoStockServicio.listarBuscarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,grupoProductoSelc.getCodigo(), pageSize, first);
-                         lazyModelStock.setRowCount(productoStockServicio.contarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,grupoProductoSelc.getCodigo()).intValue());
+                        List<Integer> principales = new ArrayList<>();
+                        principales.add(grupoProductoSelc.getCodigo());
+                         List<ProductoStock> result = productoStockServicio.listarBuscarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,principales, pageSize, first);
+                         lazyModelStock.setRowCount(productoStockServicio.contarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,principales).intValue());
                          return result;
                     }
                 }
@@ -402,8 +404,10 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                     }
                     else
                     {
-                        List<ProductoServicio> result = productoServiciosServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo(), pageSize, first);
-                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo()).intValue());
+                        List<Integer> principales = new ArrayList<>();
+                        principales.add(grupoProductoSelc.getCodigo());
+                        List<ProductoServicio> result = productoServiciosServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),principales, pageSize, first);
+                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombreProducto,empresa.getCodigo(),principales).intValue());
                         return result;
                     }
                 }
@@ -445,8 +449,10 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                     }
                     else
                     {
-                        List<ProductoPaquete> result = productoPaqueteServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo(), pageSize, first);
-                        lazyModelPaquetes.setRowCount(productoPaqueteServicio.contarPadre(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo()).intValue());
+                        List<Integer> principales = new ArrayList<>();
+                        principales.add(grupoProductoSelc.getCodigo());
+                        List<ProductoPaquete> result = productoPaqueteServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),principales, pageSize, first);
+                        lazyModelPaquetes.setRowCount(productoPaqueteServicio.contarPadre(nombreProducto,empresa.getCodigo(),principales).intValue());
                         return result;
                     }
                        
@@ -711,18 +717,18 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     }
     
     public void seleccionarClienteMA(Mascota event) {
-        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getPersona().getCodigo()));
+        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getPersona().getCodigo(), this.empresa.getCodigo()));
         this.mesaSelec.setMascotas(event);
         this.guardarMesa(this.mesaSelec);
     }
     
     public void seleccionarCliente(Persona event) {
-        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getCodigo()));
+        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getCodigo(), this.empresa.getCodigo()));
         this.guardarMesa(this.mesaSelec);
     }
     
     public void seleccionarClienteM(Mascota event) {
-        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getPersona().getCodigo()));
+        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getPersona().getCodigo(), this.empresa.getCodigo()));
         this.nuevaMascota(event.getPersona());
     }
     
@@ -966,7 +972,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.lazyModelStock = lazyModelStock;
     }
     
-    public LazyDataModel<Persona> getLazyModel() {
+    public LazyDataModel<Cliente> getLazyModel() {
         return lazyModel;
     }
 

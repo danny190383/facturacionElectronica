@@ -35,67 +35,137 @@
                     </p:menu>
                 </p:panel>
             </div> 
+            <p:tabView id="tabDatosPrincipal">
+                <p:tab title="#{msg.datosGenerales}">
+                    <h:panelGrid columns="6">
+                        <h:outputLabel value="#{msg.nombre}" />
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.nombre}"
+                                     maxlength="50"
+                                     size="22"/>
+
+                        <h:outputLabel value="#{msg.ubicacion}" />
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.ubicacion}"
+                                     maxlength="50"
+                                     size="30"/>
+
+                        <h:outputLabel value="#{msg.codigoSRI}" />
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.codigoSri}"
+                                     maxlength="3"
+                                     size="5"/>
+
+                        <h:outputLabel value="#{msg.bodega} #{msg.referencia}" />
+                        <p:selectOneMenu value="#{puntoVentaBean.bodegaSelc}" 
+                                          panelStyle="width:150px"
+                                          style="width:150px" >
+                              <f:selectItems value="#{puntoVentaBean.listaBodegas}" 
+                                             var="bodega" 
+                                             itemLabel="#{bodega.nombre}" 
+                                             itemValue="#{bodega.codigo}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.impresora}" />
+                        <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.impresora}" 
+                                          panelStyle="width:150px"
+                                          style="width:150px" >
+                                <f:selectItems value="#{puntoVentaBean.services}" 
+                                              var="imp" 
+                                              itemLabel="#{imp.name}" 
+                                              itemValue="#{imp.name}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.tipo}: "/>  
+                        <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tipoImpresora}" 
+                                         style="width: 50px">
+                            <f:selectItem itemLabel="#{msg.otro}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.tiket}" itemValue="2" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.tipo} #{msg.tiket}: "/>  
+                        <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.rise}" 
+                                         style="width: 50px">
+                            <f:selectItem itemLabel="#{msg.rise}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.factura}" itemValue="2" />
+                            <f:selectItem itemLabel="Comprobamte" itemValue="3" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{msg.movil}: "/>  
+                        <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tablet}" 
+                                         style="width: 50px">
+                            <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
+                            <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="#{msg.factura} #{msg.electronica}">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{msg.factura} #{msg.electronica}"/> 
+                        <p:selectOneRadio value="#{puntoVentaBean.puntoVenta.facturacionElectronica}"
+                                          required="true">
+                          <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                          <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                          <p:ajax update=":frmPuntoVenta:tabDatosPrincipal"/>
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid columns="6" rendered="#{puntoVentaBean.puntoVenta.facturacionElectronica}">
+
+                        <h:outputLabel value="#{msg.ambiente}"/> 
+                        <p:selectOneRadio value="#{puntoVentaBean.puntoVenta.ambienteElectronica}"
+                                          required="true">
+                          <f:selectItem itemLabel="#{msg.pruebas}" itemValue="1" />
+                          <f:selectItem itemLabel="#{msg.produccion}" itemValue="2" />
+                        </p:selectOneRadio>
+
+                        <h:outputLabel value="Archivo Firma"/> 
+                        <p:fileUpload  mode="advanced" 
+                                       skinSimple="true"
+                                       sizeLimit="1000000"  
+                                       label="Seleccionar"
+                                       auto="true"
+                                       listener="#{puntoVentaBean.subirFirma}"
+                                       allowTypes="/(\.|\/)(p12|pfx)$/"    
+                                       cancelLabel="Cancelar" 
+                                       update=":frmPuntoVenta:grMensajes"/>
+
+                        <h:outputLabel value="#{msg.clave} Firma"/>   
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.claveFirma}"/>
+
+                        <h:outputLabel value="#{msg.nombre} Comercial: "/>
+                        <p:inputTextarea rows="2" cols="40" 
+                                         style="height: 50px;width: 200px;background-color: khaki"
+                                         autoResize="false" 
+                                         maxlength="200"
+                                         required="true"
+                                         value="#{puntoVentaBean.puntoVenta.nombreEmpresa}"/> 
+
+                        <h:outputLabel value="Razón Social: "/>
+                        <p:inputTextarea rows="2" cols="40" 
+                                         style="height: 50px;width: 200px;background-color: khaki"
+                                         autoResize="false" 
+                                         maxlength="200"
+                                         required="true"
+                                         value="#{puntoVentaBean.puntoVenta.razonSocial}"/> 
+                        
+                        <h:outputLabel value="#{msg.ruc}"/>   
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.ruc}"
+                                     style="background-color: khaki"
+                                     required="true">
+                            <p:keyFilter regEx="/[\d\-\.]/" />
+                        </p:inputText> 
+                        
+                        <h:outputLabel value="#{msg.direccion}: "/>
+                        <p:inputTextarea rows="2" cols="40" 
+                                         autoResize="false" 
+                                         style="background-color: khaki"
+                                         id="txtDireccion"
+                                         maxlength="200"
+                                         required="true"
+                                         value="#{puntoVentaBean.puntoVenta.direccion}"/>
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
             
-            <p:fieldset>
-                <h:panelGrid columns="6">
-                    <h:outputLabel value="#{msg.nombre}" />
-                    <p:inputText value="#{puntoVentaBean.puntoVenta.nombre}"
-                                 maxlength="50"
-                                 size="22"/>
-
-                    <h:outputLabel value="#{msg.ubicacion}" />
-                    <p:inputText value="#{puntoVentaBean.puntoVenta.ubicacion}"
-                                 maxlength="50"
-                                 size="30"/>
-
-                    <h:outputLabel value="#{msg.codigoSRI}" />
-                    <p:inputText value="#{puntoVentaBean.puntoVenta.codigoSri}"
-                                 maxlength="3"
-                                 size="5"/>
-                    
-                    <h:outputLabel value="#{msg.bodega} #{msg.referencia}" />
-                    <p:selectOneMenu value="#{puntoVentaBean.bodegaSelc}" 
-                                      panelStyle="width:150px"
-                                      style="width:150px" >
-                          <f:selectItems value="#{puntoVentaBean.listaBodegas}" 
-                                         var="bodega" 
-                                         itemLabel="#{bodega.nombre}" 
-                                         itemValue="#{bodega.codigo}" />
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{msg.impresora}" />
-                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.impresora}" 
-                                      panelStyle="width:150px"
-                                      style="width:150px" >
-                            <f:selectItems value="#{puntoVentaBean.services}" 
-                                          var="imp" 
-                                          itemLabel="#{imp.name}" 
-                                          itemValue="#{imp.name}" />
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{msg.tipo}: "/>  
-                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tipoImpresora}" 
-                                     style="width: 50px">
-                        <f:selectItem itemLabel="#{msg.otro}" itemValue="1" />
-                        <f:selectItem itemLabel="#{msg.tiket}" itemValue="2" />
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{msg.tipo} #{msg.tiket}: "/>  
-                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.rise}" 
-                                     style="width: 50px">
-                        <f:selectItem itemLabel="#{msg.rise}" itemValue="1" />
-                        <f:selectItem itemLabel="#{msg.factura}" itemValue="2" />
-                        <f:selectItem itemLabel="Comprobamte" itemValue="3" />
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{msg.movil}: "/>  
-                    <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.tablet}" 
-                                     style="width: 50px">
-                        <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
-                        <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
-                    </p:selectOneMenu>
-                </h:panelGrid>
-            </p:fieldset>
+            
             <p:tabView>
                 <p:tab title="#{msg.usuario}">
                     <p:pickList value="#{puntoVentaBean.listaCuentas}" 

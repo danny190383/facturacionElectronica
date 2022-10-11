@@ -242,10 +242,6 @@ public class EmpresaBean implements Serializable{
         }
     }
     
-    public void subirFirma(FileUploadEvent event) {
-        this.empresa.setFirmaElectronica(event.getFile().getContent()); 
-    }
-    
     public void verPuntoVenta(PuntoVenta punto) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("empresa", this.empresa);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("punto", punto);

@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -61,7 +62,28 @@ public class PuntoVenta implements Serializable {
     @JoinColumn(name = "bodega", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.EAGER)
     private Bodega bodega;
-    
+    //Facturacion Electronica
+    @Column(name = "facturacion_electronica")
+    private Boolean facturacionElectronica;
+    @Column(name = "ambiente_electronica")
+    private String ambienteElectronica;
+    @Lob
+    @Column(name = "firma_electronica")
+    private byte[] firmaElectronica;
+    @Column(name = "clave_firma")
+    private String claveFirma;
+    @Size(max = 13)
+    @Column(name = "ruc")
+    private String ruc;
+    @Size(min = 1, max = 200)
+    @Column(name = "nombre_empresa")
+    private String nombreEmpresa;
+    @Size(min = 1, max = 200)
+    @Column(name = "razon_social ")
+    private String razonSocial;
+    @Size(min = 1, max = 200)
+    @Column(name = "direccion")
+    private String direccion;
 
     public PuntoVenta() {
     }
@@ -74,6 +96,70 @@ public class PuntoVenta implements Serializable {
         this.codigo = codigo;
         this.nombre = nombre;
         this.ubicacion = ubicacion;
+    }
+
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
+    }
+
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
+    }
+
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getRuc() {
+        return ruc;
+    }
+
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+    
+    public Boolean getFacturacionElectronica() {
+        return facturacionElectronica;
+    }
+
+    public void setFacturacionElectronica(Boolean facturacionElectronica) {
+        this.facturacionElectronica = facturacionElectronica;
+    }
+
+    public String getAmbienteElectronica() {
+        return ambienteElectronica;
+    }
+
+    public void setAmbienteElectronica(String ambienteElectronica) {
+        this.ambienteElectronica = ambienteElectronica;
+    }
+
+    public byte[] getFirmaElectronica() {
+        return firmaElectronica;
+    }
+
+    public void setFirmaElectronica(byte[] firmaElectronica) {
+        this.firmaElectronica = firmaElectronica;
+    }
+
+    public String getClaveFirma() {
+        return claveFirma;
+    }
+
+    public void setClaveFirma(String claveFirma) {
+        this.claveFirma = claveFirma;
     }
 
     public Integer getCodigo() {

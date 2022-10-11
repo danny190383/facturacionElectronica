@@ -27,6 +27,7 @@ import javax.faces.context.FacesContext;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DualListModel;
 
 @ManagedBean
@@ -255,6 +256,10 @@ public class PuntoVentaBean implements Serializable{
             LOG.log(Level.SEVERE, "No se puede eliminar.", e);
             FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registronoEliminado"));
         }
+    }
+    
+    public void subirFirma(FileUploadEvent event) {
+        this.puntoVenta.setFirmaElectronica(event.getFile().getContent()); 
     }
 
     public PuntoVenta getPuntoVenta() {
