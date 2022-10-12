@@ -594,7 +594,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             LOG.log(Level.SEVERE, "No se puede guardar.", ex);
             this.facturaVenta.setEstado("1");
             this.listaFacturaVentas.clear();
-//            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("actualiceSecuencia"));
             FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registroNoGuardado"));
         }
     }

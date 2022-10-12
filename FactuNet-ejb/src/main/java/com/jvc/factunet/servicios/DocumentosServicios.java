@@ -265,7 +265,9 @@ public class DocumentosServicios {
         {
             parametro.setSecuencia(001);
         }
-        parametro.setCodigoBarras(this.generarClaveGuiaRemisionSRI("06", parametro.getFactura().getPuntoVenta().getAmbienteElectronica(), parametro));
+        if(parametro.getFactura().getPuntoVenta().getFacturacionElectronica()){
+            parametro.setCodigoBarras(this.generarClaveGuiaRemisionSRI("06", parametro.getFactura().getPuntoVenta().getAmbienteElectronica(), parametro));
+        }
         this.documentosDAO.insertar(parametro);
     }
     
@@ -306,7 +308,9 @@ public class DocumentosServicios {
             secuencia.setEstado("2");
             this.puntoVentaServicio.actualizar(secuencia);
         }
-        parametro.setCodigoBarras(this.generarClaveSRI("01", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        if(parametro.getPuntoVenta().getFacturacionElectronica()){
+            parametro.setCodigoBarras(this.generarClaveSRI("01", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        }
         this.documentosDAO.insertar(parametro);
         parametro.getDocumentoRelacionado().setDocumentoRelacionado(parametro); 
         this.actualizarDocumento(parametro.getDocumentoRelacionado());
@@ -330,7 +334,9 @@ public class DocumentosServicios {
                 {
                     guia.setSecuencia(001);
                 }
-                guia.setCodigoBarras(this.generarClaveGuiaRemisionSRI("06", guia.getFactura().getPuntoVenta().getAmbienteElectronica(), guia));
+                if(venta.getPuntoVenta().getFacturacionElectronica()){
+                    guia.setCodigoBarras(this.generarClaveGuiaRemisionSRI("06", guia.getFactura().getPuntoVenta().getAmbienteElectronica(), guia));
+                }
             });
             
             venta.setFecha(new Date()); 
@@ -368,7 +374,9 @@ public class DocumentosServicios {
                         guia.setSecuencia(001);
                     }
                 }
-                parametro.setCodigoBarras(this.generarClaveSRI("01", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+                if(venta.getPuntoVenta().getFacturacionElectronica()){
+                    parametro.setCodigoBarras(this.generarClaveSRI("01", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+                }
             }
             else
             {
@@ -824,7 +832,9 @@ public class DocumentosServicios {
             this.puntoVentaServicio.actualizar(secuencia);
         }
         parametro.setFecha(new Date()); 
-        parametro.setCodigoBarras(this.generarClaveSRI("05", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        if(parametro.getPuntoVenta().getFacturacionElectronica()){
+            parametro.setCodigoBarras(this.generarClaveSRI("05", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        }
         this.documentosDAO.insertar(parametro);
     }
     
@@ -919,7 +929,9 @@ public class DocumentosServicios {
             }
         }
         parametro.setFecha(new Date()); 
-        parametro.setCodigoBarras(this.generarClaveSRI("04", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        if(parametro.getPuntoVenta().getFacturacionElectronica()){
+            parametro.setCodigoBarras(this.generarClaveSRI("04", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        }
         this.documentosDAO.insertar(parametro);
     }
     
@@ -1067,7 +1079,9 @@ public class DocumentosServicios {
                 {
                     retencion.setNumero(001);
                 }
-                retencion.setCodigoBarras(this.generarClaveRetencionSRI("07", "1", retencion));
+                if(parametro.getPuntoVenta().getFacturacionElectronica()){
+                    retencion.setCodigoBarras(this.generarClaveRetencionSRI("07", "1", retencion));
+                }
             });
         }
         this.documentosDAO.actualizar(parametro);

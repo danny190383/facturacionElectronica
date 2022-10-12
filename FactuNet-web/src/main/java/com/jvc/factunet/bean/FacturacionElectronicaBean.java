@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -145,7 +144,12 @@ public class FacturacionElectronicaBean implements Serializable{
         this.listaDocumentoRetencion.clear();
         if(event.getObject() != null)
         {
-            this.listaDocumentos = (List) event.getObject();
+            List<Factura> listaTmp = (List) event.getObject();
+            for(Factura factura : listaTmp){
+                if(factura.getPuntoVenta().getFacturacionElectronica()){
+                    this.listaDocumentos.add(factura);
+                }
+            }
         }
     }
     
@@ -589,15 +593,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getEmpresa().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getEmpresa().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getEmpresa().getRuc());
+            Text rucValue = document.createTextNode(factura.getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -621,7 +625,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -645,7 +649,7 @@ public class FacturacionElectronicaBean implements Serializable{
             fechaEmision.appendChild(fechaEmisionValue);
             
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element obligadoContabilidad = document.createElement("obligadoContabilidad"); 
@@ -922,15 +926,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getEmpresa().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getEmpresa().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getEmpresa().getRuc());
+            Text rucValue = document.createTextNode(factura.getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -954,7 +958,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -978,7 +982,7 @@ public class FacturacionElectronicaBean implements Serializable{
             fechaEmision.appendChild(fechaEmisionValue);
             
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element tipoIdentificacionComprador = document.createElement("tipoIdentificacionComprador"); 
@@ -1206,15 +1210,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getEmpresa().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getEmpresa().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getEmpresa().getRuc());
+            Text rucValue = document.createTextNode(factura.getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -1244,7 +1248,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -1268,7 +1272,7 @@ public class FacturacionElectronicaBean implements Serializable{
             fechaEmision.appendChild(fechaEmisionValue);
             
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getEmpresa().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element tipoIdentificacionComprador = document.createElement("tipoIdentificacionComprador"); 
@@ -1469,15 +1473,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getFactura().getEmpresa().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getFactura().getEmpresa().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getFactura().getEmpresa().getRuc());
+            Text rucValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -1501,7 +1505,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getFactura().getEmpresa().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -1521,7 +1525,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element infoFacturaNode = document.createElement("infoGuiaRemision"); 
         
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getEmpresa().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element dirPartida = document.createElement("dirPartida"); 
@@ -1697,15 +1701,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getFactura().getEmpresa().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getFactura().getEmpresa().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getFactura().getEmpresa().getRuc());
+            Text rucValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -1729,7 +1733,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getFactura().getEmpresa().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -1753,7 +1757,7 @@ public class FacturacionElectronicaBean implements Serializable{
             fechaEmision.appendChild(fechaEmisionValue);
         
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getEmpresa().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element obligadoContabilidad = document.createElement("obligadoContabilidad"); 

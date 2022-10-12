@@ -165,7 +165,7 @@
                     <h:outputLabel value="F-R " rendered="#{pedido.tipoDocumento eq 23}"/>
                     <h:commandLink actionListener="#{buscarFacturasVenta.generarReportePDF(pedido.codigo,pedido.tipoDocumento)}"
                                    target="_blank" >
-                        <h:outputLabel value="#{pedido.numero}" />
+                        <h:outputLabel value="#{pedido.puntoVenta.nombre} #{pedido.numero}" />
                     </h:commandLink>
                     <h:outputLabel value=" Ret." rendered="#{pedido.documentoRetencion.size()>0}"/>
                 </p:column>
