@@ -11,7 +11,7 @@ body{
 #envoltura{
     position:absolute;
     left:50%;
-    top:50%;
+    top:40%;
     margin-left:-200px;
     margin-top:-150px;
     width:400px;
@@ -49,11 +49,11 @@ body{
 }
 
 #cuerpo{
-    background:#ececec;
+    background:transparent;
     border:solid #ccc;
     border-width: 1px 0;
     padding:10px 30px;
-    border-radius:100px;
+    border-radius:50px;
 }
 
 form,p{

@@ -8,7 +8,7 @@
 
     <body>
 
-        <ui:composition template="./../plantilla/main-template.xhtml">
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
             
             <ui:define name="botones"> 
                 <div class="caja-botones-arriba">
@@ -28,7 +28,7 @@
                     <h:panelGrid columns="2"
                                  style="margin-bottom:10px" 
                                  cellpadding="5"
-                                 width="100%">
+                                 width="70%">
                         <p:fieldset id="flsRolUsuario0001" 
                                     style="width:250px;height:450px;" 
                                     legend="#{msg.roles}">
@@ -61,7 +61,7 @@
                         </p:fieldset>
                         
                         <p:fieldset id="flsRolUsuario0002" 
-                                    style="height:450px;width: 100%" 
+                                    style="height:450px" 
                                     legend="#{msg.opciones}">
                             <p:pickList value="#{rolUsuarioBean.listaCuentas}" 
                                         var="cuenta" 

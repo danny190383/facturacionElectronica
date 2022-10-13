@@ -11,36 +11,41 @@
     </h:head>
     <h:body>
         <h:panelGroup id="background" layout="block">
-            <h:graphicImage url="/resources/imagenes/backgraund.jpg" 
+            <h:graphicImage url="/resources/imagenes/70753-formas.jpg" 
                             style="width: 100%;height: 100%"/>
         </h:panelGroup>
         <div id="envoltura">
             <div id="contenedor" >
+                <br/>
+                <br/>
                 <div id="pie" >
                     <h:outputLabel value="#{msg.tipoSistema}"/>
                 </div>
                 <div id="cabecera" >
-                    <p:graphicImage url="/resources/imagenes/logo2.bmp"
-                                    width="100%"
-                                    height="150px"
+                    <p:graphicImage url="/resources/imagenes/wix2.jpg"
+                                    style="border-radius:100px;"/> 
+                    <p:graphicImage url="/resources/imagenes/wix2.jpg"
                                     style="border-radius:100px;"/> 
                 </div>
                 <div id="cuerpo">
-                    <h:form>
+                    <h:form >
                         <p:growl id="grMensajes" 
                                  widgetVar="grMensajes" 
                                  showDetail="false"/>
-                        <h:panelGrid columns="2"
+                        <h:panelGrid columns="1"
                                      id="pnlLogin"
                                      width="100%"
-                                     style="text-align: center">
-                            <h:outputLabel value="#{msg.usuario}: " />
+                                     style="text-align: center;">
                             <p:inputText value="#{crearSesion.identificador}"
-                                         required="true"/>
-                            <h:outputLabel value="#{msg.clave}: " />
+                                         required="true"
+                                         style="width: 80%"
+                                         placeholder="#{msg.usuario}"/>
                             <p:password value="#{crearSesion.clave}"
-                                        required="true"/>
+                                        required="true"
+                                        style="width: 80%"
+                                        placeholder="#{msg.clave}"/>
                         </h:panelGrid>
+                        <br/>
                         <center>
                             <p:commandButton value="Entrar" 
                                              icon="fa fa-hand-o-right" 
@@ -63,6 +68,8 @@
                         </p:dialog>
                     </h:form>
                 </div>
+                <br/>
+                <br/>
                 <div id="pie" >
                     <h:outputLabel value="#{msg.tipoSistema}"/>
                 </div>

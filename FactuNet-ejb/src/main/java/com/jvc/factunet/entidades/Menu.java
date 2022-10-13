@@ -44,6 +44,8 @@ public class Menu implements Serializable {
     private String tipo;
     @Column(name = "orden")
     private Integer orden;
+    @Column(name = "icon")
+    private String icon;
     @JoinColumn(name = "padre", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private Menu padre;
@@ -117,5 +119,13 @@ public class Menu implements Serializable {
 
     public void setOrden(Integer orden) {
         this.orden = orden;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

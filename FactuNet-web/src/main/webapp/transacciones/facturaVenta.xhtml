@@ -8,7 +8,7 @@
 
     <body>
 
-        <ui:composition template="./../plantilla/main-template.xhtml">
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
             <ui:define name="botones">
                 <div class="caja-botones-arriba">
                     <p:toolbar id="pnlBotones">
@@ -182,11 +182,18 @@
                 </div>
             </ui:define>
             <ui:define name="content">
+                <style>
+                    .ancho3columnas{
+                        width: 35%;
+                    }
+                </style>
                 <p:panel header="#{msg.administracion} #{msg.documento} de Venta"
                          id="pnlPrincipal">
                     <p:tabView id="tabPrincipalDatos">
                         <p:tab title="#{msg.datosGenerales}">
-                            <h:panelGrid columns="3">
+                            <h:panelGrid columns="3"
+                                         style="width: 100%"
+                                         columnClasses="ancho3columnas">
                                 <p:fieldset legend="#{msg.datosGenerales}"
                                              style="height: 200px"
                                              id="flsDatosGenerales">
@@ -229,7 +236,7 @@
                                     </h:panelGrid>
                                 </p:fieldset>
                                 <p:fieldset legend="#{msg.cliente}"
-                                            style="height: 200px;width:330px">
+                                            style="height: 200px;">
 
                                     <h:panelGrid columns="2"
                                                  id="pnlCliente">
@@ -337,7 +344,7 @@
                                     </h:panelGrid>
                                 </p:fieldset>
                                 <p:fieldset legend="#{msg.formaPago}"
-                                            style="height: 200px;width: 400px"
+                                            style="height: 200px;width: 450px"
                                             rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                                     <h:panelGrid columns="2"
                                                  id="pnlFormaPago">
@@ -927,7 +934,7 @@
                                   style="text-align:center">
                             <p:selectOneMenu value="#{items.impuestoTarifa}"
                                              converter="omnifaces.SelectItemsConverter"
-                                             style="width: 40px"
+                                             style="width: 80%"
                                              disabled="#{facturaVentaBean.facturaVenta.estado ne 1}">
                                <f:selectItems value="#{facturaVentaBean.listaTarifas}" 
                                               var="impT"
@@ -940,10 +947,11 @@
                         
                         <p:column headerText="#{msg.stock}"
                                   width="5%"
-                                  style="text-align:right">
+                                  style="text-align:left">
                             <h:outputLabel value="T : #{items.stock}" /><br/>
                             <h:outputLabel value="L : #{items.loteVenta.stockActual}" 
-                                           title="#{items.loteVenta.codigo}"/>
+                                           title="#{items.loteVenta.codigo}"
+                                           rendered="#{items.loteVenta.stockActual > 0}"/>
                         </p:column>
                         
                         <p:column headerText="#{msg.bodega}"
@@ -1047,7 +1055,12 @@
                                   width="5%"
                                   style="text-align:right"
                                   rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
-                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                            <h:outputLabel value="#{items.precioVentaUnitario}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
 
                         <p:column headerText="V. #{msg.unitario}"
@@ -1057,7 +1070,12 @@
                             <p:cellEditor>
                                 <f:facet name="output">
                                     <h:outputLabel value="#{items.precioVentaUnitario}"
-                                                   style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                                   style="font-size: 13px;font-style: normal;font-weight: bold">
+                                        <f:convertNumber type="number" 
+                                                         groupingUsed="true" 
+                                                         minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                         pattern="#0.00"/>
+                                    </h:outputLabel>
                                 </f:facet>
                                 <f:facet name="input">
                                     <p:inputNumber value="#{items.precioVentaUnitario}" 
@@ -1129,13 +1147,23 @@
                         <p:column headerText="V. #{msg.unitario} Des."
                                   width="5%"
                                   style="text-align:right">
-                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total} Des."
                                   width="5%"
                                   style="text-align:right">
-                            <h:outputLabel value="#{items.subtotalConDescuento}"/>
+                            <h:outputLabel value="#{items.subtotalConDescuento}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.total}"
@@ -1146,7 +1174,7 @@
                         </p:column>
 
                         <p:column headerText="#{msg.opcion}" 
-                                  width="10%"
+                                  width="7%"
                                   style="text-align: center"
                                   rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
 

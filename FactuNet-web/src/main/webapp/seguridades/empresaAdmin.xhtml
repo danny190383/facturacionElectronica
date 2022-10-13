@@ -8,7 +8,7 @@
 
     <body>
 
-        <ui:composition template="./../plantilla/main-template.xhtml">
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
             
             <ui:define name="botones"> 
                 <div class="caja-botones-arriba">
@@ -202,8 +202,7 @@
                                     </p:selectOneRadio>
 
                                     <h:outputLabel value="#{msg.tema}" /> 
-                                    <p:themeSwitcher style="width:165px" 
-                                                     effect="fade"
+                                    <p:themeSwitcher style="width:165px;z-index: 5000" 
                                                      value="#{empresaBean.empresa.tema}">
                                         <f:selectItems value="#{themeService.themes}"
                                                        itemLabel="#{theme.displayName}" itemValue="#{theme.name}"/>

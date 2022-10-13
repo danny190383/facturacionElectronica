@@ -15,9 +15,11 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -38,6 +40,7 @@ public class Login implements Serializable{
     
     private Empleado empleado;
     private MenuModel menuModel;
+    private MenuModel menuModelBoton;
     private String urlLogo;
     private String urlFotoLogin;
     private BigDecimal ivaEmpresa;
@@ -178,6 +181,57 @@ public class Login implements Serializable{
             }
         }
     }
+    
+    public void crearMenuBoton(Integer rol) {
+        this.menuModelBoton = new DefaultMenuModel();
+        try {
+            List<OpcionesMenu> listaMenu = this.opcionesMenuServicio.listar(rol);
+
+            for (OpcionesMenu opcion : listaMenu) {
+                if(opcion.getMenu().getIcon() != null &&
+                   !"".equals(opcion.getMenu().getIcon())){
+                    DefaultSubMenu submenu = new DefaultSubMenu("Dynamic Submenu");
+                    submenu.setLabel("");
+                    submenu.setIcon(opcion.getMenu().getIcon()); 
+                    submenu.setStyle("width: 0;font-size: 18px;color:black");
+                    this.populateMenuBoton(opcion, submenu,listaMenu);
+                    if (submenu.getElementsCount() > 0) {
+                        this.menuModelBoton.addElement(submenu);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    public void populateMenuBoton(OpcionesMenu opcionPadre, DefaultSubMenu menuPadre, List<OpcionesMenu> lista) {
+        for (OpcionesMenu opcion : lista) 
+        {
+            if("1".equals(opcion.getMenu().getTipo()))
+            {   
+                if(opcion.getMenu().getPadre() != null && Objects.equals(opcion.getMenu().getPadre().getCodigo(), opcionPadre.getMenu().getCodigo()))
+                {
+                    if(opcion.getMenu().getIcon() != null && !"".equals(opcion.getMenu().getIcon())){
+                    
+                        DefaultMenuItem itemHijo = new DefaultMenuItem();
+                        if(opcion.getMenu().getUrl().contains("?"))
+                        {
+                            itemHijo.setUrl(getServletRequest().getContextPath() + opcion.getMenu().getUrl()+"&color="+opcion.getMenu().getColor());
+                        }
+                        else
+                        {
+                            itemHijo.setUrl(getServletRequest().getContextPath() + opcion.getMenu().getUrl()+"?color="+opcion.getMenu().getColor());
+                        }
+                        itemHijo.setStyle("width: 50%;font-size: 18px;color:black");
+                        itemHijo.setIcon(opcion.getMenu().getIcon()); 
+                        menuPadre.getElements().add(itemHijo);
+                }
+                }
+            }
+        }
+    }
 
     public void logout() {
         HttpSession session = SessionBean.getSession();
@@ -231,5 +285,13 @@ public class Login implements Serializable{
 
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
+    }
+    
+    public MenuModel getMenuModelBoton() {
+        return menuModelBoton;
+    }
+
+    public void setMenuModelBoton(MenuModel menuModelBoton) {
+        this.menuModelBoton = menuModelBoton;
     }
 }

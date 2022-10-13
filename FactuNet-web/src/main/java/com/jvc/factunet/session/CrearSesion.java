@@ -94,6 +94,7 @@ public class CrearSesion implements Serializable{
             session.setAttribute("username", cuenta.getIdentificador());
             session.setAttribute("empleado", this.login.getEmpleado());
             this.login.crearMenu(this.login.getEmpleado().getCuenta().getRol().getCodigo());
+            this.login.crearMenuBoton(this.login.getEmpleado().getCuenta().getRol().getCodigo());
             this.login.cargarLogo();
             this.login.cargarFotoLogin();
             this.login.verIVA();
