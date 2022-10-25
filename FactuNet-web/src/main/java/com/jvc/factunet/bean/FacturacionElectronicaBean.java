@@ -540,7 +540,7 @@ public class FacturacionElectronicaBean implements Serializable{
             String usuario = empresa.getEmail().trim();
             String password = empresa.getEmailClave().trim();
             String destinatario = destinatarioFactura;
-            String mensaje = "Sistema FactuNet documento electrónico SRI";
+            String mensaje = "Sistema FactuYES documento electrónico SRI";
             String archivo = "";
             if(tipo == 1){ // Documento
                 archivo = this.generarReporte(factura, nombreDocumento);
@@ -597,7 +597,7 @@ public class FacturacionElectronicaBean implements Serializable{
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getPuntoVenta().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getPuntoVenta().getNombreEmpresa().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 

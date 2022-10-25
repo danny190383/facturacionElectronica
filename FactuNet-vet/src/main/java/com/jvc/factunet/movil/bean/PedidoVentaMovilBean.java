@@ -122,7 +122,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.opcion = "P";
         this.listaPadres = this.grupoProductoServicio.listarPorNivelEstado(1,1);
         this.grupoProductoSelc = this.listaPadres.get(0);
-        this.empresa = this.empresaServicio.buscar(1);
+        this.empresa = this.empresaServicio.buscar(94);
         this.listaPedidos.clear();
         this.listaPedidos.addAll(this.documentosServicios.listarPedidosVenta(this.empresa.getCodigo(), "1"));
         this.ordenarSeccion();
@@ -146,8 +146,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.llenarTablaServicios();
         this.llenarTablaPaquetes();
         this.initCliente();
-        this.listarMascotas();
-        this.nuevaMascota(null);
+//        this.listarMascotas();
+//        this.nuevaMascota(null);
     }
     
     public void buscarNotasMedicas(Mascota mascota){
@@ -353,16 +353,16 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                 {
                     if((grupoProductoSelc.getGrupoProductoList() == null) ||  (grupoProductoSelc.getGrupoProductoList().isEmpty()))
                     {
-                        List<ProductoStock> result = productoStockServicio.listarBuscar(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,grupoProductoSelc.getCodigo(), pageSize, first);
-                        lazyModelStock.setRowCount(productoStockServicio.contar(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,grupoProductoSelc.getCodigo()).intValue());
+                        List<ProductoStock> result = productoStockServicio.listarBuscar(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,89,grupoProductoSelc.getCodigo(), pageSize, first);
+                        lazyModelStock.setRowCount(productoStockServicio.contar(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,89,grupoProductoSelc.getCodigo()).intValue());
                         return result;
                     }
                     else
                     {
                         List<Integer> principales = new ArrayList<>();
                         principales.add(grupoProductoSelc.getCodigo());
-                         List<ProductoStock> result = productoStockServicio.listarBuscarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,principales, pageSize, first);
-                         lazyModelStock.setRowCount(productoStockServicio.contarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,1,principales).intValue());
+                         List<ProductoStock> result = productoStockServicio.listarBuscarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,89,principales, pageSize, first);
+                         lazyModelStock.setRowCount(productoStockServicio.contarPadre(nombreProducto,StringUtils.EMPTY,StringUtils.EMPTY,89,principales).intValue());
                          return result;
                     }
                 }
@@ -490,6 +490,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         }
         if(ban){
             this.listaProductosTodosSelc.add(this.crearDetalleProducto(producto));
+            
         }
         else
         {
@@ -722,8 +723,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.guardarMesa(this.mesaSelec);
     }
     
-    public void seleccionarCliente(Persona event) {
-        this.mesaSelec.setCliente(this.clienteServicio.buscarCliente(event.getCodigo(), this.empresa.getCodigo()));
+    public void seleccionarCliente(Cliente event) {
+        this.mesaSelec.setCliente(event);
         this.guardarMesa(this.mesaSelec);
     }
     
@@ -764,6 +765,10 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         } catch (Exception ex) {
             Logger.getLogger(PedidoVentaMovilBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void verPedido(PedidoVenta pedido) {
+        this.pedidoVentaSelc = pedido;
     }
     
     public void cambiarMesa(Mesa mesa,PedidoVenta pedido) {
@@ -840,7 +845,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     }
     
     public void restar(FacturaDetalle event){
-        if(event.getCantidad().floatValue() > 0){
+        if(event.getCantidad().floatValue() != 1){
             event.setCantidad(event.getCantidad().subtract(BigDecimal.ONE));
             this.onCellEdit(event);
         }
@@ -1099,4 +1104,14 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     public void setMascotaSelc(Mascota mascotaSelc) {
         this.mascotaSelc = mascotaSelc;
     }
+
+    public GrupoProducto getGrupoProductoSelc() {
+        return grupoProductoSelc;
+    }
+
+    public void setGrupoProductoSelc(GrupoProducto grupoProductoSelc) {
+        this.grupoProductoSelc = grupoProductoSelc;
+    }
+    
+    
 }

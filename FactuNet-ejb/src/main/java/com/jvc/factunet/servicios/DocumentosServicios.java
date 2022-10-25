@@ -942,7 +942,7 @@ public class DocumentosServicios {
         String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFecha()));
         clave = fecha+
                 tipo+
-                factura.getEmpresa().getRuc()+
+                factura.getPuntoVenta().getRuc()+
                 ambiente+
                 factura.getEmpresa().getCodigoSri()+
                 factura.getSecuenciaDocumento().getPuntoVenta().getCodigoSri()+
@@ -960,7 +960,7 @@ public class DocumentosServicios {
         String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFactura().getFecha()));
         clave = fecha+
                 tipo+
-                factura.getFactura().getEmpresa().getRuc()+
+                factura.getFactura().getPuntoVenta().getRuc()+
                 ambiente+
                 factura.getFactura().getEmpresa().getCodigoSri()+
                 factura.getFactura().getPuntoVenta().getCodigoSri()+
@@ -978,7 +978,7 @@ public class DocumentosServicios {
         String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFactura().getFecha()));
         clave = fecha+
                 tipo+
-                factura.getFactura().getEmpresa().getRuc()+
+                factura.getFactura().getPuntoVenta().getRuc()+
                 ambiente+
                 factura.getFactura().getEmpresa().getCodigoSri()+
                 factura.getFactura().getEmpleado().getPuntoVenta().getCodigoSri()+ 

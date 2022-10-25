@@ -290,13 +290,25 @@
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.costo}"
-                                          width="50">
-                                    <h:outputLabel value="#{servicio.precioUltimaCompra}" />
+                                          width="50"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{servicio.precioUltimaCompra}" >
+                                        <f:convertNumber type="number" 
+                                                         groupingUsed="true" 
+                                                         minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                         pattern="#0.00"/>
+                                    </h:outputLabel>
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.pvp}"
-                                          width="50">
-                                    <h:outputLabel value="#{servicio.pvp}" />
+                                          width="50"
+                                          style="text-align: right">
+                                    <h:outputLabel value="#{servicio.pvp}">
+                                        <f:convertNumber type="number" 
+                                                         groupingUsed="true" 
+                                                         minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                         pattern="#0.00"/>
+                                    </h:outputLabel>
                                 </p:column>
                              
                                 <p:column headerText="#{msg.opcion}" 

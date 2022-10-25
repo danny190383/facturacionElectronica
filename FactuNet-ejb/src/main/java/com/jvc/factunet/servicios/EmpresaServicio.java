@@ -66,4 +66,8 @@ public class EmpresaServicio {
     public ProductoImpuestoTarifa actualizar(ProductoImpuestoTarifa parametro) throws Exception {
         return (ProductoImpuestoTarifa) this.empresaDAO.actualizar(parametro);
     }
+    
+    public void insertar(ProductoImpuestoTarifa parametro) throws Exception {
+        this.empresaDAO.insertar(parametro);
+    }
 }

@@ -444,13 +444,28 @@ public class EmpresaBean implements Serializable{
     {
         List<Producto> listaProductosEmpresa = this.empresaServicio.listarProductosEmpresa(this.empresa.getCodigo());
         for(Producto productoObjeto : listaProductosEmpresa){
-            for(ProductoImpuestoTarifa productoImpuesto : productoObjeto.getProductoImpuestoTarifaList()){
-                if(productoImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
-                    try {
-                        productoImpuesto.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
-                        this.empresaServicio.actualizar(productoImpuesto);
-                    } catch (Exception ex) {
-                        LOG.log(Level.SEVERE, "NO se puede actualizar la tarifa.", ex);
+            if(productoObjeto.getProductoImpuestoTarifaList() == null || 
+               productoObjeto.getProductoImpuestoTarifaList().isEmpty()){
+                try {
+                    ProductoImpuestoTarifa impuestoTarifa = new ProductoImpuestoTarifa();
+                    impuestoTarifa.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+                    impuestoTarifa.setProducto(productoObjeto); 
+                    impuestoTarifa.setEstado(Boolean.TRUE);
+                    this.empresaServicio.insertar(impuestoTarifa);
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "NO se puede crear la tarifa.", ex);
+                }
+            }
+            else
+            {
+                for(ProductoImpuestoTarifa productoImpuesto : productoObjeto.getProductoImpuestoTarifaList()){
+                    if(productoImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
+                        try {
+                            productoImpuesto.setImpuestoTarifa(this.empresa.getImpuestoTarifa());
+                            this.empresaServicio.actualizar(productoImpuesto);
+                        } catch (Exception ex) {
+                            LOG.log(Level.SEVERE, "NO se puede actualizar la tarifa.", ex);
+                        }
                     }
                 }
             }
