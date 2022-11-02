@@ -21,7 +21,6 @@
 
                             <p:commandButton value="#{msg.guardar}" 
                                              icon="ui-icon-disk"
-                                             oncomplete="document.getElementById('frmCabecera:btnPrint').click();"
                                              process="@this, :frmCabecera:pnlPrincipal"
                                              actionListener="#{notaCreditoBean.guardar}"
                                              disabled="#{notaCreditoBean.notaCredito.codigo ne null}"
@@ -344,7 +343,12 @@
                                   style="text-align:right"
                                   rendered="#{notaCreditoBean.notaCredito.tipoNota == 1 ||
                                               notaCreditoBean.notaCredito.tipoNota == 2}">
-                            <h:outputLabel value="#{items.precioVentaUnitario}"/>
+                            <h:outputLabel value="#{items.precioVentaUnitario}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
                         
                         <p:column headerText="V. #{msg.unitario}"
@@ -384,7 +388,12 @@
                         <p:column headerText="V. #{msg.unitario}"
                                   width="5%"
                                   style="text-align:right">
-                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}"/>
+                            <h:outputLabel value="#{items.precioVentaUnitarioDescuento}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
 
                         <p:column headerText="V. #{msg.total}"

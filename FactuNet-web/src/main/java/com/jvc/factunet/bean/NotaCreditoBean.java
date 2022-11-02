@@ -219,6 +219,10 @@ public class NotaCreditoBean extends FacturaVentaBean {
                 FacesUtils.addErrorMessage("No se puede generar una nota de crédito sobre un documento anulado.");
                 return;
             }
+            if(super.getFacturaVenta().getEstadoAutorizacionSri() == null || !super.getFacturaVenta().getEstadoAutorizacionSri().equals("AUTORIZADO")){
+                FacesUtils.addErrorMessage("No se puede generar una nota de crédito sobre un documento no autorizado por el sri.");
+                return;
+            }
             super.setCliente(super.getFacturaVenta().getCliente());
             for(FacturaDetalle detalle : super.getFacturaVenta().getFacturaDetalleList())
             {
@@ -258,6 +262,7 @@ public class NotaCreditoBean extends FacturaVentaBean {
                 }
             }
             this.notaCredito.setDocumentoRelacionado(super.getFacturaVenta()); 
+            this.notaCredito.setPuntoVenta(super.getFacturaVenta().getPuntoVenta()); 
             this.calcularTotales();
             for(SecuenciaDocumento secuencia : ((FacturaVenta)this.notaCredito.getDocumentoRelacionado()).getPuntoVenta().getSecuenciaDocumentoList()){
                 if(Objects.equals(secuencia.getTipoDocumento().getNombre(), "NOTA DE CRÉDITO") && (secuencia.getEstado().equals("1"))){

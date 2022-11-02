@@ -16,6 +16,7 @@ import com.jvc.factunet.entidades.ProductoStock;
 import com.jvc.factunet.entidades.PuntoRestriccion;
 import com.jvc.factunet.entidades.PuntoVenta;
 import com.jvc.factunet.entidades.Seccion;
+import com.jvc.factunet.entidades.TipoIdentificacion;
 import com.jvc.factunet.movil.icefacesUtil.CatalogosPersonaMovilBean;
 import com.jvc.factunet.movil.icefacesUtil.FacesUtilsMovil;
 import static com.jvc.factunet.movil.icefacesUtil.FacesUtilsMovil.getServletContext;
@@ -183,7 +184,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.cliente.setTipoCliente(super.getListaTipoCliente().get(0));
         this.cliente.getPersona().setEstadoCivil(super.getListaEstadoCivil().get(0));
         this.cliente.setCapacidadCredito(BigDecimal.ZERO);
-        this.cliente.setEmpresa(new Empresa(1));
+        this.cliente.setEmpresa(this.empresa);
+        this.cliente.getPersona().setTipoIdentificacion(new TipoIdentificacion()); 
         this.nombreLogo = "foto_hombre.jpg";
         this.pathLogo = getServletContext().getRealPath("/") + File.separator + "resources" + File.separator + "imagenes";
     }
@@ -675,8 +677,10 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                 event.setCantidad(BigDecimal.ONE);
             }
             event.setCantidadPorFacturar(event.getCantidad());
+            if(event.getDescripcion() != null){
+                event.setDescripcion(event.getDescripcion().toUpperCase().trim());
+            }
             this.documentosServicios.actualizar(event);
-//            FacesUtilsMovil.addInfoMessage(FacesUtilsMovil.getResourceBundle().getString("registroGrabado"));
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "No se puede guardar.", ex);
             FacesUtilsMovil.addErrorMessage(FacesUtilsMovil.getResourceBundle().getString("registroNoGuardado"));

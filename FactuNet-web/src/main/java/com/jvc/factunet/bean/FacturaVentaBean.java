@@ -315,6 +315,12 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                     detalle.setValorDescuento(BigDecimal.ZERO);
                     detalle.setComision(BigDecimal.ZERO);
                     detalle.setDescuento(BigDecimal.ZERO);
+                    for(ProductoImpuestoTarifa tarifaImpuesto : detalle.getProductoServicio().getProductoImpuestoTarifaList()){
+                        if(tarifaImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
+                            detalle.setImpuestoTarifa(tarifaImpuesto.getImpuestoTarifa());
+                            break;
+                        }
+                    }
                     this.facturaVenta.getFacturaDetalleList().add(detalle);
                 }
             }
@@ -343,6 +349,16 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     public void anular()
     {
         try {
+            if(this.facturaVenta.getPuntoVenta().getFacturacionElectronica()){
+                if(facturaVenta.getEstadoSri() != null && facturaVenta.getEstadoSri().equals("RECIBIDA")){
+                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico enviado al SRI");
+                    return;
+                }
+                if(facturaVenta.getCliente().getPersona().getCedula().equals("9999999999999")){ 
+                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico generado a Consumidor Final ");
+                    return;
+                }
+            }
             this.facturaVenta.setEstado("3");
             this.documentosServicios.anularFacturaVenta(this.facturaVenta);
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("facturaAnulada"));
@@ -1053,6 +1069,18 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         }
     }
     
+    public void onClienteUpdateSelect(SelectEvent event) {
+        if(event.getObject() != null)
+        {
+            try {
+                facturaVenta.setCliente((Cliente)event.getObject());
+                documentosServicios.actualizarDocumento(facturaVenta);
+            } catch (Exception ex) {
+                Logger.getLogger(FacturaVentaBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     public void onFacturaSelect(SelectEvent event) {
         if(event.getObject() != null)
         {
@@ -1711,7 +1739,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         else
         {
             for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
-                items = items + this.generaItem(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getPrecioVentaUnitario().toString(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+                items = items + this.generaItem(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getPrecioVentaUnitario().setScale(2,RoundingMode.FLOOR).toString(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
             }
             for(int i = factura.getFacturaDetalleList().size() ; i<=factura.getSecuenciaDocumento().getMaxItems() ; i++){
                 items = items + "\n";

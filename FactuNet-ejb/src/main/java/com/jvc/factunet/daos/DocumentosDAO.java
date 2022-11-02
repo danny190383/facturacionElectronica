@@ -248,6 +248,17 @@ public class DocumentosDAO extends GenericDAO{
         }
     }
     
+    public List<FacturaVenta> listarFacturasVentaElectronica(Integer empresa, String estado) {
+        try {
+            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and o.estado like ?2 and o.numero != -1 and o.puntoVenta.facturacionElectronica = true order by o.fecha desc").setMaxResults(100);
+            q.setParameter(1, empresa);
+            q.setParameter(2, estado.equals("0") ? "%%" : estado);
+            return q.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public List<GuiaRemision> listarGuiasRemision(Integer empresa, String estado) {
         try {
             Query q = em.createQuery("select o from GuiaRemision o where o.factura.empresa.codigo = ?1 and o.estado like ?2 order by o.factura.fecha desc").setMaxResults(100);

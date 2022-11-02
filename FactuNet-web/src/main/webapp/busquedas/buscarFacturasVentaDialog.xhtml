@@ -131,17 +131,25 @@
                         </p:column>
 
                         <p:column headerText="#{msg.cantidad}"
-                                  width="50">
+                                  width="50"
+                                  style="text-align: right">
                             <h:outputLabel value="#{detalle.cantidad}" />
                         </p:column>
 
                         <p:column headerText="#{msg.costo}"
-                                  width="50">
-                            <h:outputLabel value="#{detalle.precioVentaUnitario}" />
+                                  width="50"
+                                  style="text-align: right">
+                            <h:outputLabel value="#{detalle.precioVentaUnitario}" >
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
 
                         <p:column headerText="#{msg.subtotal}"
-                                  width="50">
+                                  width="50"
+                                  style="text-align: right">
                             <h:outputLabel value="#{detalle.subtotalConDescuento}"/>
                         </p:column>      
                     </p:dataTable>
@@ -254,7 +262,8 @@
                 </p:column>
 
                 <p:column headerText="#{msg.total}"
-                          width="40">
+                          width="40"
+                          style="text-align: right">
                     <h:outputLabel value="#{pedido.total}"/>
                 </p:column>
                 

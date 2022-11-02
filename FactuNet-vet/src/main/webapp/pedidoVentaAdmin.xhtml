@@ -13,8 +13,7 @@
     </h:head>
     <h:body>
         <pm:page id="pedido">
-            <pm:header title="#{msg.administracion} #{msg.pedidoVenta}"
-                       style="background-color: skyblue;font-size: 15px">
+            <pm:header>
 
                   <p:button outcome="pm:busquedaClientes" 
                             value=""
@@ -61,13 +60,13 @@
                             sticky="true"/>
 
                    <p:tabView id="tabPrincipal"
-                              style="font-size: 14px">
+                              style="font-size: 12px">
                         <c:forEach var="seccion"
                                    items="#{pedidoVentaMovilBean.empresa.seccionList}">
                             <p:tab title="#{seccion.nombre}">
                                 <p:dataGrid var="mesa" 
                                             value="#{seccion.mesaList}" 
-                                            columns="3"
+                                            columns="2"
                                             emptyMessage="#{msg.tablaVacia}"
                                             id="pnlMesa">
 
@@ -75,31 +74,31 @@
                                         <f:facet name="header">
                                             <p:fieldset style="border: black solid 2px;background-color: cadetblue;color: red">
                                                 <h:outputLabel value="#{mesa.nombre}"
-                                                               style="color: red;font-size: 20px;font-style: normal;font-weight: bold"/>
+                                                               style="color: red;font-size: 15px;font-style: normal;"/>
                                                 <h:panelGrid columns="7">
                                                     <p:commandButton actionListener="#{pedidoVentaMovilBean.verBusquedaClientes(mesa)}"
                                                                      icon="ui-icon-search"
-                                                                     value="#{msg.buscar}"
+                                                                     value="#{msg.buscar} #{msg.cliente}"
                                                                      title="#{msg.buscar}"
                                                                      update=":busquedaClientes:frmCabecera2"
-                                                                     style="font-size: 14px;background-color: tan"
+                                                                     style="font-size: 12px"
                                                                      onclick="document.getElementById('pedido:btnBuscarClientes').click();"/>
 
                                                     <p:commandButton actionListener="#{pedidoVentaMovilBean.verNuevoCliente(mesa)}" 
                                                                      icon="ui-icon-comment"
                                                                      title="#{msg.nuevo}"
-                                                                     value="#{msg.nuevo}"
-                                                                     style="font-size: 14px;background-color: tan"
+                                                                     value="#{msg.nuevo} #{msg.cliente}"
+                                                                     style="font-size: 12px"
                                                                      update=":nuevoCliente:frmCabecera3"
-                                                                     rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '1'}"
+                                                                     rendered="true"
                                                                      onclick="document.getElementById('pedido:btnNuevoCliente').click();"/>
 
                                                     <p:commandButton actionListener="#{pedidoVentaMovilBean.consumidorFinal(mesa)}"
                                                                      icon="ui-icon-comment"
                                                                      title="#{msg.consumidorFinal}"
                                                                      value="#{msg.consumidorFinal}"
-                                                                     style="font-size: 14px;background-color: tan"
-                                                                     rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '1'}"
+                                                                     style="font-size: 12px;background-color: tan"
+                                                                     rendered="false"
                                                                      update="pedido:frmCabecera:tabPrincipal"/>
                                                 </h:panelGrid>
                                             </p:fieldset>
@@ -115,16 +114,20 @@
                                                 <h:panelGrid columns="3"
                                                              style="float:left">
                                                     <h:outputLabel value="#{items.fecha}" 
-                                                                   style="font-size: 16px;font-style: normal;font-weight: bold;">
+                                                                   style="font-size: 12px;font-style: normal;">
                                                             <f:convertDateTime timeZone="#{parametrosApplicationMovil.timeZone}" 
                                                                                pattern="#{parametrosApplicationMovil.formatoHoraSMS}"/>
                                                     </h:outputLabel>
-
-                                                    <h:outputLabel value="#{items.cliente.persona.nombres } #{items.cliente.persona.apellidos}" 
-                                                                   style="font-size: 16px;font-style: normal;font-weight: bold;"/>
+                                                    
+                                                    <p:commandButton icon="ui-icon-search"
+                                                                     value="#{items.cliente.persona.nombres } #{items.cliente.persona.apellidos}"
+                                                                     style="font-size: 12px"
+                                                                     update="buscarProducto:frmCabecera4"
+                                                                     actionListener="#{pedidoVentaMovilBean.verBusquedaProductosStock(items)}"
+                                                                     onclick="document.getElementById('pedido:btnBuscarProductos').click();"/>
 
                                                     <h:outputLabel value="#{items.mascota.nombre } #{items.mascota.raza.nombre}" 
-                                                                   style="font-size: 14px;font-style: normal;font-weight: bold;color: red"
+                                                                   style="font-size: 12px;font-style: normal;color: red"
                                                                    rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}"/>
                                                 </h:panelGrid>
                                                 <h:panelGrid columns="7"
@@ -132,32 +135,24 @@
                     
                                                     <p:commandButton icon="ui-icon-delete" 
                                                                      title="#{msg.eliminar} #{msg.pedido}"
-                                                                     style="font-size: 20px;background-color: tan"
+                                                                     style="font-size: 12px;background-color: tan"
                                                                      update="tablaFacturaVenta" 
                                                                      actionListener="#{pedidoVentaMovilBean.eliminarPedidoMesa(mesa,items)}">
-                                                       <p:confirm header="#{msg.confirmacion}" 
-                                                                  message="#{msg.eliminar}" 
-                                                                  icon="ui-icon-alert" />
+                                                      
                                                     </p:commandButton>
-                                                    <p:spacer width="5px"/>
-                                                    <p:commandButton icon="ui-icon-search"
-                                                                     title="#{msg.buscar} #{msg.producto}"
-                                                                     style="font-size: 20px;background-color: tan"
-                                                                     update="buscarProducto:frmCabecera4"
-                                                                     actionListener="#{pedidoVentaMovilBean.verBusquedaProductosStock(items)}"
-                                                                     onclick="document.getElementById('pedido:btnBuscarProductos').click();"/>
+                                                    
                                                     <p:spacer width="5px" rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}"/>
                                                     <p:commandButton icon="ui-icon-comment"
                                                                      title="#{msg.notaMedica}"
                                                                      rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}"
-                                                                     style="font-size: 20px;background-color: tan"
+                                                                     style="font-size: 12px;background-color: tan"
                                                                      update="notaMedica:frmCabecera7,buscarNotaMedica:frmCabecera8"
                                                                      actionListener="#{pedidoVentaMovilBean.nuevaNotaMedica(items)}"
                                                                      onclick="document.getElementById('pedido:btnNotaMedica').click();"/>
                                                     <p:spacer width="5px"/>
                                                     <p:commandButton icon="ui-icon-refresh"
                                                                      title="#{msg.cambiar}"
-                                                                     style="font-size: 20px;background-color: tan"
+                                                                     style="font-size: 12px;background-color: tan"
                                                                      actionListener="#{pedidoVentaMovilBean.cambiarMesa(mesa,items)}"
                                                                      onclick="document.getElementById('pedido:btnCambiarMesa').click();"/>
                                                 </h:panelGrid>              
@@ -177,7 +172,7 @@
                                                                          update="tablaFacturaVentaDetalle" 
                                                                          actionListener="#{pedidoVentaMovilBean.eliminarDetalle(itemsD,items)}"
                                                                          title="#{msg.eliminar}"
-                                                                         style="font-size: 15px;background-color: tan">
+                                                                         style="font-size: 12px;background-color: tan">
                                                             <p:confirm header="#{msg.confirmacion}" 
                                                                        message="#{msg.eliminar}" 
                                                                        icon="ui-icon-alert" />
@@ -189,7 +184,7 @@
                                                          style="text-align: left"
                                                          width="30">
                                                      <h:outputLabel value="#{itemsD.fecha}"
-                                                                    style="font-size: 14px">
+                                                                    style="font-size: 12px">
                                                          <f:convertDateTime timeZone="#{parametrosApplicationMovil.timeZone}" 
                                                                             pattern="#{parametrosApplicationMovil.formatoHoraSMS}"/>
                                                      </h:outputLabel> 
@@ -198,7 +193,7 @@
                                                <p:column headerText="#{msg.productos}"
                                                          style="text-align: left">
                                                    <h:outputLabel value="#{itemsD.productoServicio.nombre}" 
-                                                                  style="font-size: 14px;font-style: normal;font-weight: bold;"/>
+                                                                  style="font-size: 12px;font-style: normal;"/>
                                                </p:column>
 
                                                <p:column headerText="#{msg.detalle}"
@@ -206,7 +201,7 @@
                                                    <p:inputTextarea rows="2" cols="40" 
                                                                     autoResize="false" 
                                                                     maxlength="800"
-                                                                    style="font-size: 14px"
+                                                                    style="font-size: 12px"
                                                                     value="#{itemsD.descripcion}">
                                                        <p:ajax listener="#{pedidoVentaMovilBean.onCellEdit(itemsD)}"/>
                                                    </p:inputTextarea>
@@ -216,7 +211,7 @@
                                                          width="80"
                                                          style="text-align:right">
                                                     <p:inputText value="#{itemsD.cantidad}" 
-                                                                 style="font-size: 14px"
+                                                                 style="font-size: 12px"
                                                                  maxlength="7"
                                                                  size="5"
                                                                  id="txtCantidad">
@@ -247,34 +242,35 @@
                 </h:form>
             </pm:content>
         </pm:page>
-        <pm:page id="busquedaClientes">
-            <pm:header title="#{msg.buscar} #{msg.clientes}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
-                       
+        <pm:page id="busquedaClientes">  
             <pm:content>
                 <h:form id="frmCabecera2">
-                    <p:button outcome="pm:pedido" 
+                    <h:panelGrid columns="2" width="100%">
+                        <p:button outcome="pm:pedido" 
                               value="#{msg.regresar}" 
                               icon="ui-icon-arrow-l"
                               style="background-color: cadetblue"/>
                     
-                    <p:commandButton actionListener="#{pedidoVentaMovilBean.verNuevoCliente(mesa)}" 
-                                     icon="ui-icon-comment"
-                                     title="#{msg.nuevo}"
-                                     value="#{msg.nuevo} #{msg.cliente}"
-                                     style="font-size: 17px;background-color: tan"
-                                     update=":nuevoCliente:frmCabecera3"
-                                     onclick="document.getElementById('pedido:btnNuevoCliente').click();"/>
+                        <p:commandButton actionListener="#{pedidoVentaMovilBean.verNuevoCliente(mesa)}" 
+                                         icon="ui-icon-comment"
+                                         rendered="false"
+                                         title="#{msg.nuevo}"
+                                         value="#{msg.nuevo} #{msg.cliente}"
+                                         style="font-size: 12px;background-color: tan"
+                                         update=":nuevoCliente:frmCabecera3"
+                                         onclick="document.getElementById('pedido:btnNuevoCliente').click();"/>
+                    </h:panelGrid>
+                    
 
                     <p:inputText type="search"
-                                 style="font-size: 16px"
+                                 style="font-size: 12px"
                                  value="#{pedidoVentaMovilBean.nombres}"
                                  placeholder="#{msg.buscar} #{msg.cliente} #{msg.nombre}">
                         <p:ajax event="keyup" update="busquedaClientes:frmCabecera2:pnlTablas" 
                                 listener="#{pedidoVentaMovilBean.listarOpcion}"/>  
                     </p:inputText>
                     <p:inputText type="search"
-                                 style="font-size: 16px"
+                                 style="font-size: 12px"
                                  value="#{pedidoVentaMovilBean.cedula}"
                                  placeholder="#{msg.buscar} #{msg.cliente} #{msg.cedula}">
                         <p:ajax event="keyup" update="busquedaClientes:frmCabecera2:pnlTablas" 
@@ -282,7 +278,7 @@
                     </p:inputText>
                     <p:inputText placeholder="#{msg.buscar} #{msg.mascota}" type="search"
                                  value="#{pedidoVentaMovilBean.mascota}"
-                                 style="font-size: 16px"
+                                 style="font-size: 12px"
                                  rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}">
                         <p:ajax event="keyup" update="busquedaClientes:frmCabecera2:pnlTablas" 
                                 listener="#{pedidoVentaMovilBean.listarOpcion}"/>  
@@ -296,7 +292,7 @@
                                     emptyMessage="#{msg.tablaVacia}"
                                     rows="10" 
                                     lazy="true"
-                                    style="font-size: 16px"
+                                    style="font-size: 12px;padding: 0"
                                     rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '1'}"
                                     paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {NextPageLink} {RowsPerPageDropdown}">
 
@@ -306,7 +302,7 @@
                                                  title="#{msg.seleccionar}" 
                                                  icon="ui-icon-check"
                                                  value="#{clie.persona.cedula}" 
-                                                 style="font-size: 17px;background-color: tan"
+                                                 style="font-size: 12px;background-color: tan"
                                                  update="pedido:frmCabecera"
                                                  onclick="document.getElementById('busquedaClientes:frmCabecera2:btnPrint').click();"/>
                            </p:column>
@@ -314,7 +310,7 @@
                            <p:column headerText="#{msg.nombres}"
                                      style="vertical-align: middle">
                                <h:outputLabel value="#{clie.persona.nombres} #{clie.persona.apellidos}" 
-                                              style="font-size: 17px;font-style: normal;font-weight: bold;"/>
+                                              style="font-size: 12px;font-style: normal;"/>
                            </p:column>
 
                         </p:dataTable>
@@ -378,9 +374,6 @@
             </pm:content>
         </pm:page>
         <pm:page id="nuevoCliente">
-            <pm:header title="#{msg.nuevo} #{msg.clientes}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
-
             <pm:content>
                 <h:form id="frmCabecera3">
                     <p:button outcome="pm:pedido" 
@@ -391,40 +384,52 @@
                              widgetVar="grMensajes3" 
                              showDetail="false"
                              sticky="true"/>
+                    
+                    <pm:field>
+                        <h:outputLabel value="#{msg.tipoIdentificacion}" 
+                                       style="font-size: 15px"/>
+                        <p:selectOneMenu value="#{pedidoVentaMovilBean.cliente.persona.tipoIdentificacion.codigo}">
+                            <f:selectItems value="#{pedidoVentaMovilBean.listaTipoIdentificacion}" 
+                                           var="tipoId"
+                                           itemLabel="#{tipoId.nombre}"
+                                           itemValue="#{tipoId.codigo}"/>
+                        </p:selectOneMenu>
+                    </pm:field>
 
                     <pm:field>
-                        <h:outputLabel value="#{msg.cedula}" 
-                                       style="font-size: 16px"/>
+                        <h:outputLabel value="#{msg.numero}" 
+                                       style="font-size: 15px"/>
                         <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.cedula}"
                                      maxlength="13"
-                                     style="font-size: 16px"
+                                     required="true"
+                                     style="background-color: khaki;font-size: 12px"
                                      validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil"/>
                     </pm:field>
 
                     <pm:field>
                         <h:outputLabel value="#{msg.nombres}"
-                                       style="font-size: 16px"/>
+                                       style="font-size: 15px"/>
                         <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.nombres}"
                                      maxlength="50"
                                      required="true"
-                                     style="background-color: khaki;font-size: 16px"/>
+                                     style="background-color: khaki;font-size: 12px"/>
                     </pm:field>
 
                     <pm:field>
                         <h:outputLabel value="#{msg.apellidos}"
-                                       style="font-size: 16px"/>
+                                       style="font-size: 15px"/>
                         <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.apellidos}"
                                      maxlength="50"
-                                     style="font-size: 16px"/>
+                                     style="font-size: 12px"/>
                     </pm:field>
 
                     <pm:field>
                         <h:outputLabel value="#{msg.correo}"
-                                       style="font-size: 14px"/>
+                                       style="font-size: 15px"/>
                         <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.email}"
                                      size="35"
                                      maxlength="50"
-                                     style="font-size: 16px"
+                                     style="font-size: 12px"
                                      validatorMessage="#{msg.emailInvalido}">
                              <f:validator validatorId="com.jvc.factunet.movil.validador.ValidarEmailMovil" />
                         </p:inputText>
@@ -432,20 +437,20 @@
                     
                     <pm:field>
                         <h:outputLabel value="#{msg.telefono}"
-                                       style="font-size: 16px"/>
+                                       style="font-size: 15px"/>
                         <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.telefono}"
                                      maxlength="13"
-                                     style="font-size: 16px">
+                                     style="font-size: 12px">
                             <p:keyFilter regEx="/[\d]/"/>
                         </p:inputText>
                     </pm:field>
 
                     <pm:field>
                         <h:outputLabel value="#{msg.direccion}" 
-                                       style="font-size: 16px"/>
+                                       style="font-size: 15px"/>
                         <p:inputTextarea rows="2" cols="30" 
                                          autoResize="false" 
-                                         style="font-size: 16px"
+                                         style="font-size: 12px"
                                          value="#{pedidoVentaMovilBean.cliente.persona.direccion}"/>
                     </pm:field>
 
@@ -465,8 +470,6 @@
             </pm:content>
         </pm:page>
         <pm:page id="buscarProducto">
-            <pm:header title="#{msg.buscar} #{msg.producto}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
 
             <pm:content>
                 <h:form id="frmCabecera4">
@@ -482,11 +485,7 @@
                                              icon="ui-icon-delete"/>
                         </h:panelGrid>
                    </p:confirmDialog>
-                    <p:commandButton style="background-color: cadetblue"
-                                     value="#{msg.finalizar}" 
-                                     onclick="PF('dlg1').show();"
-                                     icon="ui-icon-arrow-l"/>               
- 
+                              
                     <p:dialog header="#{msg.pedido}"
                               widgetVar="dlg1" 
                               showEffect="pop">
@@ -516,7 +515,7 @@
                              widgetVar="grMensajes4" 
                              showDetail="false"
                              sticky="true"/>
-                    <p:panel>
+                    <p:panel style="position: fixed;top: -40px;z-index: 2000; width: 100%">
                         <p:tabView>
                             <p:ajax event="tabChange" 
                                     listener="#{pedidoVentaMovilBean.onTabChange}" 
@@ -526,9 +525,9 @@
                                 <p:tab title="#{padre.nombre}">
                                      <p:dataGrid var="hijo" 
                                                  value="#{padre.grupoProductoList}" 
-                                                 columns="4" >
+                                                 columns="5" >
                                             <p:commandButton value="#{hijo.nombre}"
-                                                             style="width:160px;height:30px;font-size: 15px;background-color: tan"
+                                                             style="width:150px;height:30px;font-size: 12px;background-color: tan"
                                                              update="buscarProducto:frmCabecera4:datosTablasItems" 
                                                              actionListener="#{pedidoVentaMovilBean.onNodeSelect(hijo)}"/>
                                     </p:dataGrid>
@@ -536,16 +535,43 @@
                             </c:forEach>
                         </p:tabView>
                     </p:panel>
-                    <p:inputText placeholder="#{msg.buscar}" type="search"
-                                 value="#{pedidoVentaMovilBean.nombreProducto}">
-                      <p:ajax event="keyup" update="buscarProducto:frmCabecera4:datosTablasItems" 
-                              listener="#{pedidoVentaMovilBean.filtrarTablas}"/>  
-                    </p:inputText>
-                    <h:panelGrid columns="2"
-                                 style="vertical-align: top">
+                    <p:panelGrid columns="2"
+                                 style="position: fixed;top: 210px;z-index: 2000; width: 100%">
+                        <p:inputText placeholder="#{msg.buscar}" type="search"
+                                 value="#{pedidoVentaMovilBean.nombreProducto}"
+                                 style="font-size: 18px">
+                            <p:ajax event="keyup" update="buscarProducto:frmCabecera4:datosTablasItems" 
+                                    listener="#{pedidoVentaMovilBean.filtrarTablas}"/>  
+                        </p:inputText>
+                        <p:commandButton style="background-color: cadetblue;font-size: 15px"
+                                         value="#{msg.finalizar}" 
+                                         onclick="PF('dlg1').show();"
+                                         icon="ui-icon-arrow-l"/>   
+                    </p:panelGrid>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/> 
+                    <br/> 
+                    <br/>
+                    <br/> 
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/> 
+                    <br/> 
+                    <br/>
+                    <br/>
+                    <br/>
+                    <p:panelGrid columns="2"
+                                 style="vertical-align: top !important;padding: 10px">
                         <p:panelGrid columns="1"
-                                     id="datosTablasItems">
-                            <h:outputLabel value="#{pedidoVentaMovilBean.grupoProductoSelc.nombre }"/>
+                                     id="datosTablasItems"
+                                     style="vertical-align: top;">
+                            <h:outputLabel value="#{pedidoVentaMovilBean.grupoProductoSelc.nombre }"
+                                           rendered="false"/>
                             <p:dataTable var="producto" 
                                          id="tablaProductos"
                                          value="#{pedidoVentaMovilBean.lazyModelStock}" 
@@ -563,7 +589,7 @@
                                                      title="#{msg.seleccionar}" 
                                                      icon="ui-icon-check"
                                                      value="#{producto.productoBodega.nombre}" 
-                                                     style="font-size: 15px;background-color: tan"
+                                                     style="font-size: 12px"
                                                      update="buscarProducto:frmCabecera4:tablaProductosSelc,buscarProducto:frmCabecera4:grMensajes4"/>
                                 </p:column>
 
@@ -571,7 +597,7 @@
                                           width="40"
                                           style="text-align: right;vertical-align: middle">
                                     <h:outputLabel value="#{producto.productoBodega.pvp}" 
-                                                   style="font-size: 15px">
+                                                   style="font-size: 12px">
                                         <f:convertNumber type="number" 
                                                          groupingUsed="true" 
                                                          minFractionDigits="2"
@@ -595,7 +621,7 @@
                                                      title="#{msg.seleccionar}" 
                                                      icon="ui-icon-check"
                                                      value="#{servicio.nombre}"
-                                                     style="font-size: 15px;background-color: tan"
+                                                     style="font-size: 12px;border: blue;border-color: #000000"
                                                      update="buscarProducto:frmCabecera4:tablaProductosSelc,buscarProducto:frmCabecera4:grMensajes4"/>
                                 </p:column>
 
@@ -603,7 +629,7 @@
                                           width="40"
                                           style="text-align: right;vertical-align: middle">
                                     <h:outputLabel value="#{servicio.pvp}" 
-                                                   style="font-size: 15px">
+                                                   style="font-size: 12px">
                                         <f:convertNumber type="number" 
                                                          groupingUsed="true" 
                                                          minFractionDigits="2"
@@ -633,13 +659,13 @@
 
                                 <p:column headerText="#{msg.paquetes}">
                                     <h:outputLabel value="#{paquete.nombre}" 
-                                                   style="font-size: 17px;font-style: normal;font-weight: bold;"/>
+                                                   style="font-size: 12px;font-style: normal;"/>
                                 </p:column>
 
                                 <p:column headerText="#{msg.pvp}"
                                           width="50">
                                     <h:outputLabel value="#{paquete.pvp}"
-                                                   style="font-size: 15px"/>
+                                                   style="font-size: 12px"/>
                                 </p:column>
                             </p:dataTable>
                         </p:panelGrid>
@@ -648,12 +674,10 @@
                             <p:dataTable var="productoSl" 
                                          id="tablaProductosSelc"
                                          value="#{pedidoVentaMovilBean.pedidoVentaSelc.facturaDetalleList}" 
-                                         paginator="true" 
                                          emptyMessage="#{msg.tablaVacia}"
-                                         rows="8" 
                                          tableStyleClass="ui-table-columntoggle"
-                                         style="font-size: 15px">
-                                
+                                         style="font-size: 12px">
+
                                  <p:column width="60"
                                          style="text-align: center"
                                          headerText="#{msg.opcion}">   
@@ -663,7 +687,7 @@
                                                          process="tablaProductosSelc"
                                                          actionListener="#{pedidoVentaMovilBean.eliminarProductoSelc(productoSl)}"
                                                          title="#{msg.eliminar}"
-                                                         style="font-size: 20px;background-color: tan">
+                                                         style="font-size: 12px;background-color: tan">
                                             <p:confirm header="#{msg.confirmacion}" 
                                                                        message="#{msg.eliminar}" 
                                                                        icon="ui-icon-alert" />
@@ -674,7 +698,7 @@
                                 <p:column headerText="#{msg.producto}" 
                                           style="vertical-align: middle">
                                     <h:outputLabel value="#{productoSl.productoServicio.nombre}" 
-                                                   style="font-size: 17px;font-style: normal;font-weight: bold;"/>
+                                                   style="font-size: 12px;font-style: normal;"/>
                                 </p:column>
 
                                 <p:column headerText="#{msg.detalle}"
@@ -682,7 +706,7 @@
                                   <p:inputTextarea rows="1" cols="40" 
                                                    autoResize="false" 
                                                    maxlength="800"
-                                                   style="font-size: 15px"
+                                                   style="font-size: 12px"
                                                    value="#{productoSl.descripcion}">
                                       <p:ajax listener="#{pedidoVentaMovilBean.onCellEdit(productoSl)}"/>
                                   </p:inputTextarea>
@@ -696,7 +720,7 @@
                                                          update="txtCantidad"
                                                          style="background-color: tan"/>
                                         <p:inputText value="#{productoSl.cantidad}" 
-                                                     style="font-size: 17px;"
+                                                     style="font-size: 12px;"
                                                      maxlength="7"
                                                      size="50"
                                                      id="txtCantidad">
@@ -713,18 +737,17 @@
                                </p:column>
                             </p:dataTable>
                         </h:panelGrid>
-                    </h:panelGrid>
+                    </p:panelGrid>
+                    
                     <p:commandButton style="background-color: cadetblue"
                                      value="#{msg.finalizar}" 
                                      icon="ui-icon-arrow-l"
                                      onclick="PF('dlg1').show();"/>  
+                   
                 </h:form>
             </pm:content>
         </pm:page>
         <pm:page id="cambiarMesa">
-            <pm:header title="#{msg.cambiar}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
-
             <pm:content>
                 <h:form id="frmCabecera5">
                     <p:button outcome="pm:pedido" 
@@ -768,8 +791,6 @@
             </pm:content>
         </pm:page>
         <pm:page id="nuevaMascota">
-            <pm:header title="#{msg.nuevo} #{msg.mascota}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
 
             <pm:content rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}">
                 <h:form id="frmCabecera6">
@@ -891,8 +912,6 @@
             </pm:content>
         </pm:page>
         <pm:page id="notaMedica">
-            <pm:header title="#{msg.nuevo} #{msg.notaMedica}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
 
             <pm:content rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}">
                 <h:form id="frmCabecera7">
@@ -905,7 +924,7 @@
                                          title="#{msg.nuevo} #{msg.mascota}" 
                                          icon="ui-icon-comment"
                                          value="#{msg.nuevo}"
-                                         style="font-size: 16px;background-color: tan"
+                                         style="font-size: 12px;background-color: tan"
                                          update="nuevaMascota:frmCabecera6"
                                          onclick="document.getElementById('busquedaClientes:frmCabecera2:btnPrintNuevaMascota').click();"/>
                         <p:button outcome="pm:buscarNotaMedica" 
@@ -1033,8 +1052,6 @@
             </pm:content>
         </pm:page>
         <pm:page id="buscarNotaMedica">
-            <pm:header title="#{msg.buscar} #{msg.notaMedica}"
-                       style="background-color: skyblue;font-size: 15px"></pm:header>
 
             <pm:content rendered="#{pedidoVentaMovilBean.empresa.tipoEmpresa eq '2'}">
                 <h:form id="frmCabecera8">

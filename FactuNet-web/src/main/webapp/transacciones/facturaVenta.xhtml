@@ -272,14 +272,14 @@
                                         <h:outputLabel value="#{facturaVentaBean.cliente.persona.nombres} #{facturaVentaBean.cliente.persona.apellidos}"
                                                        styleClass="texto_etiquetas"/>
                                         
-                                        <h:outputLabel value="#{msg.telefono}: "
-                                                       styleClass="texto_etiquetas"/>
-                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.telefono}"
-                                                       styleClass="texto_etiquetas"/>
-                                        
                                         <h:outputLabel value="#{msg.direccion}: "
                                                        styleClass="texto_etiquetas"/>
                                         <h:outputLabel value="#{facturaVentaBean.cliente.persona.direccion}"
+                                                       styleClass="texto_etiquetas"/>
+                                        
+                                        <h:outputLabel value="#{msg.correo}: "
+                                                       styleClass="texto_etiquetas"/>
+                                        <h:outputLabel value="#{facturaVentaBean.cliente.persona.email}"
                                                        styleClass="texto_etiquetas"/>
 
                                         <h:outputLabel value="#{msg.descuento}: "
@@ -311,6 +311,20 @@
                                                 </p:inputNumber> 
                                             </h:panelGrid>
                                         </h:panelGrid>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2"
+                                                 rendered="#{facturaVentaBean.facturaVenta.puntoVenta.facturacionElectronica and
+                                                             facturaVentaBean.facturaVenta.estado ne 1 and
+                                                             facturaVentaBean.facturaVenta.estadoSri eq null}">
+                                        <p:fragment autoUpdate="true">
+                                            <p:commandButton value="#{msg.buscar}"  
+                                                            icon="ui-icon-search"
+                                                            actionListener="#{facturaVentaBean.verBusquedaClientes}">
+                                             <p:ajax event="dialogReturn" 
+                                                     listener="#{facturaVentaBean.onClienteUpdateSelect}" 
+                                                     update="pnlCliente, :frmCabecera:grMensajes" />
+                                            </p:commandButton>
+                                        </p:fragment>
                                     </h:panelGrid>
                                     <h:panelGrid columns="2"
                                                  rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">

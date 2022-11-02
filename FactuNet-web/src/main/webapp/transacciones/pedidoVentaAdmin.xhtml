@@ -38,9 +38,10 @@
                                             value="#{seccion.mesaList}" 
                                             columns="2">
                                     <p:panel header="#{mesa.nombre}" 
-                                             style="text-align:center;height: 400px">
+                                             style="text-align:center;height: 400px;width: 100%">
                                         <h:panelGrid columns="1"
-                                                     id="pnlDatosCliente">
+                                                     id="pnlDatosCliente"
+                                                     width="100%">
                                             <p:fragment autoUpdate="true">
                                                 <h:panelGrid columns="5">
                                                     <p:commandButton value="#{msg.listar}"  
@@ -85,7 +86,7 @@
                                                 </h:panelGrid>
                                             </p:fragment>
                                         </h:panelGrid>
-                                        <p:scrollPanel style="height:300px;width: 450px"
+                                        <p:scrollPanel style="height:300px"
                                                        id="scrollID">
                                             <p:dataGrid var="items" 
                                                         id="tablaFacturaVenta"

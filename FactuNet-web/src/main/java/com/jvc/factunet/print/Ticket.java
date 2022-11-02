@@ -91,6 +91,8 @@ public class Ticket {
                                  "REVICE SU FACTURA ELECTRÓNICA \n"+
                                  "INGRESANDO A SU CORREO        \n"+
                                  "\n"+
+                                 "\n"+
+                                 "\n"+
                                  "\n";
     
     public Ticket(String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula,String items, String subTotal, String siniva, String coniva, String iva, String total,String mesa) {

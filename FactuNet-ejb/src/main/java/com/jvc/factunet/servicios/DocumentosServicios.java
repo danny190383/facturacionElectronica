@@ -203,6 +203,10 @@ public class DocumentosServicios {
         return this.documentosDAO.listarFacturasVenta(empresa, estado);
     }
     
+    public List<FacturaVenta> listarFacturasVentaElectronica(Integer empresa, String estado){
+        return this.documentosDAO.listarFacturasVentaElectronica(empresa, estado);
+    }
+    
     public List<GuiaRemision> listarGuiasRemision(Integer empresa, String estado){
         return this.documentosDAO.listarGuiasRemision(empresa, estado);
     }
@@ -929,8 +933,8 @@ public class DocumentosServicios {
             }
         }
         parametro.setFecha(new Date()); 
-        if(parametro.getPuntoVenta().getFacturacionElectronica()){
-            parametro.setCodigoBarras(this.generarClaveSRI("04", parametro.getPuntoVenta().getAmbienteElectronica(), parametro));
+        if(parametro.getDocumentoRelacionado().getPuntoVenta().getFacturacionElectronica()){
+            parametro.setCodigoBarras(this.generarClaveNotaCreditoSRI("04", parametro.getDocumentoRelacionado().getPuntoVenta().getAmbienteElectronica(), parametro));
         }
         this.documentosDAO.insertar(parametro);
     }
@@ -943,6 +947,24 @@ public class DocumentosServicios {
         clave = fecha+
                 tipo+
                 factura.getPuntoVenta().getRuc()+
+                ambiente+
+                factura.getEmpresa().getCodigoSri()+
+                factura.getSecuenciaDocumento().getPuntoVenta().getCodigoSri()+
+                this.numerocomprobanteSRI(factura.getNumero())+
+                "12345678"+
+                "1";
+        clave = clave + this.digitoVerificador(clave);
+        return clave;
+    }
+    
+    public String generarClaveNotaCreditoSRI(String tipo, String ambiente, NotaCredito factura){
+        String clave;
+        String dia = this.diaSRI(String.valueOf(Fecha.getDia(factura.getFecha())));
+        String mes = this.mesSRI(String.valueOf(Fecha.getMes(factura.getFecha())));
+        String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFecha()));
+        clave = fecha+
+                tipo+
+                factura.getDocumentoRelacionado().getPuntoVenta().getRuc()+
                 ambiente+
                 factura.getEmpresa().getCodigoSri()+
                 factura.getSecuenciaDocumento().getPuntoVenta().getCodigoSri()+
