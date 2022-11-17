@@ -553,8 +553,9 @@ public class FacturacionElectronicaBean implements Serializable{
             }
             EmailSenderThread emailSenderThread = new EmailSenderThread(usuario, password, destinatario, asunto, mensaje, archivo, xml);
             emailSenderThread.sendMail();
+            FacesUtils.addInfoMessage("Envío Exitoso"); 
         } catch (Exception e) {
-            String danny = "";
+            FacesUtils.addErrorMessage("Error Envío"); 
         }
     }
     

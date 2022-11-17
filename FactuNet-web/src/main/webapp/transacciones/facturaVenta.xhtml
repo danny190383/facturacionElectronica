@@ -315,7 +315,9 @@
                                     <h:panelGrid columns="2"
                                                  rendered="#{facturaVentaBean.facturaVenta.puntoVenta.facturacionElectronica and
                                                              facturaVentaBean.facturaVenta.estado ne 1 and
-                                                             facturaVentaBean.facturaVenta.estadoSri eq null}">
+                                                             (facturaVentaBean.facturaVenta.estadoAutorizacionSri eq 'NO AUTORIZADO' ||
+                                                              facturaVentaBean.facturaVenta.estadoSri eq null ||
+                                                              facturaVentaBean.facturaVenta.estadoAutorizacionSri eq null )}">
                                         <p:fragment autoUpdate="true">
                                             <p:commandButton value="#{msg.buscar}"  
                                                             icon="ui-icon-search"

@@ -76,6 +76,10 @@ public class Producto implements Serializable {
     private Bodega bodega;
     @Transient
     private FacturaDetalle lote;
+    @Transient
+    private BigDecimal cantidad;
+    @Transient
+    private String observacion;
 
     public Producto() {
     }
@@ -216,6 +220,22 @@ public class Producto implements Serializable {
 
     public void setLote(FacturaDetalle lote) {
         this.lote = lote;
+    }
+
+    public BigDecimal getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(BigDecimal cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public String getObservacion() {
+        return observacion;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
     
     @Override

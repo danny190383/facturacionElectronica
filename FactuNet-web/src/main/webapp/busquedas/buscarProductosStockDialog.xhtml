@@ -148,13 +148,16 @@
                              style="position: static; top: 0px"
                              resizableColumns="true"
                              resizeMode="expand"
+                             widgetVar="tablaProductosSWidgetVar"
                              rendered="#{buscarProductosStockBean.opcion eq 'S'}">
 
                     <p:ajax event="rowSelectRadio" 
                             listener="#{buscarProductosStockBean.onRowSelect}" 
-                            update=":frmBusquedaProductos:tablaSeleccionados" />
+                            update="tablaServicios, :frmBusquedaProductos:tablaSeleccionados" 
+                            oncomplete="PF('tablaProductosSWidgetVar').unselectAllRows();"/>
 
-                    <p:column selectionMode="single" style="width:16px;text-align:center"/>
+                    <p:column selectionMode="single" 
+                              style="width:16px;text-align:center"/>
 
                     <p:column headerText="#{msg.codigoBarras}" 
                               filterBy="#{servicio.codigoBarras}"
@@ -277,12 +280,13 @@
                     <f:facet name="header" >
                         <p:commandButton process="tablaSeleccionados" 
                                          icon="ui-icon-check" 
+                                         update=":frmBusquedaProductos:grMensajes"
                                          value="#{msg.agregarSeleccion}" 
                                          action="#{buscarProductosStockBean.seleccionarLista}"/>
                     </f:facet>
                     
                     <p:column headerText="#{msg.lote}" 
-                              width="100">
+                              width="7%">
                         <h:outputLabel value="#{selec.lote.codigo}" /><br/>
                         <h:outputLabel value="#{selec.lote.fechaCaducidad}" >
                             <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
@@ -295,26 +299,45 @@
                     </p:column>
 
                     <p:column headerText="#{msg.grupo}" 
-                              width="150">
+                              width="7%">
                         <h:outputLabel value="#{selec.grupo.nombre}" />
                     </p:column>
 
                     <p:column headerText="#{msg.pvp}" 
-                              width="100"
+                              width="7%"
                               style="text-align: right">
                         <p:inputNumber value="#{selec.pvp}" 
                                        decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
                                        minValue="0" readonly="true" disabled="true"
                                        inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
                     </p:column>
+                    
+                    <p:column headerText="#{msg.observacion}" >
+                        <p:inputTextarea rows="2" cols="30" 
+                                        autoResize="false" 
+                                        maxlength="800"
+                                        style="width: 90%"
+                                        value="#{selec.observacion}">
+                            <p:ajax event="change"/>
+                        </p:inputTextarea>
+                    </p:column>
+                    
+                    <p:column headerText="#{msg.cantidad}" 
+                              width="7%">
+                        <p:inputNumber value="#{selec.cantidad}" 
+                                       decimalPlaces="2"
+                                       minValue="0"
+                                       inputStyle="width:80%;text-align: right ">
+                            <p:ajax event="change"/>
+                        </p:inputNumber> 
+                    </p:column>
 
                     <p:column style="text-align: center"
-                              width="20">
+                              width="3%">
                         <p:commandButton  icon="ui-icon-close" 
-                                          update="tablaSeleccionados" 
+                                          update="tablaSeleccionados,:frmBusquedaProductos:flsProductos" 
                                           actionListener="#{buscarProductosStockBean.eliminar(selec)}"
-                                          title="#{msg.eliminar}"
-                                          oncomplete="PF('tablaProductosWidgetVar').unselectAllRows();">
+                                          title="#{msg.eliminar}">
                             <p:confirm header="#{msg.confirmacion}" 
                                        message="#{msg.eliminar}" 
                                        icon="ui-icon-alert" />

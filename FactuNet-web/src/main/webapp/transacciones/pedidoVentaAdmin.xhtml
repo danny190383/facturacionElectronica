@@ -44,7 +44,7 @@
                                                      width="100%">
                                             <p:fragment autoUpdate="true">
                                                 <h:panelGrid columns="5">
-                                                    <p:commandButton value="#{msg.listar}"  
+                                                    <p:commandButton value="#{msg.buscar} #{msg.cliente}"  
                                                                     icon="ui-icon-search"
                                                                     actionListener="#{pedidoVentaBean.verBusquedaClientes(mesa)}">
                                                      <p:ajax event="dialogReturn" 
@@ -54,7 +54,7 @@
                                                     </p:commandButton>
 
                                                     <p:commandButton title="#{msg.nuevo} #{msg.cliente}"
-                                                                     value="#{msg.nuevo}"
+                                                                     value="#{msg.nuevo} #{msg.cliente}"
                                                                      actionListener="#{pedidoVentaBean.verNuevoCliente(mesa)}" 
                                                                      icon="ui-icon-comment">
                                                           <p:ajax event="dialogReturn" 
@@ -141,7 +141,7 @@
                                                                             actionListener="#{pedidoVentaBean.verBusquedaProductosStock(items)}">
                                                                  <p:ajax event="dialogReturn" 
                                                                          listener="#{pedidoVentaBean.onProductoSelect}" 
-                                                                         update="tablaFacturaVentaDetalle, :frmCabecera:grMensajes" />
+                                                                         update=":frmCabecera:pnlPrincipal, tablaFacturaVentaDetalle, :frmCabecera:grMensajes" />
                                                             </p:commandButton>
 
                                                             <p:commandButton title="#{msg.notaMedica}"  

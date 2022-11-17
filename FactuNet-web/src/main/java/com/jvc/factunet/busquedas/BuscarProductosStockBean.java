@@ -14,9 +14,11 @@ import com.jvc.factunet.servicios.ProductoPaqueteServicio;
 import com.jvc.factunet.servicios.ProductoServiciosServicio;
 import com.jvc.factunet.session.Login;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -259,23 +261,38 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
                 else
                 {
                     producto.setLote(this.lotes.get(0)); 
+                    producto.setCantidad(BigDecimal.ONE);
                     this.listaProductosTodosSelc.add(producto);
                 }
             }
             else
             {
+                producto.setCantidad(BigDecimal.ONE);
                 this.listaProductosTodosSelc.add(producto);
             }
         }
         else
         {
-            this.listaProductosTodosSelc.add((Producto)event.getObject());
+            Producto producto = (Producto)event.getObject();
+            Boolean banExiste = Boolean.FALSE;
+            for(Producto productoLista : this.listaProductosTodosSelc){
+                if(Objects.equals(producto.getCodigo(), productoLista.getCodigo())){
+                    productoLista.setCantidad(productoLista.getCantidad().add(BigDecimal.ONE)); 
+                    banExiste = Boolean.TRUE;
+                }
+            }
+            if(!banExiste){
+                producto.setCantidad(BigDecimal.ONE);
+                this.listaProductosTodosSelc.add(producto);
+            }
         }
     }
     
     public void eliminar(Producto parametro) {
         try {
             this.listaProductosTodosSelc.remove(parametro);
+            PrimeFaces.current().executeScript("PF('tablaProductosWidgetVar').unselectAllRows();");
+            PrimeFaces.current().executeScript("PF('tablaProductosSWidgetVar').unselectAllRows();");
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroEliminado"));
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "No se puede eliminar.", e);
@@ -284,6 +301,12 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     }
     
     public void seleccionarLista() {
+        for(Producto producto : this.listaProductosTodosSelc){
+            if(producto.getCantidad().floatValue() <= 0){
+                FacesUtils.addErrorMessage("La cantidad debe ser mayor que cero");
+                return;
+            }
+        }
         PrimeFaces.current().dialog().closeDynamic(this.listaProductosTodosSelc);
     }
     

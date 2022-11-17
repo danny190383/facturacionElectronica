@@ -156,7 +156,8 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
             {
                 FacturaDetalle detalle = new FacturaDetalle();
                 detalle.setProductoServicio(producto);
-                detalle.setCantidad(BigDecimal.ONE);
+                detalle.setCantidad(producto.getCantidad());
+                detalle.setDescripcion(producto.getObservacion()); 
                 detalle.setCantidadPorFacturar(detalle.getCantidad());
                 detalle.setSubtotalSinDescuento(BigDecimal.ONE);
                 detalle.setPvp(producto.getPvp());

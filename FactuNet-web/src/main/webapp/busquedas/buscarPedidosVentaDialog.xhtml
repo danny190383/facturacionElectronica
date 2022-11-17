@@ -26,8 +26,9 @@
                 
                 <p:rowExpansion>
                     <p:dataTable var="detalle"
+                                 emptyMessage="#{msg.tablaVacia}"
                                  value="#{pedido.facturaDetalleList}"
-                                 style="width: 55%">
+                                 style="width: 65%">
                         
                         <p:column style="width:16px;text-align:center">
                             <p:selectBooleanCheckbox value="#{detalle.estado}">
@@ -64,7 +65,12 @@
                                   width="50"
                                   style="text-align: right">
                             <h:outputLabel value="#{detalle.productoServicio.pvp}"
-                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                           style="font-size: 13px;font-style: normal;font-weight: bold">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
                         
                         <p:column headerText="#{msg.total}"
@@ -200,6 +206,10 @@
                                       rendered="#{buscarPedidosVentaBean.visible}"/>
                 </p:column>
             </p:dataTable>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
         </h:form>
     </h:body>
 </html>

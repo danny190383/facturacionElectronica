@@ -135,8 +135,8 @@ public class NuevoTarjetaEmpresaBean implements Serializable{
     
     public void agregarComision()
     {
-        if((this.comisionTarjeta.getValor() != null) && (this.comisionTarjeta.getValor().floatValue() > 0))
-        {
+//        if((this.comisionTarjeta.getValor() != null) && (this.comisionTarjeta.getValor().floatValue() > 0))
+//        {
             this.comisionTarjeta.setFormaPago(this.setearFormaPagoTarjeta());
             if((this.comisionTarjeta.getFormaPago().getCodigo() != 157) && (this.comisionTarjeta.getMeses() == null) )
             {
@@ -159,11 +159,11 @@ public class NuevoTarjetaEmpresaBean implements Serializable{
                 FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
                 PrimeFaces.current().executeScript("PF('dlgComision').hide();");
             }
-        }
-        else
-        {
-            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("comisionmayorcero"));
-        }
+//        }
+//        else
+//        {
+//            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("comisionmayorcero"));
+//        }
     }
     
     public void eliminarComision(ComisionTarjeta parametro) {

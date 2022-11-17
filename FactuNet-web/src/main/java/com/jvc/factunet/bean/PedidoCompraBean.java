@@ -399,7 +399,13 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 }
                 if(banNoExiste)
                 {
-                    this.nuevoDetalle(factura, producto, BigDecimal.ONE);
+                    if(producto.getCantidad().floatValue() > 0){
+                        this.nuevoDetalle(factura, producto, producto.getCantidad());
+                    }
+                    else
+                    {
+                        this.nuevoDetalle(factura, producto, BigDecimal.ONE);
+                    }
                 }
             }
         }
