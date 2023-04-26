@@ -19,56 +19,56 @@ public class ProductoServiciosServicio {
     @EJB
     private ProductoServiciosDAO productoDAO;
     
-    public ProductoServicio buscarCodigoBarras(String barras) {
-        return productoDAO.buscarBarras(barras);
+    public ProductoServicio buscarCodigoBarras(String barras, Boolean estado) {
+        return productoDAO.buscarBarras(barras, estado);
     }
     
-    public List<ProductoServicio> listar(Integer empresa, Integer grupo, int maxResults, int firstResult) {
-        return productoDAO.listar(empresa, grupo, maxResults, firstResult);
+    public List<ProductoServicio> listar(Integer empresa, Integer grupo, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listar(empresa, grupo, estado, maxResults, firstResult);
     }
     
-    public Long contar(Integer empresa, Integer grupo){
-        return productoDAO.contar(empresa, grupo);
+    public Long contar(Integer empresa, Integer grupo, Boolean estado){
+        return productoDAO.contar(empresa, grupo, estado);
     }
     
-    public List<ProductoServicio> listarBuscar(String nombre,  Integer empresa, Integer grupo, int maxResults, int firstResult) {
-        return productoDAO.listarBuscar(nombre, empresa, grupo, maxResults, firstResult);
+    public List<ProductoServicio> listarBuscar(String nombre,  Integer empresa, Integer grupo, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listarBuscar(nombre, empresa, grupo, estado, maxResults, firstResult);
     }
     
-    public List<ProductoServicio> listarBuscar(String nombre,  Integer empresa, String grupo, int maxResults, int firstResult) {
-        return productoDAO.listarBuscar(nombre, empresa, grupo, maxResults, firstResult);
+    public List<ProductoServicio> listarBuscar(String nombre,  Integer empresa, String grupo, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listarBuscar(nombre, empresa, grupo, estado, maxResults, firstResult);
     }
     
-    public List<ProductoServicio> listarBuscarBarras(String codigoBarras, Integer empresa, int maxResults, int firstResult) {
-        return productoDAO.listarBuscarBarras(codigoBarras, empresa, maxResults, firstResult);
+    public List<ProductoServicio> listarBuscarBarras(String codigoBarras, Integer empresa, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listarBuscarBarras(codigoBarras, empresa, estado, maxResults, firstResult);
     }
     
-    public Long contar(String nombre, Integer empresa, Integer grupo){
-        return productoDAO.contar(nombre, empresa, grupo);
+    public Long contar(String nombre, Integer empresa, Integer grupo, Boolean estado){
+        return productoDAO.contar(nombre, empresa, grupo, estado);
     }
     
-    public Long contar(String nombre, Integer empresa, String grupo){
-        return productoDAO.contar(nombre, empresa, grupo);
+    public Long contar(String nombre, Integer empresa, String grupo, Boolean estado){
+        return productoDAO.contar(nombre, empresa, grupo, estado);
     }
     
-    public Long contarBarras(String codigoBarras, Integer empresa){
-        return productoDAO.contarBarras(codigoBarras, empresa);
+    public Long contarBarras(String codigoBarras, Integer empresa, Boolean estado){
+        return productoDAO.contarBarras(codigoBarras, empresa, estado);
     }
     
-    public List<ProductoServicio> listarPadre(Integer empresa, List<Integer> gruposBuscar, int maxResults, int firstResult) {
-        return productoDAO.listarPadre(empresa, gruposBuscar, maxResults, firstResult);
+    public List<ProductoServicio> listarPadre(Integer empresa, List<Integer> gruposBuscar, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listarPadre(empresa, gruposBuscar, estado, maxResults, firstResult);
     }
     
-    public Long contarPadre(Integer empresa, List<Integer> gruposBuscar){
-        return productoDAO.contarPadre(empresa, gruposBuscar);
+    public Long contarPadre(Integer empresa, List<Integer> gruposBuscar, Boolean estado){
+        return productoDAO.contarPadre(empresa, gruposBuscar, estado);
     }
     
-    public List<ProductoServicio> listarBuscarPadre(String nombre, Integer empresa, List<Integer> gruposBuscar, int maxResults, int firstResult) {
-        return productoDAO.listarBuscarPadre(nombre, empresa, gruposBuscar, maxResults, firstResult);
+    public List<ProductoServicio> listarBuscarPadre(String nombre, Integer empresa, List<Integer> gruposBuscar, Boolean estado, int maxResults, int firstResult) {
+        return productoDAO.listarBuscarPadre(nombre, empresa, gruposBuscar, estado, maxResults, firstResult);
     }
     
-    public Long contarPadre(String nombre, Integer empresa, List<Integer> gruposBuscar){
-        return productoDAO.contarPadre(nombre, empresa, gruposBuscar);
+    public Long contarPadre(String nombre, Integer empresa, List<Integer> gruposBuscar, Boolean estado){
+        return productoDAO.contarPadre(nombre, empresa, gruposBuscar, estado);
     }
     
     public void eliminar(ProductoServicio parametro) throws Exception {

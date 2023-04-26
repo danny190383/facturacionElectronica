@@ -291,9 +291,9 @@ public class FacturacionElectronicaBean implements Serializable{
                         XAdESBESSignature procesoFirma = new XAdESBESSignature(archivoFirmar);
                         String url = ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa();
                         String nombreResultado = retencion.getCodigoBarras() + "Firmado.xml";
-                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(retencion.getFactura().getPuntoVenta().getFirmaElectronica()), retencion.getFactura().getPuntoVenta().getClaveFirma(), url, nombreResultado);
+                        procesoFirma.firmar(archivoFirmar, new ByteArrayInputStream(retencion.getFactura().getEmpleado().getPuntoVenta().getFirmaElectronica()), retencion.getFactura().getEmpleado().getPuntoVenta().getClaveFirma(), url, nombreResultado);
                         RespuestaRecepcion respuesta;
-                        if(retencion.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
+                        if(retencion.getFactura().getEmpleado().getPuntoVenta().getAmbienteElectronica().equals("1")){
                             respuesta = consumoSRI.consumirRecepcionPruebas(url+nombreResultado); 
                         }
                         else
@@ -369,11 +369,11 @@ public class FacturacionElectronicaBean implements Serializable{
                             nombreDocumento = "Nota de Débito";
                         }
                         if(factura.getCliente().getPersona().getEmail() != null){
-                            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getCliente().getPersona().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+                            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getCliente().getPersona().getEmail(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
                         }
                         else
                         {
-                            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+                            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
                         }
                     }
                 } catch (Exception ex) {
@@ -411,11 +411,11 @@ public class FacturacionElectronicaBean implements Serializable{
                     if(respuesta.getEstado().equals("AUTORIZADO")){
                         
                         if(guia.getFactura().getCliente().getPersona().getEmail() != null){
-                            envioFacturaEmail(guia.getPathXmlFirmado(), guia.getFactura().getCliente().getPersona().getEmail(), guia.getCodigo(), "", 2);
+                            envioFacturaEmail(guia.getPathXmlFirmado(), guia.getFactura().getCliente().getPersona().getEmail(), guia.getCodigo(), "", 2,guia.getFactura().getPuntoVenta().getRuc());
                         }
                         else
                         {
-                            envioFacturaEmail(guia.getPathXmlFirmado(), guia.getFactura().getEmpresa().getEmail(), guia.getCodigo(), "", 2);
+                            envioFacturaEmail(guia.getPathXmlFirmado(), guia.getFactura().getEmpresa().getEmail(), guia.getCodigo(), "", 2,guia.getFactura().getPuntoVenta().getRuc());
                         }
                     }
                 } catch (Exception ex) {
@@ -431,7 +431,7 @@ public class FacturacionElectronicaBean implements Serializable{
             if(retencion.getEstadoAutorizacionSri() == null || !retencion.getEstadoAutorizacionSri().equals("AUTORIZADO")) {
                 try {
                     RespuestaAutorizacion respuesta;
-                    if(retencion.getFactura().getPuntoVenta().getAmbienteElectronica().equals("1")){
+                    if(retencion.getFactura().getEmpleado().getPuntoVenta().getAmbienteElectronica().equals("1")){
                         respuesta = consumoSRI.consumirAutorizacionPruebas(retencion.getCodigoBarras()); 
                     }
                     else
@@ -453,11 +453,11 @@ public class FacturacionElectronicaBean implements Serializable{
                     if(respuesta.getEstado().equals("AUTORIZADO")){
                         
                         if(retencion.getFactura().getProveedor().getPersona().getEmail() != null){
-                            envioFacturaEmail(retencion.getPathXmlFirmado(), retencion.getFactura().getProveedor().getPersona().getEmail(), retencion.getCodigo(), "", 3);
+                            envioFacturaEmail(retencion.getPathXmlFirmado(), retencion.getFactura().getProveedor().getPersona().getEmail(), retencion.getCodigo(), "", 3,retencion.getFactura().getPuntoVenta().getRuc());
                         }
                         else
                         {
-                            envioFacturaEmail(retencion.getPathXmlFirmado(), retencion.getFactura().getEmpresa().getEmail(), retencion.getCodigo(), "", 3);
+                            envioFacturaEmail(retencion.getPathXmlFirmado(), retencion.getFactura().getEmpresa().getEmail(), retencion.getCodigo(), "", 3,retencion.getFactura().getPuntoVenta().getRuc());
                         }
                     }
                 } catch (Exception ex) {
@@ -471,12 +471,13 @@ public class FacturacionElectronicaBean implements Serializable{
         }
     }
     
-    public String generarReporte(Integer factura, String nombreDocumento) {
+    public String generarReporte(Integer factura, String nombreDocumento, String ruc) {
         Map<String, Object> parametros = new HashMap();
         try {
             parametros.put("factura", factura);
             parametros.put("nombreReporte", nombreDocumento);
             parametros.put("SUBREPORT_DIR", JasperReportUtil.PATH);
+            parametros.put("ruc", ruc);
             JasperReportUtil jasperBean = (JasperReportUtil) FacesUtils.getManagedBean(JasperReportUtil.NOMBRE_BEAN);
             return jasperBean.jasperReportFile(JasperReportUtil.PATH_REPORTE_DOCUMENTO_TRANSACCION, JasperReportUtil.TIPO_PDF, parametros);
         } catch (ClassNotFoundException ex) {
@@ -526,15 +527,15 @@ public class FacturacionElectronicaBean implements Serializable{
         }
         
         if(factura.getCliente().getPersona().getEmail() != null){
-            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getCliente().getPersona().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getCliente().getPersona().getEmail(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
         }
         else
         {
-            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1);
+            envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
         }
     }
     
-    public void envioFacturaEmail(String xml, String destinatarioFactura, Integer factura, String nombreDocumento, Integer tipo) {
+    public void envioFacturaEmail(String xml, String destinatarioFactura, Integer factura, String nombreDocumento, Integer tipo, String ruc) {
         try {
             String asunto = "Documento Eléctronico ";
             String usuario = empresa.getEmail().trim();
@@ -543,7 +544,7 @@ public class FacturacionElectronicaBean implements Serializable{
             String mensaje = "Sistema FactuYES documento electrónico SRI";
             String archivo = "";
             if(tipo == 1){ // Documento
-                archivo = this.generarReporte(factura, nombreDocumento);
+                archivo = this.generarReporte(factura, nombreDocumento, ruc);
             }
             if(tipo == 2){ // Guia Remision
                 archivo = this.generarReporteGuiaRemision(factura);
@@ -614,7 +615,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDoc.appendChild(codDocValue);
             
             Element estab = document.createElement("estab"); 
-            Text estabValue = document.createTextNode(factura.getEmpresa().getCodigoSri());
+            Text estabValue = document.createTextNode(factura.getPuntoVenta().getCodigoSriEmpresa());
             estab.appendChild(estabValue);
             
             Element ptoEmi = document.createElement("ptoEmi"); 
@@ -947,7 +948,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDoc.appendChild(codDocValue);
             
             Element estab = document.createElement("estab"); 
-            Text estabValue = document.createTextNode(factura.getEmpresa().getCodigoSri());
+            Text estabValue = document.createTextNode(((FacturaVenta)factura.getDocumentoRelacionado()).getPuntoVenta().getCodigoSriEmpresa());
             estab.appendChild(estabValue);
             
             Element ptoEmi = document.createElement("ptoEmi"); 
@@ -1007,7 +1008,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDocModificado.appendChild(codDocModificadoValue);
             
             Element numDocModificado = document.createElement("numDocModificado"); 
-            Text numDocModificadoValue = document.createTextNode(factura.getDocumentoRelacionado().getEmpresa().getCodigoSri()+"-"+((FacturaVenta)factura.getDocumentoRelacionado()).getPuntoVenta().getCodigoSri()+"-"+this.generaSecuencia(factura.getDocumentoRelacionado().getNumero().toString()));
+            Text numDocModificadoValue = document.createTextNode(((FacturaVenta)factura.getDocumentoRelacionado()).getPuntoVenta().getCodigoSriEmpresa()+"-"+((FacturaVenta)factura.getDocumentoRelacionado()).getPuntoVenta().getCodigoSri()+"-"+this.generaSecuencia(factura.getDocumentoRelacionado().getNumero().toString()));
             numDocModificado.appendChild(numDocModificadoValue);
             
             Element fechaEmisionDocSustento = document.createElement("fechaEmisionDocSustento"); 
@@ -1231,7 +1232,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDoc.appendChild(codDocValue);
             
             Element estab = document.createElement("estab"); 
-            Text estabValue = document.createTextNode(factura.getEmpresa().getCodigoSri());
+            Text estabValue = document.createTextNode(((FacturaVenta)factura.getDocumentoRelacionado()).getPuntoVenta().getCodigoSriEmpresa());
             estab.appendChild(estabValue);
             
             Element ptoEmi = document.createElement("ptoEmi"); 
@@ -1310,7 +1311,7 @@ public class FacturacionElectronicaBean implements Serializable{
             if(factura.getDocumentoRelacionado() instanceof NotaCredito){
                 numeroDocumentoPV = ((FacturaVenta)(((NotaCredito)factura.getDocumentoRelacionado())).getDocumentoRelacionado()).getPuntoVenta().getCodigoSri();
             }
-            Text numDocModificadoValue = document.createTextNode(factura.getDocumentoRelacionado().getEmpresa().getCodigoSri()+"-"+numeroDocumentoPV+"-"+this.generaSecuencia(factura.getDocumentoRelacionado().getNumero().toString()));
+            Text numDocModificadoValue = document.createTextNode(factura.getDocumentoRelacionado().getPuntoVenta().getCodigoSriEmpresa()+"-"+numeroDocumentoPV+"-"+this.generaSecuencia(factura.getDocumentoRelacionado().getNumero().toString()));
             numDocModificado.appendChild(numDocModificadoValue);
             
             Element fechaEmisionDocSustento = document.createElement("fechaEmisionDocSustento"); 
@@ -1494,7 +1495,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDoc.appendChild(codDocValue);
             
             Element estab = document.createElement("estab"); 
-            Text estabValue = document.createTextNode(factura.getFactura().getEmpresa().getCodigoSri());
+            Text estabValue = document.createTextNode(factura.getFactura().getPuntoVenta().getCodigoSriEmpresa());
             estab.appendChild(estabValue);
             
             Element ptoEmi = document.createElement("ptoEmi"); 
@@ -1601,7 +1602,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDocSustento.appendChild(codDocSustentoValue);
             
             Element numDocSustento = document.createElement("numDocSustento"); 
-            Text numDocSustentoValue = document.createTextNode(factura.getFactura().getEmpresa().getCodigoSri()+"-"+factura.getFactura().getPuntoVenta().getCodigoSri()+"-"+this.generaSecuencia(factura.getFactura().getNumero().toString()));
+            Text numDocSustentoValue = document.createTextNode(factura.getFactura().getPuntoVenta().getCodigoSriEmpresa()+"-"+factura.getFactura().getPuntoVenta().getCodigoSri()+"-"+this.generaSecuencia(factura.getFactura().getNumero().toString()));
             numDocSustento.appendChild(numDocSustentoValue);
             
             Element numAutDocSustento = document.createElement("numAutDocSustento"); 
@@ -1694,7 +1695,7 @@ public class FacturacionElectronicaBean implements Serializable{
         Element itemInfoTributariaNode = document.createElement("infoTributaria"); 
 
             Element ambiente = document.createElement("ambiente"); 
-            Text ambienteValue = document.createTextNode(factura.getFactura().getPuntoVenta().getAmbienteElectronica());
+            Text ambienteValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getAmbienteElectronica());
             ambiente.appendChild(ambienteValue);
 
             Element tipoEmision = document.createElement("tipoEmision"); 
@@ -1702,15 +1703,15 @@ public class FacturacionElectronicaBean implements Serializable{
             tipoEmision.appendChild(tipoEmisionValue);
 
             Element razonSocial = document.createElement("razonSocial"); 
-            Text razonSocialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRazonSocial().trim());
+            Text razonSocialValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getRazonSocial().trim());
             razonSocial.appendChild(razonSocialValue);
 
             Element nombreComercial = document.createElement("nombreComercial"); 
-            Text nombreComercialValue = document.createTextNode(factura.getFactura().getPuntoVenta().getNombre().trim());
+            Text nombreComercialValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getNombre().trim());
             nombreComercial.appendChild(nombreComercialValue);
 
             Element ruc = document.createElement("ruc"); 
-            Text rucValue = document.createTextNode(factura.getFactura().getPuntoVenta().getRuc());
+            Text rucValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getRuc());
             ruc.appendChild(rucValue);
             
             Element claveAcceso = document.createElement("claveAcceso"); 
@@ -1722,7 +1723,7 @@ public class FacturacionElectronicaBean implements Serializable{
             codDoc.appendChild(codDocValue);
             
             Element estab = document.createElement("estab"); 
-            Text estabValue = document.createTextNode(factura.getFactura().getEmpresa().getCodigoSri());
+            Text estabValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getCodigoSriEmpresa());
             estab.appendChild(estabValue);
             
             Element ptoEmi = document.createElement("ptoEmi"); 
@@ -1734,7 +1735,7 @@ public class FacturacionElectronicaBean implements Serializable{
             secuencial.appendChild(secuencialValue);
             
             Element dirMatriz = document.createElement("dirMatriz"); 
-            Text dirMatrizValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
+            Text dirMatrizValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
 
         itemInfoTributariaNode.appendChild(ambiente);
@@ -1758,7 +1759,7 @@ public class FacturacionElectronicaBean implements Serializable{
             fechaEmision.appendChild(fechaEmisionValue);
         
             Element dirEstablecimiento = document.createElement("dirEstablecimiento"); 
-            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
+            Text dirEstablecimientoValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getDireccion().trim());
             dirEstablecimiento.appendChild(dirEstablecimientoValue);
             
             Element obligadoContabilidad = document.createElement("obligadoContabilidad"); 

@@ -39,6 +39,9 @@ public class PuntoVenta implements Serializable {
     private String ubicacion;
     @Column(name = "codigo_sri")
     private String codigoSri;
+    @Size(max = 3)
+    @Column(name = "codigo_sri_empresa")
+    private String codigoSriEmpresa;
     @Column(name = "impresora")
     private String impresora;
     @Size(max = 1)
@@ -264,6 +267,14 @@ public class PuntoVenta implements Serializable {
 
     public void setRise(String rise) {
         this.rise = rise;
+    }
+
+    public String getCodigoSriEmpresa() {
+        return codigoSriEmpresa;
+    }
+
+    public void setCodigoSriEmpresa(String codigoSriEmpresa) {
+        this.codigoSriEmpresa = codigoSriEmpresa;
     }
     
     @Override

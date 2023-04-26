@@ -1,5 +1,7 @@
 package com.jvc.factunet.print;
 
+import com.jvc.factunet.entidades.Empresa;
+import com.jvc.factunet.entidades.PuntoVenta;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.print.DocFlavor;
@@ -68,16 +70,26 @@ public class Ticket {
      private String contentTicketComprobante = 
                                  "\n"+
                                  "\n"+
-                                 "\n"+
-                                 "         {{numero}}\n"+
                                  "--------------------------------\n"+
                                  "{{empresa}}\n"+
+                                 "{{razon_social}}\n"+
+                                 "{{ruc}}\n"+
+                                 "{{descripcion}}\n"+
+                                 "{{telefono_empresa}}\n"+
+                                 "{{correo_empresa}}\n"+
+                                 "{{direccion_empresa}}\n"+
+                                 "{{ciudad_empresa}}\n"+
                                  "--------------------------------\n"+
-                                 "{{ciudadFecha}}\n"+
+                                 "FACTURA Nº: {{numero}}\n"+
+                                 "Nº AUTORIZACION / CLAVE ACCESO:\n"+
+                                 "{{clave_acceso}}\n"+
+                                 "--------------------------------\n"+
+                                 "CIUDAD/FECHA: {{ciudadFecha}}\n"+
                                  "CLIENTE: {{cliente}}\n"+
                                  "DIRECCION: {{direccion}}\n"+
                                  "TELEFONO: {{telefono}}\n"+
-                                 "RUC: {{cedula}}\n"+
+                                 "CORREO: {{correo_cliente}}\n"+
+                                 "CI/RUC: {{cedula}}\n"+
                                  "--------------------------------\n"+
                                  "CANT. DESCRIPCION        V.TOTAL\n"+
                                  "--------------------------------\n"+
@@ -88,8 +100,13 @@ public class Ticket {
                                  "   IMPORTE DEL IVA: {{iva}}\n"+
                                  "   SUMA TOTAL:      {{total}}\n"+
                                  "\n"+
+                                 "--------------------------------\n"+
                                  "REVICE SU FACTURA ELECTRÓNICA \n"+
                                  "INGRESANDO A SU CORREO        \n"+
+                                 "\n"+
+                                 "ESTE DOCUMENTO NO TIENE VALIDEZ \n"+
+                                 "TRIBUTARIA \n"+
+                                 "\n"+
                                  "\n"+
                                  "\n"+
                                  "\n"+
@@ -123,14 +140,26 @@ public class Ticket {
       this.contentTicketRise = this.contentTicketRise.replace("{{mesa}}", mesa);
     }
     
-    public Ticket(String empresa, String numero, String ciudadFecha, String cliente, String direccion, String telefono, String cedula,String items, String subTotal,String iva, String total, String descuento) {
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{empresa}}", empresa);
+    public Ticket(Empresa empresa,PuntoVenta punto, String numero, String clave, String ciudadFecha, String cliente, String direccion, String telefono,String cedula, String correo,String items, String subTotal,String iva, String total, String descuento) {
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{empresa}}", empresa.getNombreAbreviado());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{razon_social}}", punto.getRazonSocial());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ruc}}", punto.getRuc());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{descripcion}}", empresa.getDescripcion());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{telefono_empresa}}", empresa.getTelefono1());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{correo_empresa}}", empresa.getEmail());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{direccion_empresa}}", punto.getDireccion());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudad_empresa}}", empresa.getCiudad().getNombre());
+      
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{numero}}", numero);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{clave_acceso}}", clave);
+      
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudadFecha}}", ciudadFecha);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{cliente}}", cliente);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{direccion}}", direccion);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{telefono}}", telefono);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{cedula}}", cedula);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{correo_cliente}}", correo);
+      
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{items}}", items);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{subTotal}}", subTotal);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{iva}}", iva);

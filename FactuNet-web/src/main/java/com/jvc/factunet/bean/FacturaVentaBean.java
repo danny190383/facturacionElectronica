@@ -177,7 +177,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         {
             FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("secuanciaNoDefinida"));
         }
-        this.facturaVenta.setObservacion(this.facturaVenta.getEmpresa().getCodigoSri() + "-" + this.facturaVenta.getPuntoVenta().getCodigoSri()); 
+        this.facturaVenta.setObservacion(this.facturaVenta.getPuntoVenta().getCodigoSriEmpresa() + "-" + this.facturaVenta.getPuntoVenta().getCodigoSri()); 
         this.verificarPedidoVenta();
         this.calcularTotales();
         this.listaTarjetaEmpresa.addAll(this.tarjetaEmpresaServicio.listar(super.getEmpresa().getCodigo()));
@@ -349,16 +349,16 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     public void anular()
     {
         try {
-            if(this.facturaVenta.getPuntoVenta().getFacturacionElectronica()){
-                if(facturaVenta.getEstadoSri() != null && facturaVenta.getEstadoSri().equals("RECIBIDA")){
-                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico enviado al SRI");
-                    return;
-                }
-                if(facturaVenta.getCliente().getPersona().getCedula().equals("9999999999999")){ 
-                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico generado a Consumidor Final ");
-                    return;
-                }
-            }
+//            if(this.facturaVenta.getPuntoVenta().getFacturacionElectronica()){
+//                if(facturaVenta.getEstadoSri() != null && facturaVenta.getEstadoSri().equals("RECIBIDA")){
+//                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico enviado al SRI");
+//                    return;
+//                }
+//                if(facturaVenta.getCliente().getPersona().getCedula().equals("9999999999999")){ 
+//                    FacesUtils.addErrorMessage("No se puede anular un documento electrónico generado a Consumidor Final ");
+//                    return;
+//                }
+//            }
             this.facturaVenta.setEstado("3");
             this.documentosServicios.anularFacturaVenta(this.facturaVenta);
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("facturaAnulada"));
@@ -747,6 +747,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 factura.setFacturaDetalleList(this.verificarRestriccion(listaTotal, punto));
                 factura.setCliente(this.facturaVenta.getCliente());
                 factura.setPedidosVenta(this.facturaVenta.getPedidosVenta());
+                factura.setDescripcion(facturaVenta.getDescripcion()); 
                 if(factura.getFacturaDetalleList().size()>0){
                     for(FacturaDetalle detalle : factura.getFacturaDetalleList()){
                         detalle.setFactura(factura);
@@ -1796,13 +1797,16 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 }
             default:
                 {
-                    Ticket ticket = new Ticket(factura.getEmpresa().getNombreAbreviado(),
+                    Ticket ticket = new Ticket(factura.getEmpresa(),
+                            factura.getPuntoVenta(),
                             factura.getNumero().toString(),
+                            factura.getCodigoBarras(),
                             super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
                             nombreCompleto,
                             direccionCompleta,
                             factura.getCliente().getPersona().getTelefono() == null ? " " : factura.getCliente().getPersona().getTelefono(),
                             factura.getCliente().getPersona().getCedula() == null ? " " : factura.getCliente().getPersona().getCedula(),
+                            factura.getCliente().getPersona().getEmail() == null ? " " : factura.getCliente().getPersona().getEmail(),
                             items,
                             factura.getSubtotal().toString(),
                             factura.getIva().toString(),

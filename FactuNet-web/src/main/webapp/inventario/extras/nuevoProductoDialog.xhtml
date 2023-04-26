@@ -202,6 +202,12 @@
                                      maxlength="500"
                                      value="#{nuevoProductoBean.productoBodega.referencia}"/>
                     
+                    <h:outputLabel value="#{msg.estado}: "/> 
+                    <p:selectBooleanButton onLabel="#{msg.activo}" 
+                                           offLabel="#{msg.inactivo}"
+                                           style="width:6rem"
+                                           value="#{nuevoProductoBean.productoBodega.estado}"/>
+                    
                 </h:panelGrid>
                 <h:panelGrid columns="4" 
                              width="90%">

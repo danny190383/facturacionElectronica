@@ -400,16 +400,16 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                 {
                     if((grupoProductoSelc.getGrupoProductoList() == null) ||  (grupoProductoSelc.getGrupoProductoList().isEmpty()))
                     {
-                        List<ProductoServicio> result = productoServiciosServicio.listarBuscar(nombreProducto, empresa.getCodigo(),grupoProductoSelc.getCodigo(), pageSize, first);
-                        lazyModelServicios.setRowCount(productoServiciosServicio.contar(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo()).intValue());
+                        List<ProductoServicio> result = productoServiciosServicio.listarBuscar(nombreProducto, empresa.getCodigo(),grupoProductoSelc.getCodigo(), true, pageSize, first);
+                        lazyModelServicios.setRowCount(productoServiciosServicio.contar(nombreProducto,empresa.getCodigo(),grupoProductoSelc.getCodigo(), true).intValue());
                         return result;
                     }
                     else
                     {
                         List<Integer> principales = new ArrayList<>();
                         principales.add(grupoProductoSelc.getCodigo());
-                        List<ProductoServicio> result = productoServiciosServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),principales, pageSize, first);
-                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombreProducto,empresa.getCodigo(),principales).intValue());
+                        List<ProductoServicio> result = productoServiciosServicio.listarBuscarPadre(nombreProducto,empresa.getCodigo(),principales, true, pageSize, first);
+                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombreProducto,empresa.getCodigo(),principales, true).intValue());
                         return result;
                     }
                 }

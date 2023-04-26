@@ -239,7 +239,7 @@ public class DocumentosDAO extends GenericDAO{
     
     public List<FacturaVenta> listarFacturasVenta(Integer empresa, String estado) {
         try {
-            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and o.estado like ?2 and o.numero != -1 order by o.fecha desc").setMaxResults(100);
+            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and o.estado like ?2 and o.numero != -1 order by o.fecha desc").setMaxResults(500);
             q.setParameter(1, empresa);
             q.setParameter(2, estado.equals("0") ? "%%" : estado);
             return q.getResultList();
@@ -250,7 +250,7 @@ public class DocumentosDAO extends GenericDAO{
     
     public List<FacturaVenta> listarFacturasVentaElectronica(Integer empresa, String estado) {
         try {
-            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and o.estado like ?2 and o.numero != -1 and o.puntoVenta.facturacionElectronica = true order by o.fecha desc").setMaxResults(100);
+            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and o.estado like ?2 and o.numero != -1 and o.puntoVenta.facturacionElectronica = true order by o.fecha desc").setMaxResults(500);
             q.setParameter(1, empresa);
             q.setParameter(2, estado.equals("0") ? "%%" : estado);
             return q.getResultList();

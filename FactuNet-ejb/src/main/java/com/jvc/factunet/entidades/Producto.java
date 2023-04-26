@@ -61,6 +61,8 @@ public class Producto implements Serializable {
     @JoinColumn(name = "grupo", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private GrupoProducto grupo;
+    @Column(name = "estado")
+    private Boolean estado;
     @JoinColumn(name = "empresa", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private Empresa empresa;
@@ -82,8 +84,17 @@ public class Producto implements Serializable {
     private String observacion;
 
     public Producto() {
+        this.estado = Boolean.TRUE;
     }
 
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
+    }
+    
     public Producto(Integer codigo) {
         this.codigo = codigo;
     }

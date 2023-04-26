@@ -118,13 +118,6 @@
                                     <h:outputLabel value="#{msg.correo} #{msg.clave}"/>   
                                     <p:inputText value="#{empresaBean.empresa.emailClave}"/>
 
-                                    <h:outputLabel value="#{msg.codigoSRI}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.codigoSri}"
-                                                 style="background-color: khaki "
-                                                 required="true">
-                                        <p:keyFilter regEx="/[\d\-\.]/" />
-                                    </p:inputText> 
-                                    
                                     <p:outputLabel value="#{msg.tarifa} IVA:" 
                                                    for="txtTarifaSRI"/>
                                     <h:panelGrid columns="3">
@@ -258,8 +251,13 @@
                                         <p:column headerText="#{msg.ubicacion}">
                                             <h:outputLabel value="#{puntoVenta.ubicacion}" />
                                         </p:column>
+                                        
+                                        <p:column headerText="#{msg.codigoSRI} Empresa"
+                                                  width="100">
+                                            <h:outputLabel value="#{puntoVenta.codigoSriEmpresa}" />
+                                        </p:column>
 
-                                        <p:column headerText="#{msg.codigoSRI}"
+                                        <p:column headerText="#{msg.codigoSRI} Punto de Venta"
                                                   width="100">
                                             <h:outputLabel value="#{puntoVenta.codigoSri}" />
                                         </p:column>

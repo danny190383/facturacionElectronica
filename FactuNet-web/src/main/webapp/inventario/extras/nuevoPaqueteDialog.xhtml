@@ -81,6 +81,12 @@
                                        symbol="%" 
                                        required="true"
                                        symbolPosition="s"/> 
+                        
+                        <h:outputLabel value="#{msg.estado}: "/> 
+                        <p:selectBooleanButton onLabel="#{msg.activo}" 
+                                               offLabel="#{msg.inactivo}"
+                                               style="width:6rem"
+                                               value="#{nuevoPaqueteBean.productoPaquete.estado}"/>
 
                     </h:panelGrid>
                     <h:panelGrid columns="1" 

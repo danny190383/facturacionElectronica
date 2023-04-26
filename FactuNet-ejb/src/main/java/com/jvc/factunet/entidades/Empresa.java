@@ -68,9 +68,6 @@ public class Empresa implements Serializable {
     @Size(max = 15)
     @Column(name = "telefono2")
     private String telefono2;
-    @Size(max = 3)
-    @Column(name = "codigo_sri")
-    private String codigoSri;
     @Size(max = 50)
     @Column(name = "tema")
     private String tema;
@@ -201,14 +198,6 @@ public class Empresa implements Serializable {
 
     public void setTelefono2(String telefono2) {
         this.telefono2 = telefono2;
-    }
-
-    public String getCodigoSri() {
-        return codigoSri;
-    }
-
-    public void setCodigoSri(String codigoSri) {
-        this.codigoSri = codigoSri;
     }
 
     public byte[] getLogoImagen() {

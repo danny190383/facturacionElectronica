@@ -109,20 +109,20 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
                             List<ProductoServicio> result;
                             if(codigoBarras.trim().isEmpty())
                             {
-                                result = productoServiciosServicio.listarBuscarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar(), pageSize, first);
-                                lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar()).intValue());
+                                result = productoServiciosServicio.listarBuscarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar(), true, pageSize, first);
+                                lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar(), true).intValue());
                             }
                             else
                             {
-                                result = productoServiciosServicio.listarBuscarBarras(codigoBarras,empresa.getCodigo(), pageSize, first);
-                                lazyModelServicios.setRowCount(productoServiciosServicio.contarBarras(codigoBarras,empresa.getCodigo()).intValue());
+                                result = productoServiciosServicio.listarBuscarBarras(codigoBarras,empresa.getCodigo(), true, pageSize, first);
+                                lazyModelServicios.setRowCount(productoServiciosServicio.contarBarras(codigoBarras,empresa.getCodigo(), true).intValue());
                             }
                             return result;
                         }
                         else
                         {
-                            List<ProductoServicio> result = productoServiciosServicio.listarBuscar(nombre, empresa.getCodigo(), grupo, pageSize, first);
-                            lazyModelServicios.setRowCount(productoServiciosServicio.contar(nombre,empresa.getCodigo(),grupo).intValue());
+                            List<ProductoServicio> result = productoServiciosServicio.listarBuscar(nombre, empresa.getCodigo(), grupo, true, pageSize, first);
+                            lazyModelServicios.setRowCount(productoServiciosServicio.contar(nombre,empresa.getCodigo(),grupo, true).intValue());
                             return result;
                         }
                     }
@@ -130,14 +130,14 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
                     {
                         if(visible)
                         {
-                            List<ProductoServicio> result = productoServiciosServicio.listarPadre(empresa.getCodigo(), getListaGruposBuscar(), pageSize, first);
-                            lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(empresa.getCodigo(),getListaGruposBuscar()).intValue());
+                            List<ProductoServicio> result = productoServiciosServicio.listarPadre(empresa.getCodigo(), getListaGruposBuscar(), true, pageSize, first);
+                            lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(empresa.getCodigo(),getListaGruposBuscar(), true).intValue());
                             return result;
                         }
                         else
                         {
-                            List<ProductoServicio> result = productoServiciosServicio.listarBuscar(StringUtils.EMPTY, empresa.getCodigo(),StringUtils.EMPTY, pageSize, first);
-                            lazyModelServicios.setRowCount(productoServiciosServicio.contar(StringUtils.EMPTY,empresa.getCodigo(),StringUtils.EMPTY).intValue());
+                            List<ProductoServicio> result = productoServiciosServicio.listarBuscar(StringUtils.EMPTY, empresa.getCodigo(),StringUtils.EMPTY, true, pageSize, first);
+                            lazyModelServicios.setRowCount(productoServiciosServicio.contar(StringUtils.EMPTY,empresa.getCodigo(),StringUtils.EMPTY, true).intValue());
                             return result;
                         }
                     }

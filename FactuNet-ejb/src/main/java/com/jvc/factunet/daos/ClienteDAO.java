@@ -162,7 +162,7 @@ public class ClienteDAO extends GenericDAO{
             {
                 sql = sql + "and upper(o.nombre) like :mascota ";
             }
-            Query q = em.createQuery("select o from Mascota o Where "
+            Query q = em.createQuery("select o from Mascota o Where o.codigo <> null "
                     + sql
                     + "order by o.persona.nombres");
 //            q.setParameter("empresa", empresa);
@@ -236,7 +236,7 @@ public class ClienteDAO extends GenericDAO{
                           + "'";
             }
             Query q = em.createNativeQuery("select sum(uno) from "
-                                          + "(select count(mascota.codigo) as uno from mascota inner join persona on mascota.persona = persona.codigo  Where " 
+                                          + "(select count(mascota.codigo) as uno from mascota inner join persona on mascota.persona = persona.codigo  Where (not persona.codigo isnull)  " 
                                           + sql 
                                           + ") as suma");
             

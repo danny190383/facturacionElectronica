@@ -46,7 +46,9 @@
                                  selection="#{nuevaNotaVeterinariaBean.mascotaSelc}" 
                                  rowKey="#{mascota}"
                                  emptyMessage="#{msg.tablaVacia}"
-                                 id="tablaMascotas">>
+                                 id="tablaMascotas"
+                                 scrollable="true" 
+                                 scrollHeight="400">
                        
                        <f:facet name="header">
                             <p:commandButton value="#{msg.nuevo}"  
@@ -92,7 +94,7 @@
                                  emptyMessage="#{msg.tablaVacia}"
                                  id="tablaNotas"
                                  scrollable="true" 
-                                 scrollHeight="300">
+                                 scrollHeight="400">
                         
                         <f:facet name="header">
                             <p:commandButton value="#{msg.nuevo}"

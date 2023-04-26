@@ -397,7 +397,7 @@ public class DocumentosServicios {
                     parametro.setNumero(001);
                 }
             }
-            venta.setObservacion(venta.getEmpresa().getCodigoSri() + "-" + venta.getPuntoVenta().getCodigoSri()); 
+            venta.setObservacion(venta.getPuntoVenta().getCodigoSriEmpresa() + "-" + venta.getPuntoVenta().getCodigoSri()); 
             for(FacturaDetalle detalle : parametro.getFacturaDetalleList())
             {
                 detalle.setFecha(new Date()); 
@@ -948,7 +948,7 @@ public class DocumentosServicios {
                 tipo+
                 factura.getPuntoVenta().getRuc()+
                 ambiente+
-                factura.getEmpresa().getCodigoSri()+
+                factura.getPuntoVenta().getCodigoSriEmpresa()+
                 factura.getSecuenciaDocumento().getPuntoVenta().getCodigoSri()+
                 this.numerocomprobanteSRI(factura.getNumero())+
                 "12345678"+
@@ -966,7 +966,7 @@ public class DocumentosServicios {
                 tipo+
                 factura.getDocumentoRelacionado().getPuntoVenta().getRuc()+
                 ambiente+
-                factura.getEmpresa().getCodigoSri()+
+                factura.getDocumentoRelacionado().getPuntoVenta().getCodigoSriEmpresa()+
                 factura.getSecuenciaDocumento().getPuntoVenta().getCodigoSri()+
                 this.numerocomprobanteSRI(factura.getNumero())+
                 "12345678"+
@@ -984,7 +984,7 @@ public class DocumentosServicios {
                 tipo+
                 factura.getFactura().getPuntoVenta().getRuc()+
                 ambiente+
-                factura.getFactura().getEmpresa().getCodigoSri()+
+                factura.getFactura().getPuntoVenta().getCodigoSriEmpresa()+
                 factura.getFactura().getPuntoVenta().getCodigoSri()+
                 this.numerocomprobanteSRI(factura.getSecuencia())+
                 "12345678"+
@@ -993,16 +993,16 @@ public class DocumentosServicios {
         return clave;
     }
     
-    public String generarClaveRetencionSRI(String tipo, String ambiente, DocumentoRetencion factura){
+    public String generarClaveRetencionSRI(String tipo, String ambiente, DocumentoRetencion factura, FacturaCompra compra){
         String clave;
-        String dia = this.diaSRI(String.valueOf(Fecha.getDia(factura.getFactura().getFecha())));
-        String mes = this.mesSRI(String.valueOf(Fecha.getMes(factura.getFactura().getFecha())));
-        String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFactura().getFecha()));
+        String dia = this.diaSRI(String.valueOf(Fecha.getDia(factura.getFecha())));
+        String mes = this.mesSRI(String.valueOf(Fecha.getMes(factura.getFecha())));
+        String fecha = dia+mes+String.valueOf(Fecha.getAnio(factura.getFecha()));
         clave = fecha+
                 tipo+
-                factura.getFactura().getPuntoVenta().getRuc()+
+                factura.getFactura().getEmpleado().getPuntoVenta().getRuc()+
                 ambiente+
-                factura.getFactura().getEmpresa().getCodigoSri()+
+                factura.getFactura().getEmpleado().getPuntoVenta().getCodigoSriEmpresa()+
                 factura.getFactura().getEmpleado().getPuntoVenta().getCodigoSri()+ 
                 this.numerocomprobanteSRI(factura.getNumero())+
                 "12345678"+
@@ -1101,8 +1101,8 @@ public class DocumentosServicios {
                 {
                     retencion.setNumero(001);
                 }
-                if(parametro.getPuntoVenta().getFacturacionElectronica()){
-                    retencion.setCodigoBarras(this.generarClaveRetencionSRI("07", "1", retencion));
+                if(compra.getEmpleado().getPuntoVenta().getFacturacionElectronica()){
+                    retencion.setCodigoBarras(this.generarClaveRetencionSRI("07", compra.getEmpleado().getPuntoVenta().getAmbienteElectronica(), retencion, compra));
                 }
             });
         }

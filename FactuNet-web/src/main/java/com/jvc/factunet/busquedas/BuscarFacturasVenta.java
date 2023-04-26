@@ -1,5 +1,6 @@
 package com.jvc.factunet.busquedas;
 
+import com.jvc.factunet.entidades.Factura;
 import com.jvc.factunet.entidades.FacturaVenta;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.ImprimirReportesBean;
@@ -73,6 +74,8 @@ public class BuscarFacturasVenta extends ImprimirReportesBean implements Seriali
     public void generarReporte(String tipoReporte, Integer documento, Integer tipoDocumento) {
         try {
             super.getParametros().put("factura", documento);
+            Factura factura = this.documentosServicios.buscarDocumento(documento);
+            super.getParametros().put("ruc", factura.getPuntoVenta().getRuc());
             if(tipoDocumento == 21 ||  tipoDocumento == 23){ super.getParametros().put("nombreReporte", "Factura de Venta");}
             if(tipoDocumento == 22){ super.getParametros().put("nombreReporte", "Reserva");}
             if(tipoDocumento == 100){ super.getParametros().put("nombreReporte", "Nota de Crédito");}

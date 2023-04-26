@@ -5,11 +5,13 @@ import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.Contactar;
 import com.jvc.factunet.entidades.Contacto;
 import com.jvc.factunet.entidades.Empresa;
+import com.jvc.factunet.entidades.EspecieMascota;
 import com.jvc.factunet.entidades.EstadoCivil;
 import com.jvc.factunet.entidades.Mascota;
 import com.jvc.factunet.entidades.Persona;
 import com.jvc.factunet.entidades.RetencionPersona;
 import com.jvc.factunet.entidades.Sexo;
+import com.jvc.factunet.entidades.SexoMascota;
 import com.jvc.factunet.entidades.TipoCliente;
 import com.jvc.factunet.icefacesUtil.CatalogosPersonaBean;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
@@ -330,6 +332,21 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
                 this.cliente.getPersona().getMascotaPersonaList().addAll(this.mascotaServicio.listar(this.cliente.getPersona().getCodigo()));
             }
         }
+    }
+    
+    public void nuevoCachorro() {
+        
+        if(this.cliente.getPersona().getMascotaPersonaList() == null)
+        {
+            this.cliente.getPersona().setMascotaPersonaList(new ArrayList<Mascota>());
+        }
+        Mascota mascota = new Mascota();
+        mascota.setPersona(cliente.getPersona()); 
+        mascota.setNombre("Para Facturar"); 
+        mascota.setEspecie(new EspecieMascota(371));
+        mascota.setSexo(new SexoMascota(366));
+        this.cliente.getPersona().getMascotaPersonaList().add(mascota);
+        
     }
     
     public boolean tieneRetencion(Integer tipoRetencion)

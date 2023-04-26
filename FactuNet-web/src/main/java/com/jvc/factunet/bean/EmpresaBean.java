@@ -142,7 +142,7 @@ public class EmpresaBean implements Serializable{
         }
         else
         {
-            this.empresa = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getEmpresa();
+            this.empresa =  this.empresaServicio.buscar(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getEmpresa().getCodigo());
             if(this.empresa.getParroquia() != null){
                 this.provincia = this.empresa.getParroquia().getCanton().getProvincia();
                 this.canton = this.empresa.getParroquia().getCanton();

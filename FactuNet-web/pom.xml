@@ -113,6 +113,12 @@
         </dependency>
         
         <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-bridge</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+        
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.16</version>
@@ -125,16 +131,10 @@
             <type>jar</type>
         </dependency>
         
-        <dependency>
+         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.10.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
+            <version>6.16.0</version>
         </dependency>
     </dependencies>
 

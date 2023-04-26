@@ -223,6 +223,10 @@ public class NotaCreditoBean extends FacturaVentaBean {
                 FacesUtils.addErrorMessage("No se puede generar una nota de crédito sobre un documento no autorizado por el sri.");
                 return;
             }
+            if(super.getFacturaVenta().getCliente().getPersona().getCedula().equals("9999999999999")){ 
+                FacesUtils.addErrorMessage("No se puede generar una nota de crédito a CONSUMIDOR FINAL");
+                return;
+            }
             super.setCliente(super.getFacturaVenta().getCliente());
             for(FacturaDetalle detalle : super.getFacturaVenta().getFacturaDetalleList())
             {

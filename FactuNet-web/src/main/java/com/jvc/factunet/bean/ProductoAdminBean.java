@@ -239,21 +239,21 @@ public class ProductoAdminBean implements Serializable{
                         List<ProductoServicio> result;
                         if(codigoBarras == null || codigoBarras.trim().isEmpty())
                         {
-                            result = productoServiciosServicio.listarBuscarPadre(nombre,empresa.getCodigo(), listaGruposBuscar, pageSize, first);
-                            lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombre, empresa.getCodigo(), listaGruposBuscar).intValue());
+                            result = productoServiciosServicio.listarBuscarPadre(nombre,empresa.getCodigo(), listaGruposBuscar, false, pageSize, first);
+                            lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombre, empresa.getCodigo(), listaGruposBuscar, false).intValue());
                         }
                         else
                         {
-                            result = productoServiciosServicio.listarBuscarBarras(codigoBarras,empresa.getCodigo(), pageSize, first);
-                            lazyModelServicios.setRowCount(productoServiciosServicio.contarBarras(codigoBarras,empresa.getCodigo()).intValue());
+                            result = productoServiciosServicio.listarBuscarBarras(codigoBarras,empresa.getCodigo(), false, pageSize, first);
+                            lazyModelServicios.setRowCount(productoServiciosServicio.contarBarras(codigoBarras,empresa.getCodigo(), false).intValue());
                         }
                         return result;
                         
                     }
                     else
                     {
-                        List<ProductoServicio> result = productoServiciosServicio.listarPadre(empresa.getCodigo(), listaGruposBuscar, pageSize, first);
-                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(empresa.getCodigo(), listaGruposBuscar).intValue());
+                        List<ProductoServicio> result = productoServiciosServicio.listarPadre(empresa.getCodigo(), listaGruposBuscar, false, pageSize, first);
+                        lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(empresa.getCodigo(), listaGruposBuscar, false).intValue());
                         return result;
                     }
                 }

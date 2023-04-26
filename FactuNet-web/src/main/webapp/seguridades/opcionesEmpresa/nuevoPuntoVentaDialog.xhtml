@@ -47,8 +47,13 @@
                         <p:inputText value="#{puntoVentaBean.puntoVenta.ubicacion}"
                                      maxlength="50"
                                      size="30"/>
+                        
+                        <h:outputLabel value="#{msg.codigoSRI} Empresa" />
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.codigoSriEmpresa}"
+                                     maxlength="3"
+                                     size="5"/>
 
-                        <h:outputLabel value="#{msg.codigoSRI}" />
+                        <h:outputLabel value="#{msg.codigoSRI} Punto de Venta" />
                         <p:inputText value="#{puntoVentaBean.puntoVenta.codigoSri}"
                                      maxlength="3"
                                      size="5"/>

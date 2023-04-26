@@ -81,18 +81,6 @@
                     </h:outputLabel>
                 </p:column>
                 
-                <p:column headerText="#{msg.contactar}"
-                          width="110"
-                          style="text-align: center">
-                    <h:outputText value="#{clie.persona.telefono}"
-                                  styleClass="texto_negrita"/>
-                    <p:dataScroller value="#{clie.contactarPersonaList}" 
-                                    var="contactar"
-                                    rendered="#{clie.contactarPersonaList.size()>0}">
-                        <h:outputText value="#{contactar.valor}"/>
-                    </p:dataScroller>
-                </p:column>
-                
                 <p:column headerText="#{msg.opcion}"
                           style="text-align: center"
                           width="70">

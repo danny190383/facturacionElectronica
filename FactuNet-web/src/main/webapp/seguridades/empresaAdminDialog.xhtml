@@ -128,13 +128,6 @@
                                     <h:outputLabel value="#{msg.correo} #{msg.clave}"/>   
                                     <p:inputText value="#{empresaBean.empresa.emailClave}"/>
 
-                                    <h:outputLabel value="#{msg.codigoSRI}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.codigoSri}"
-                                                 style="background-color: khaki "
-                                                 required="true">
-                                        <p:keyFilter regEx="/[\d\-\.]/" />
-                                    </p:inputText> 
-
                                     <h:outputLabel value="#{msg.ciudad}"/>
                                     <h:panelGrid id="pnlCiudad"
                                                  columns="2">

@@ -283,6 +283,11 @@
                                      var="mascota">
 
                             <f:facet name="header">
+                                <p:commandButton value="#{msg.agregar} para Facturar"  
+                                                 actionListener="#{nuevoClienteBean.nuevoCachorro()}" 
+                                                 update=":frmNuevoCliente:grMensajes, :frmNuevoCliente:tabDatosMascota:tablaMascotas"
+                                                 icon="ui-icon-comment" />
+                                
                                 <p:commandButton value="#{msg.nuevo}"  
                                                  actionListener="#{nuevoClienteBean.verMascota(null)}" 
                                                  update=":frmNuevoCliente:grMensajes"

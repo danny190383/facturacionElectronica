@@ -209,6 +209,11 @@
                                           width="10%">
                                     <h:outputLabel value="#{producto.marca.nombre}" />
                                 </p:column>
+                                
+                                <p:column headerText="#{msg.estado}" 
+                                          width="4%">
+                                    <h:outputLabel value="#{producto.estado ? msg.activo : msg.inactivo}" />
+                                </p:column>
                              
                                 <p:column headerText="#{msg.opcion}" 
                                           width="8%"
@@ -287,6 +292,11 @@
                                 <p:column headerText="#{msg.servicios}" filterBy="#{servicio.nombre}">
                                     <h:outputLabel value="#{servicio.nombre}" 
                                                    style="font-size: 12px;font-style: normal;font-weight: bold"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.estado}" 
+                                          width="4%">
+                                    <h:outputLabel value="#{servicio.estado ? msg.activo : msg.inactivo}" />
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.costo}"
