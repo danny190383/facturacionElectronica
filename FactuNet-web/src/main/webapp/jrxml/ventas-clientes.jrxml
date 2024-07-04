@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventas-clientes" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventas-clientes" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter1.jrdax"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
@@ -15,9 +27,19 @@
 	<parameter name="sexo" class="java.lang.String"/>
 	<parameter name="tipo" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT persona.codigo,cedula,nombres,apellidos,direccion,email,
-persona.fecha_nacimiento, mantenimiento.nombre as tipo, mantenimiento_sexo.nombre as sexo,
-mantenimiento_ciudad.nombre as ciudad
+		<![CDATA[SELECT 
+persona.codigo,
+cedula,
+nombres,
+apellidos,
+direccion,
+email,
+telefono,
+persona.fecha_nacimiento,
+ mantenimiento.nombre as tipo, 
+ mantenimiento_sexo.nombre as sexo,
+mantenimiento_ciudad.nombre as ciudad,
+mantenimiento_identificacion.nombre as tipo_identificacion
 from cliente inner join tipo_persona
 on cliente.codigo = tipo_persona.codigo inner join persona
 on tipo_persona.persona = persona.codigo inner join tipo_cliente
@@ -26,32 +48,79 @@ on mantenimiento.codigo = tipo_cliente.codigo inner join ciudad
 on ciudad.codigo = persona.ciudad inner join mantenimiento as mantenimiento_ciudad
 on mantenimiento_ciudad.codigo = ciudad.codigo inner join sexo
 on sexo.codigo = persona.sexo inner join mantenimiento as mantenimiento_sexo
-on mantenimiento_sexo.codigo = sexo.codigo
+on mantenimiento_sexo.codigo = sexo.codigo inner join tipo_identificacion
+on persona.tipo_identificacion = tipo_identificacion.codigo  inner join mantenimiento as mantenimiento_identificacion
+on mantenimiento_identificacion.codigo = tipo_identificacion.codigo
 where persona.ciudad::text like $P{ciudad} and persona.sexo::text like $P{sexo} and
 cliente.tipo_cliente::text like $P{tipo} and 
-empresa = $P{empresa} order by persona.nombres]]>
+tipo_persona.empresa = $P{empresa} order by persona.nombres]]>
 	</queryString>
 	<field name="codigo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
 		<fieldDescription><![CDATA[Numero entero que indica la cuenta por cobrar a la que se esta realizando el abono o pago.]]></fieldDescription>
 	</field>
-	<field name="cedula" class="java.lang.String"/>
-	<field name="nombres" class="java.lang.String"/>
-	<field name="apellidos" class="java.lang.String"/>
+	<field name="cedula" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cedula"/>
+		<property name="com.jaspersoft.studio.field.label" value="cedula"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
+	<field name="nombres" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
+	<field name="apellidos" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="apellidos"/>
+		<property name="com.jaspersoft.studio.field.label" value="apellidos"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
 	<field name="direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
 		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
 	</field>
 	<field name="email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
 		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
 	</field>
-	<field name="fecha_nacimiento" class="java.sql.Date"/>
+	<field name="telefono" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.label" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
+	<field name="fecha_nacimiento" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_nacimiento"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_nacimiento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
 	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="mantenimiento"/>
 		<fieldDescription><![CDATA[1 principal
 2 cuenta
 3 tarjeta de credito]]></fieldDescription>
 	</field>
-	<field name="sexo" class="java.lang.String"/>
+	<field name="sexo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="sexo"/>
+		<property name="com.jaspersoft.studio.field.label" value="sexo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="mantenimiento"/>
+	</field>
 	<field name="ciudad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ciudad"/>
+		<property name="com.jaspersoft.studio.field.label" value="ciudad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="mantenimiento"/>
 		<fieldDescription><![CDATA[Ciudad dond esta la bodega.]]></fieldDescription>
+	</field>
+	<field name="tipo_identificacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo_identificacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo_identificacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="mantenimiento"/>
 	</field>
 	<variable name="contador" class="java.lang.Integer" calculation="DistinctCount">
 		<variableExpression><![CDATA[$F{codigo}]]></variableExpression>
@@ -71,7 +140,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 	<pageHeader>
 		<band height="16">
 			<frame>
-				<reportElement mode="Opaque" x="1" y="0" width="554" height="16" backcolor="#9DB1B8" uuid="49a0d759-2933-4e84-a710-24b35c83309d"/>
+				<reportElement mode="Opaque" x="1" y="0" width="799" height="16" backcolor="#9DB1B8" uuid="49a0d759-2933-4e84-a710-24b35c83309d"/>
 				<staticText>
 					<reportElement mode="Transparent" x="5" y="0" width="302" height="16" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="b38111a2-ad78-4b43-be56-e38875e994b9"/>
 					<textElement verticalAlignment="Middle">
@@ -84,8 +153,9 @@ empresa = $P{empresa} order by persona.nombres]]>
 	</pageHeader>
 	<columnHeader>
 		<band height="15">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement mode="Opaque" x="151" y="0" width="58" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c"/>
+				<reportElement mode="Opaque" x="288" y="0" width="69" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -96,10 +166,12 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[RUC]]></text>
+				<text><![CDATA[IDENTIFICACION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="42" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c"/>
+				<reportElement mode="Opaque" x="28" y="0" width="35" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -113,7 +185,9 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[FECHA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="42" y="0" width="109" height="14" backcolor="#999999" uuid="62a957fa-e3a0-46da-8c94-7a3fdaf8fdbb"/>
+				<reportElement mode="Opaque" x="63" y="0" width="180" height="14" backcolor="#999999" uuid="62a957fa-e3a0-46da-8c94-7a3fdaf8fdbb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -127,7 +201,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[CLIENTE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="355" y="0" width="46" height="14" backcolor="#999999" uuid="ddac16f5-ace9-4df4-8924-d633c3ab2bd8"/>
+				<reportElement mode="Opaque" x="600" y="0" width="46" height="14" backcolor="#999999" uuid="ddac16f5-ace9-4df4-8924-d633c3ab2bd8"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -141,7 +215,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[SEXO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="309" y="0" width="46" height="14" backcolor="#999999" uuid="4031290a-c4d5-47ed-8b99-dad9a57e4ee4"/>
+				<reportElement mode="Opaque" x="554" y="0" width="46" height="14" backcolor="#999999" uuid="4031290a-c4d5-47ed-8b99-dad9a57e4ee4"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -155,7 +229,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[TIPO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="209" y="0" width="100" height="14" backcolor="#999999" uuid="ff20d249-440d-4f58-aec2-824c6dece47a"/>
+				<reportElement mode="Opaque" x="357" y="0" width="100" height="14" backcolor="#999999" uuid="ff20d249-440d-4f58-aec2-824c6dece47a"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -169,7 +243,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[DIRECCION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="446" y="0" width="109" height="14" backcolor="#999999" uuid="169a5815-c9db-4122-af84-448f84e3ca0b"/>
+				<reportElement mode="Opaque" x="691" y="0" width="109" height="14" backcolor="#999999" uuid="169a5815-c9db-4122-af84-448f84e3ca0b"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -183,7 +257,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 				<text><![CDATA[CORREO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="401" y="0" width="46" height="14" backcolor="#999999" uuid="f2579238-ffb3-4a01-9076-73cc12f38791"/>
+				<reportElement mode="Opaque" x="646" y="0" width="46" height="14" backcolor="#999999" uuid="f2579238-ffb3-4a01-9076-73cc12f38791"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -196,67 +270,140 @@ empresa = $P{empresa} order by persona.nombres]]>
 				</textElement>
 				<text><![CDATA[CIUDAD]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="243" y="0" width="45" height="14" backcolor="#999999" uuid="695f8170-7e19-4452-bb51-1f7bdc9edeeb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TIPO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="457" y="0" width="98" height="14" backcolor="#999999" uuid="38703cb2-f40a-494b-a16f-63ca8ab695ab"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TELEFONO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="28" height="14" backcolor="#999999" uuid="9482fb0e-7b1a-4ecb-84ed-aa89d095c238">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="13">
 			<frame>
-				<reportElement style="Detail" mode="Opaque" x="0" y="0" width="555" height="13" uuid="ae7e6140-90db-46dd-8330-ad7362e83ade"/>
+				<reportElement style="Detail" mode="Opaque" x="0" y="0" width="800" height="13" uuid="ae7e6140-90db-46dd-8330-ad7362e83ade"/>
 				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="42" y="0" width="108" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4"/>
+					<reportElement mode="Transparent" x="63" y="0" width="180" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
-						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{nombres}+" "+($F{apellidos} == null ? " " : $F{apellidos})]]></textFieldExpression>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="151" y="0" width="57" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="44ccd92a-b799-4e95-9949-56cf02196210"/>
+					<reportElement mode="Transparent" x="288" y="0" width="68" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="44ccd92a-b799-4e95-9949-56cf02196210"/>
 					<textElement verticalAlignment="Middle" rotation="None" markup="none">
-						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="0" y="0" width="42" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="44ccd92a-b799-4e95-9949-56cf02196210"/>
+					<reportElement mode="Transparent" x="28" y="0" width="35" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="44ccd92a-b799-4e95-9949-56cf02196210">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<textElement verticalAlignment="Middle" rotation="None" markup="none">
-						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{fecha_nacimiento}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="209" y="0" width="100" height="13" backcolor="#FFFFFF" uuid="274b83b7-2978-43bf-814f-925126b33d62"/>
+					<reportElement mode="Transparent" x="357" y="0" width="100" height="13" backcolor="#FFFFFF" uuid="274b83b7-2978-43bf-814f-925126b33d62"/>
 					<textElement verticalAlignment="Middle">
 						<font size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="309" y="0" width="46" height="13" backcolor="#FFFFFF" uuid="5f03ecae-9afb-4421-8237-28e28bdc3ed8"/>
+					<reportElement mode="Transparent" x="554" y="0" width="46" height="13" backcolor="#FFFFFF" uuid="5f03ecae-9afb-4421-8237-28e28bdc3ed8"/>
 					<textElement verticalAlignment="Middle">
 						<font size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="447" y="0" width="108" height="13" uuid="8dadfdc4-819e-454b-b9ef-2b62694efd6d"/>
+					<reportElement x="692" y="0" width="108" height="13" uuid="8dadfdc4-819e-454b-b9ef-2b62694efd6d"/>
 					<textElement verticalAlignment="Middle">
 						<font size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="355" y="0" width="46" height="13" backcolor="#FFFFFF" uuid="2dfd0955-04c2-44e7-8364-e220a91ba591"/>
+					<reportElement mode="Transparent" x="600" y="0" width="46" height="13" backcolor="#FFFFFF" uuid="2dfd0955-04c2-44e7-8364-e220a91ba591"/>
 					<textElement verticalAlignment="Middle">
 						<font size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{sexo}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="401" y="0" width="46" height="13" uuid="ed54148c-8f96-4060-b454-8a426a0cd0e6"/>
+					<reportElement x="646" y="0" width="46" height="13" uuid="ed54148c-8f96-4060-b454-8a426a0cd0e6"/>
 					<textElement verticalAlignment="Middle">
 						<font size="7" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ciudad}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="243" y="0" width="45" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="c3a43a75-c2c3-4beb-a8e1-7be5b57d0447">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle" rotation="None" markup="none">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo_identificacion}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="457" y="0" width="98" height="13" backcolor="#FFFFFF" uuid="b30aa5f8-7c73-4914-883b-022dc75140bd"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement mode="Transparent" x="0" y="0" width="28" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="05761139-3d85-428a-9add-78454ef5a1d7">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle" rotation="None" markup="none">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{contador}]]></textFieldExpression>
 				</textField>
 			</frame>
 		</band>
@@ -264,7 +411,7 @@ empresa = $P{empresa} order by persona.nombres]]>
 	<pageFooter>
 		<band height="17">
 			<frame>
-				<reportElement mode="Opaque" x="-20" y="4" width="595" height="13" backcolor="#9DB1B8" uuid="a8b4542b-3745-4618-bb57-7b6b79377aeb"/>
+				<reportElement mode="Opaque" x="-20" y="4" width="820" height="13" backcolor="#9DB1B8" uuid="a8b4542b-3745-4618-bb57-7b6b79377aeb"/>
 				<textField>
 					<reportElement mode="Transparent" x="361" y="0" width="194" height="13" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="218542f6-e181-4a91-8302-e22cfc62b658"/>
 					<textElement textAlignment="Right"/>

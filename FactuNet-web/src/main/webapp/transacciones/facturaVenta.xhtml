@@ -473,7 +473,8 @@
                         </p:tab>
                         <p:tab title="#{msg.retencion}"
                                rendered="#{facturaVentaBean.facturaVenta.estado ne 1 and
-                                           facturaVentaBean.facturaVenta.tipoDocumento ne 22}">
+                                           facturaVentaBean.facturaVenta.tipoDocumento ne 22 and
+                                           login.estadoOpcion(2)}">
                             <p:dataTable var="documento" 
                                          id="tablaDocRetencion"
                                          value="#{facturaVentaBean.facturaVenta.documentoRetencion}" 
@@ -524,7 +525,7 @@
                                     </p:cellEditor>
                                 </p:column>
                                 <p:column headerText="#{msg.observacion}">
-                                     <p:cellEditor>
+                                    <p:cellEditor>
                                         <f:facet name="output">
                                             <h:outputLabel value="#{documento.observacion}"/>
                                         </f:facet>
@@ -636,7 +637,8 @@
                             </p:dataTable>
                         </p:tab>
                         <p:tab title="#{msg.guia} #{msg.remision}"
-                               rendered="#{facturaVentaBean.facturaVenta.tipoDocumento ne 22}">
+                               rendered="#{facturaVentaBean.facturaVenta.tipoDocumento ne 22 and
+                                           login.estadoOpcion(1)}">
                             <p:dataTable var="guia"
                                          value="#{facturaVentaBean.facturaVenta.guiaRemisionList}"
                                          id="tablaGuia"
@@ -741,6 +743,89 @@
                                     </p:row>
                                 </p:columnGroup>
                             </p:dataTable>
+                        </p:tab>
+                        <p:tab title="#{msg.infoAdicional}"
+                               rendered="#{login.estadoOpcion(3)}"> 
+                            <p:dataTable var="infoAd"
+                                         id="tablaInfoAdicional"
+                                         value="#{facturaVentaBean.facturaVenta.facturaInfoAdicionalList}"
+                                         style="width: 90%"
+                                         rowIndexVar="indexInfo"
+                                         emptyMessage="#{msg.tablaVacia}"
+                                         editable="true" 
+                                         editMode="cell">
+
+                                <f:facet name="header" >
+                                    <h:panelGrid columns="2"
+                                                 width="50%"
+                                                 style="border: hidden">
+                                        <p:selectOneMenu value="#{facturaVentaBean.infoAdicionalSlc}"
+                                                         style="width: 300px"
+                                                         converter="omnifaces.SelectItemsConverter">
+                                            <f:selectItems value="#{facturaVentaBean.listaCatalogoInfoAdicional}" 
+                                                            var="informacionAD"
+                                                            itemLabel="#{informacionAD.nombre}"
+                                                            itemValue="#{informacionAD}"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton actionListener="#{facturaVentaBean.agregarInfoAdicional}"
+                                                        icon="ui-icon-check" 
+                                                        value="#{msg.agregar}"
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipalDatos:tablaInfoAdicional"/>
+
+                                    </h:panelGrid>
+                                </f:facet>
+
+                                <p:column headerText="#{msg.infoAdicional}"
+                                          style="text-align: left"
+                                          width="150">
+                                    <h:outputText value="#{infoAd.infoAdicional.nombre}" />
+                                </p:column>
+
+                                <p:column headerText="#{msg.valor}">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <p:inputText value="#{infoAd.valor}" 
+                                                         placeholder="Numero Entero"
+                                                         rendered="#{infoAd.infoAdicional.tipoDato eq 1}"/>
+                                            <p:inputText value="#{infoAd.valor}" 
+                                                         rendered="#{infoAd.infoAdicional.tipoDato eq 2}"
+                                                         placeholder="Numero Decimal"/>
+                                            <p:inputTextarea value="#{infoAd.valor}" 
+                                                             style="width: 60%"
+                                                             rows="2"
+                                                             rendered="#{infoAd.infoAdicional.tipoDato eq 3}"
+                                                             placeholder="Texto"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputNumber value="#{infoAd.valor}"
+                                                           decimalPlaces="0"
+                                                           rendered="#{infoAd.infoAdicional.tipoDato eq 1}"/>
+                                            <p:inputNumber value="#{infoAd.valor}" 
+                                                           decimalPlaces="2"
+                                                           rendered="#{infoAd.infoAdicional.tipoDato eq 2}"/>
+                                            <p:inputTextarea value="#{infoAd.valor}" 
+                                                             style="width: 60%"
+                                                             rows="2"
+                                                             maxlength="300"
+                                                             rendered="#{infoAd.infoAdicional.tipoDato eq 3}"/>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                                <p:column headerText="#{msg.opcion}" 
+                                          width="50"
+                                          style="text-align: center">
+
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:tabPrincipalDatos:tablaInfoAdicional" 
+                                                      actionListener="#{facturaVentaBean.eliminarInfoAdicional(indexInfo)}"
+                                                      title="#{msg.eliminar}">
+                                          <p:confirm header="#{msg.confirmacion}" 
+                                                     message="#{msg.eliminar}" 
+                                                     icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </p:column>
+                           </p:dataTable>
                         </p:tab>
                     </p:tabView>
                     <p:dataTable var="items" 
@@ -1222,7 +1307,7 @@
                         
                         <p:columnGroup type="footer">
                             <p:row>
-                                <p:column rowspan="11"
+                                <p:column rowspan="12"
                                           colspan="7">
                                 </p:column>
                             </p:row>
@@ -1255,12 +1340,14 @@
                                           colspan="4"/>
                                 <p:column footerText="#{facturaVentaBean.facturaVenta.total}" style="text-align:right"/>
                             </p:row>
-                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1 and
+                                               login.estadoOpcion(2)}">
                                 <p:column footerText="#{msg.retencion}" style="text-align:right"
                                           colspan="4"/>
                                 <p:column footerText="#{facturaVentaBean.facturaVenta.totalRetencion}" style="text-align:right"/>
                             </p:row>
-                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1}">
+                            <p:row rendered="#{facturaVentaBean.facturaVenta.estado ne 1 and
+                                               login.estadoOpcion(2)}">
                                 <p:column footerText="#{msg.valorPagar} - #{msg.retencion}" style="text-align:right"
                                           colspan="4"/>
                                 <p:column footerText="#{facturaVentaBean.facturaVenta.totalPagar}" style="text-align:right"/>

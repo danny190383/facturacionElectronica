@@ -11,6 +11,11 @@
     </h:head>
 
     <h:body>
+        <style>
+            .columna{
+                vertical-align: top;
+            }
+        </style>
         <h:form style="width: 100%"
                 id="frmBusquedaProductos">
             
@@ -37,16 +42,23 @@
                     </p:tab>
                 </c:forEach>
             </p:tabView>
+            
+            <p:selectOneButton value="#{buscarProductosStockBean.opcion}"
+                               rendered="#{!buscarProductosStockBean.visible}">
+                <p:ajax listener="#{buscarProductosStockBean.escogerTipo}"
+                        update=":frmBusquedaProductos:flsProductos"/>
+                <f:selectItem itemLabel="#{msg.producto}" itemValue="P" />
+                <f:selectItem itemLabel="#{msg.servicios}" itemValue="S" />
+                <f:selectItem itemLabel="#{msg.paquetes}" itemValue="PA" />
+            </p:selectOneButton>
 
+            <h:panelGrid columns="2"
+                         width="100%"
+                         columnClasses="columna, columna">
+            
             <p:fieldset id="flsProductos">
-                <p:selectOneButton value="#{buscarProductosStockBean.opcion}"
-                                   rendered="#{!buscarProductosStockBean.visible}">
-                    <p:ajax listener="#{buscarProductosStockBean.escogerTipo}"
-                            update=":frmBusquedaProductos:flsProductos"/>
-                    <f:selectItem itemLabel="#{msg.producto}" itemValue="P" />
-                    <f:selectItem itemLabel="#{msg.servicios}" itemValue="S" />
-                    <f:selectItem itemLabel="#{msg.paquetes}" itemValue="PA" />
-                </p:selectOneButton>
+                
+                
                 <h:panelGrid columns="2"
                              rendered="#{buscarProductosStockBean.opcion eq 'P'}">
                     <h:outputLabel value="#{msg.bodega}"
@@ -63,34 +75,38 @@
                                          itemValue="#{bodega.codigo}" />
                     </p:selectOneMenu>
                 </h:panelGrid>
+                
                 <p:dataTable var="producto" 
                             id="tablaProductos"
                             value="#{buscarProductosStockBean.lazyModelStock}" 
                             paginator="true" 
                             emptyMessage="#{msg.tablaVacia}"
-                            rows="5" 
+                            rows="8" 
                             lazy="true"  
                             rowKey="#{producto.productoBodega.codigo}"
                             style="position: static; top: 0px"
-                            resizableColumns="true"
-                            resizeMode="expand"
-                            widgetVar="tablaProductosWidgetVar"
-                            rendered="#{buscarProductosStockBean.opcion eq 'P'}">
+                            rendered="#{buscarProductosStockBean.opcion eq 'P'}"
+                            widgetVar="tablaProductosWidgetVar">
 
                     <p:ajax event="rowSelectRadio" 
                             listener="#{buscarProductosStockBean.onRowSelect}" 
-                            update=":frmBusquedaProductos:tablaSeleccionados, mdlLoteProducto" />
+                            update=":frmBusquedaProductos:tablaSeleccionados, mdlLoteProducto"
+                            oncomplete="PF('tablaProductosWidgetVar').unselectAllRows();"/>
 
-                    <p:column selectionMode="single" style="width:16px;text-align:center"/>
+                    <p:column selectionMode="single" 
+                              style="text-align:center"
+                              width="4%"/>
 
                     <p:column headerText="#{msg.codigoBarras}" 
                               filterBy="#{producto.productoBodega.codigoBarras}"
-                              width="110">
+                              width="10%"
+                              visible="false">
                         <h:outputLabel value="#{producto.productoBodega.codigoBarras}" />
                     </p:column>
 
                     <p:column headerText="#{msg.producto}" 
-                              filterBy="#{producto.productoBodega.nombre}">
+                              filterBy="#{producto.productoBodega.nombre}"
+                              width="30%">
                         <p:tooltip for="imgHelp">
                             <p:outputLabel value="#{producto.productoBodega.grupo.nombre} - #{producto.productoBodega.descripcion}"/>
                         </p:tooltip>
@@ -102,38 +118,41 @@
                                        style="font-size: 12px;font-style: normal;font-weight: bold"/>
                     </p:column>
 
-                    <p:column headerText="#{msg.grupo}" 
-                              filterBy="#{producto.productoBodega.grupo.nombre}"
-                              width="100"
-                              rendered="#{!buscarProductosStockBean.visible}">
-                         <h:outputLabel value="#{producto.productoBodega.grupo.nombre}" />
-                    </p:column>
-
                     <p:column headerText="#{msg.modelo}" 
                               filterBy="#{producto.productoBodega.modelo}"
-                              width="110">
+                              visible="false"
+                              width="15%">
                         <h:outputLabel value="#{producto.productoBodega.modelo}"/>
                     </p:column>
 
                     <p:column headerText="#{msg.marca}" 
                               filterBy="#{producto.productoBodega.marca.nombre}"
-                              width="110">
+                              width="15%">
                         <h:outputLabel value="#{producto.productoBodega.marca.nombre}"/>
                     </p:column>
 
                     <p:column headerText="#{msg.stock}" 
-                              width="50"
+                              width="5%"
                               style="text-align: right">
                         <h:outputLabel value="#{producto.stock}" 
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                                       style="font-size: 13px;font-style: normal;font-weight: bold">
+                            <f:convertNumber type="number" 
+                                             groupingUsed="true" 
+                                             minFractionDigits="0"
+                                             pattern="#0.00"/>
+                        </h:outputLabel>
                     </p:column>
 
                     <p:column headerText="#{msg.pvp}" 
-                              width="80">
-                           <p:inputNumber value="#{producto.productoBodega.pvp}" 
-                                   decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
-                                   minValue="0" readonly="true" disabled="true"
-                                   inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                              width="5%"
+                              style="text-align: right">
+                        <h:outputLabel value="#{producto.productoBodega.pvp}"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold">
+                            <f:convertNumber type="number" 
+                                             groupingUsed="true" 
+                                             minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                             pattern="#0.00"/>
+                        </h:outputLabel>
                     </p:column>
                 </p:dataTable>
 
@@ -142,12 +161,11 @@
                              value="#{buscarProductosStockBean.lazyModelServicios}" 
                              paginator="true" 
                              emptyMessage="#{msg.tablaVacia}"
-                             rows="5" 
+                             rows="8" 
                              lazy="true"   
                              rowKey="#{servicio.codigo}"
                              style="position: static; top: 0px"
-                             resizableColumns="true"
-                             resizeMode="expand"
+                             
                              widgetVar="tablaProductosSWidgetVar"
                              rendered="#{buscarProductosStockBean.opcion eq 'S'}">
 
@@ -157,34 +175,33 @@
                             oncomplete="PF('tablaProductosSWidgetVar').unselectAllRows();"/>
 
                     <p:column selectionMode="single" 
-                              style="width:16px;text-align:center"/>
+                              style="text-align:center"
+                              width="4%"/>
 
                     <p:column headerText="#{msg.codigoBarras}" 
                               filterBy="#{servicio.codigoBarras}"
-                              width="110"
+                              width="10%"
                               visible="false">
                         <h:outputLabel value="#{servicio.codigoBarras}" />
                     </p:column>
 
-                    <p:column headerText="#{msg.servicios}" filterBy="#{servicio.nombre}">
+                    <p:column headerText="#{msg.servicios}" 
+                              filterBy="#{servicio.nombre}"
+                              width="30%">
                         <h:outputLabel value="#{servicio.nombre}" 
                                        style="font-size: 13px;font-style: normal;font-weight: bold"/>
                     </p:column>
 
-                    <p:column headerText="#{msg.grupo}" filterBy="#{servicio.grupo.nombre}"
-                              width="150"
-                              rendered="#{!buscarProductosStockBean.visible}">
-                        <h:outputLabel value="#{servicio.grupo.nombre}" 
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
-                    </p:column>
-
                     <p:column headerText="#{msg.pvp}" 
-                              width="100"
+                              width="6%"
                               style="text-align: right">
-                        <p:inputNumber value="#{servicio.pvp}" 
-                               decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
-                               minValue="0" readonly="true" disabled="true"
-                               inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                        <h:outputLabel value="#{servicio.pvp}"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold">
+                            <f:convertNumber type="number" 
+                                             groupingUsed="true" 
+                                             minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                             pattern="#0.00"/>
+                        </h:outputLabel>
                     </p:column>
                 </p:dataTable>
 
@@ -193,17 +210,17 @@
                              value="#{buscarProductosStockBean.lazyModelPaquetes}" 
                              paginator="true" 
                              emptyMessage="#{msg.tablaVacia}"
-                             rows="5" 
+                             rows="8" 
                              lazy="true" 
                              rowKey="#{paquete.codigo}"
                              style="position: static; top: 0px"
-                             resizableColumns="true"
-                             resizeMode="expand"
                              rendered="#{buscarProductosStockBean.opcion eq 'PA'}">
 
-                    <p:column selectionMode="single" style="width:16px;text-align:center"/>
+                    <p:column selectionMode="single" 
+                              style="text-align:center"
+                              width="4%"/>
 
-                    <p:column style="width:16px">
+                    <p:column width="3%">
                         <p:rowToggler/>
                     </p:column>
 
@@ -215,7 +232,8 @@
                         <p:dataTable var="paqueteP"
                                      value="#{paquete.paqueteVentaList}"
                                      rows="10"
-                                     paginator="true">
+                                     paginator="true"
+                                     emptyMessage="#{msg.tablaVacia}">
 
                             <p:column headerText="#{msg.codigoBarras}"
                                       width="110"
@@ -242,26 +260,19 @@
 
                     <p:column headerText="#{msg.codigoBarras}" 
                               filterBy="#{paquete.codigoBarras}"
-                              width="110">
+                              visible="false">
                         <h:outputLabel value="#{paquete.codigoBarras}" />
                     </p:column>
 
                     <p:column headerText="#{msg.paquetes}" 
-                              filterBy="#{paquete.nombre}">
+                              filterBy="#{paquete.nombre}"
+                              width="30%">
                         <h:outputLabel value="#{paquete.nombre}" 
                                        style="font-size: 13px;font-style: normal;font-weight: bold"/>
                     </p:column>
 
-                    <p:column headerText="#{msg.grupo}" 
-                              filterBy="#{paquete.grupo.nombre}"
-                              width="150"
-                              rendered="#{!buscarProductosStockBean.visible}">
-                        <h:outputLabel value="#{paquete.grupo.nombre}" 
-                                       style="font-size: 13px;font-style: normal;font-weight: bold"/>
-                    </p:column>
-
                     <p:column headerText="#{msg.pvp}"
-                              width="80">
+                              width="10%">
                         <p:inputNumber value="#{paquete.pvp}" 
                                decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
                                minValue="0" readonly="true" disabled="true"
@@ -286,7 +297,8 @@
                     </f:facet>
                     
                     <p:column headerText="#{msg.lote}" 
-                              width="7%">
+                              width="7%"
+                              visible="false">
                         <h:outputLabel value="#{selec.lote.codigo}" /><br/>
                         <h:outputLabel value="#{selec.lote.fechaCaducidad}" >
                             <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
@@ -299,25 +311,29 @@
                     </p:column>
 
                     <p:column headerText="#{msg.grupo}" 
-                              width="7%">
+                              width="10%"
+                              visible="false">
                         <h:outputLabel value="#{selec.grupo.nombre}" />
                     </p:column>
 
                     <p:column headerText="#{msg.pvp}" 
-                              width="7%"
+                              width="5%"
                               style="text-align: right">
-                        <p:inputNumber value="#{selec.pvp}" 
-                                       decimalPlaces="#{login.empleado.cuenta.empleado.empresa.decimales}"
-                                       minValue="0" readonly="true" disabled="true"
-                                       inputStyle="width:80%;font-size: 13px;font-style: normal;font-weight: bold;text-align: right"/>
+                        <h:outputLabel value="#{selec.pvp}"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold">
+                            <f:convertNumber type="number" 
+                                             groupingUsed="true" 
+                                             minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                             pattern="#0.00"/>
+                        </h:outputLabel>
                     </p:column>
                     
                     <p:column headerText="#{msg.observacion}" >
-                        <p:inputTextarea rows="2" cols="30" 
-                                        autoResize="false" 
-                                        maxlength="800"
-                                        style="width: 90%"
-                                        value="#{selec.observacion}">
+                        <p:inputTextarea cols="30" 
+                                         autoResize="false" 
+                                         maxlength="800"
+                                         style="width: 90%;height: 20px"
+                                         value="#{selec.observacion}">
                             <p:ajax event="change"/>
                         </p:inputTextarea>
                     </p:column>
@@ -333,7 +349,7 @@
                     </p:column>
 
                     <p:column style="text-align: center"
-                              width="3%">
+                              width="4%">
                         <p:commandButton  icon="ui-icon-close" 
                                           update="tablaSeleccionados,:frmBusquedaProductos:flsProductos" 
                                           actionListener="#{buscarProductosStockBean.eliminar(selec)}"
@@ -345,6 +361,8 @@
                     </p:column>
                 </p:dataTable>
             </p:fieldset>
+            
+            </h:panelGrid>
             <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode"  >
                 <table width="200" align="center" border="0">
                     <tr>

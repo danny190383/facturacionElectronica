@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
         <h:outputStylesheet name="css/default.css"/>
@@ -53,12 +54,11 @@
                 border: none;
             }
         </style>
-         <script src="https://kit.fontawesome.com/75ec3b7252.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/75ec3b7252.js" crossorigin="anonymous"></script>
     </h:head>
 
     <h:body>
             <script type="text/javascript" src = "../resources/js/script.js"/>
-           
             <p:ajaxStatus id="ajxStatus01" 
                           onstart="PF('statusDialog').show();" 
                           onsuccess="PF('statusDialog').hide();"/> 
@@ -183,17 +183,25 @@
                          style="min-height: 100vh; background: ##{request.getParameter('color')}; border:none;">
                 <p:spacer width="55"/>
                 <p:fieldset style="min-height: 100vh;">
-                <h:form id="frmCabecera">
-                    <p:growl id="grMensajes"  
-                             widgetVar="grMensajes" 
-                             showDetail="false">
-                    </p:growl> 
-                    <p:spacer height="67"/>
-                    <ui:insert name="botones"/> 
-                    <ui:insert name="content" id="content"></ui:insert>
-                    
-                </h:form>
-                    </p:fieldset>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="FIN DE CONTRATO:"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold;color: red"/>
+                        <p:outputLabel value="#{login.empleado.empresa.fechaHasta}"
+                                       style="font-size: 13px;font-style: normal;font-weight: bold">
+                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                pattern="#{parametrosApplication.formatoFecha}"/>
+                        </p:outputLabel>
+                    </h:panelGrid>
+                    <h:form id="frmCabecera">
+                        <p:growl id="grMensajes"  
+                                 widgetVar="grMensajes" 
+                                 showDetail="false">
+                        </p:growl> 
+                        <p:spacer height="40"/>
+                        <ui:insert name="botones"/> 
+                        <ui:insert name="content" id="content"></ui:insert>
+                    </h:form>
+                </p:fieldset>
             </h:panelGrid>
             
             <h:form>

@@ -26,6 +26,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.PrimeFaces;
 
 @ManagedBean
@@ -111,6 +112,7 @@ public class CuentaCobroBean implements Serializable{
     {
         this.cuentaFactura = new CuentaFactura();
         this.cuentaFactura.setFechaVencimiento(new Date());
+        this.cuentaFactura.setDetalle(StringUtils.EMPTY); 
     }
     
     public void verificarRetencion()
@@ -232,6 +234,7 @@ public class CuentaCobroBean implements Serializable{
                 if(this.retencion != null){
                     pago1.setFactura(this.retencion.getFactura()); 
                 }
+                pago1.setObservacion(this.cuentaFactura.getDetalle()); 
                 pago1.setFormaPago(this.setearFormaPago());
                 pago1.setValor(this.montoPago);
                 if(pago1.getFormaPago().getCodigo() == 149)

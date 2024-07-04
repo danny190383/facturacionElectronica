@@ -36,7 +36,7 @@
                                        minValue="0" id="txtMontoPago"
                                        inputStyle="width: 100px;background-color: khaki;text-align: right;font-size: 20px;font-weight: bold;color: red;">
                         </p:inputNumber>
-                        <p:commandButton actionListener="#{cuentaCobroBean.agregarPago()}"
+                        <p:commandButton actionListener="#{cuentaCobroBean.agregarPago}"
                                         icon="ui-icon-check"
                                         style="width:100px;height:38px"
                                         value="#{msg.agregar} #{msg.pago}"
@@ -187,6 +187,10 @@
                 <p:column headerText="#{msg.formaPago}">
                     <h:outputLabel value="#{items.formaPago.nombre}" />
                 </p:column>
+                    
+                <p:column headerText="#{msg.detalle}">
+                    <h:outputLabel value="#{items.observacion}" />
+                </p:column>
                 
                 <p:column headerText="#{msg.valor}"
                           width="100"
@@ -253,13 +257,13 @@
                 <p:columnGroup type="footer">
                     <p:row>
                         <p:column footerText="#{msg.totalAplicado}" 
-                                  colspan="2" style="text-align:right;font-size: 20px;font-weight: bold;"/>
+                                  colspan="3" style="text-align:right;font-size: 20px;font-weight: bold;"/>
                         <p:column footerText="#{cuentaCobroBean.totalPagos}" style="text-align:right;font-size: 20px;font-weight: bold;color: red;"/>
                     </p:row>
                 </p:columnGroup>
                 
                 <p:column headerText="#{msg.opcion}" 
-                          width="50"
+                          width="60"
                           style="text-align: center">
 
                     <p:commandButton icon="ui-icon-close" 

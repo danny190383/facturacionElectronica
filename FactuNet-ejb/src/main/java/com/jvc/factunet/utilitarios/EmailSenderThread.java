@@ -1,5 +1,6 @@
 package com.jvc.factunet.utilitarios;
 
+import java.io.IOException;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -14,6 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
 
 public class EmailSenderThread {
 
@@ -24,8 +26,9 @@ public class EmailSenderThread {
     private String mensaje;
     private String pathArchivoPDF;
     private String pathArchivoXML;
+    private String pathEmpresa;
 
-    public EmailSenderThread(String usuario, String password, String destinatarios, String asunto, String mensaje, String archivo, String xml) {
+    public EmailSenderThread(String usuario, String password, String destinatarios, String asunto, String mensaje, String archivo, String xml, String pathEmpresa) {
         this.usuario = usuario;
         this.password=password;
         this.destinatarios = destinatarios;
@@ -33,6 +36,7 @@ public class EmailSenderThread {
         this.mensaje = mensaje;
         this.pathArchivoPDF = archivo;
         this.pathArchivoXML = xml;
+        this.pathEmpresa = pathEmpresa;
     }
 
     public Properties mailProperties() {
@@ -66,6 +70,16 @@ public class EmailSenderThread {
             message.setFrom(new InternetAddress(usuario));
             message.addRecipients(Message.RecipientType.TO, destinatarios);
             MimeMultipart multipart = new MimeMultipart();
+            
+            // First Image
+            String headerImgPath = pathEmpresa + "FACTUYES.png";
+            MimeBodyPart headerImagePart = new MimeBodyPart();
+            headerImagePart.attachFile(headerImgPath);
+            headerImagePart.setContentID("<header>");
+            headerImagePart.setDisposition(MimeBodyPart.INLINE);
+            multipart.addBodyPart(headerImagePart);
+            
+            // Mensage texto
             MimeBodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setContent(mensaje, "text/html");
             multipart.addBodyPart(messageBodyPart);
@@ -95,6 +109,8 @@ public class EmailSenderThread {
             e.printStackTrace();
             return "INVALID_EMAIL";
         } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return "ERROR";

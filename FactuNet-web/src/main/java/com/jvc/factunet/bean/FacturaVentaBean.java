@@ -2,11 +2,14 @@ package com.jvc.factunet.bean;
 
 import com.jvc.factunet.bean.externos.CuentaCobroBean;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
+import com.jvc.factunet.entidades.CatalogoInfoAdicional;
 import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.ComisionTarjeta;
 import com.jvc.factunet.entidades.DetalleFacturaImpuestoTarifa;
+import com.jvc.factunet.entidades.DocumentoRetencion;
 import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.FacturaDetalleSeries;
+import com.jvc.factunet.entidades.FacturaInfoAdicional;
 import com.jvc.factunet.entidades.FacturaPago;
 import com.jvc.factunet.entidades.FacturaVenta;
 import com.jvc.factunet.entidades.FormaPago;
@@ -29,6 +32,7 @@ import com.jvc.factunet.entidades.TarjetaEmpresa;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.JasperReportUtil;
 import com.jvc.factunet.print.Ticket;
+import com.jvc.factunet.servicios.CatalogoInfoAdicionalServicio;
 import com.jvc.factunet.servicios.ClienteServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.ProductoBodegaServicio;
@@ -73,6 +77,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private PuntoVentaServicio puntoVentaServicio;
     @EJB
     private ProductoBodegaServicio productoBodegaServicio;
+    @EJB
+    private CatalogoInfoAdicionalServicio catalogoInfoAdicionalServicio;
     
     private FacturaVenta facturaVenta;
     private Cliente cliente;
@@ -93,6 +99,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private final List<FacturaVenta> listaFacturaVentas = new ArrayList<>();
     private List<FacturaDetalle> lotes;
     private BigDecimal recepcion;
+    private List<CatalogoInfoAdicional> listaCatalogoInfoAdicional;
+    private CatalogoInfoAdicional infoAdicionalSlc;
 
     public FacturaVentaBean() {
         this.recepcion = BigDecimal.ZERO;
@@ -100,6 +108,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.listaTarjetaEmpresa = new ArrayList<>();
         this.listaComisionTarjeta = new ArrayList<>();
         this.listaPuntoVenta = new ArrayList<>();
+        this.listaCatalogoInfoAdicional = new ArrayList<>();
         this.lotes = new ArrayList<>();
         this.efectivo = Boolean.TRUE;
         this.tarjeta = Boolean.FALSE;
@@ -163,7 +172,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.facturaVenta.setCliente(new Cliente());
         this.facturaVenta.setNumero(0);
         this.facturaVenta.setDescripcion(StringUtils.EMPTY);
-        this.facturaVenta.setTarifaIva(this.getIvaEmpresa()); 
         this.iniciarCliente();
         super.setDescuento(BigDecimal.ZERO);
         super.setComision(BigDecimal.ZERO);
@@ -184,6 +192,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.listaComisionTarjeta.addAll(this.listaTarjetaEmpresa.get(0).getComisionTarjetaList());
         this.tarjetaEmpresaSlc = this.listaTarjetaEmpresa.get(0).getCodigo();
         this.comisionTarjetaSlc = this.listaTarjetaEmpresa.get(0).getComisionTarjetaList().get(0).getCodigo();  
+        this.listaCatalogoInfoAdicional.clear();
+        this.listaCatalogoInfoAdicional.addAll(this.catalogoInfoAdicionalServicio.listar());
         this.efectivo = Boolean.TRUE;
         this.tarjeta = Boolean.FALSE;
         this.credito = Boolean.FALSE;
@@ -244,7 +254,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                     detalle.setPvp(servicio.getProductoServicio().getPvp());
                     detalle.setPrecioVentaUnitario(servicio.getProductoServicio().getPvp());
                     detalle.setPrecioVentaUnitarioDescuento(servicio.getProductoServicio().getPvp());
-                    detalle.setPvpIva(servicio.getProductoServicio().getPvp().add(servicio.getProductoServicio().getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    detalle.setPvpIva(servicio.getProductoServicio().getPvp().add(servicio.getProductoServicio().getPvp().multiply(ivaProducto(servicio.getProductoServicio()).divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
                     detalle.setSubtotalSinDescuento(detalle.getPvp().multiply(servicio.getCantidad()));
                     detalle.setSubtotalConDescuento(detalle.getPvp().multiply(servicio.getCantidad()));
                     detalle.setValorComision(BigDecimal.ZERO);
@@ -308,7 +318,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                     detalle.setPrecioVentaUnitario(detalle.getPvp());
                     detalle.setPrecioVentaUnitarioDescuento(detalle.getPrecioVentaUnitario());
                     detalle.setPrecioUnitarioTmp(detalle.getPrecioVentaUnitario());
-                    detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(ivaProducto(detalle.getProductoServicio()).divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
                     detalle.setSubtotalSinDescuento((detalle.getPvp().multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
                     detalle.setSubtotalConDescuento(detalle.getSubtotalSinDescuento());
                     detalle.setValorComision(BigDecimal.ZERO);
@@ -960,9 +970,9 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         options.put("draggable", false);
         options.put("modal", true);
         options.put("modal", true);
-        options.put("width", 750);
+        options.put("width", 800);
         options.put("height", 500);
-        options.put("contentWidth", 750);
+        options.put("contentWidth", 800);
         options.put("contentHeight", 500);
         PrimeFaces.current().dialog().openDynamic("/busquedas/buscarClientesDialog", options, null);
     }
@@ -1153,8 +1163,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.facturaVenta.setCliente(proforma.getCliente());
             this.cliente = facturaVenta.getCliente();
             this.facturaVenta.setSubtotal(proforma.getSubtotal());
-//            this.facturaVenta.setSubtotalConIva(proforma.getSubtotalConIva());
-//            this.facturaVenta.setSubtotalSinIva(proforma.getSubtotalSinIva());
             this.facturaVenta.setTotal(proforma.getTotal());
             this.facturaVenta.setTotalPagar(proforma.getTotal());
             this.facturaVenta.setIva(proforma.getIva());
@@ -1186,7 +1194,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                     }
                 }
                 detalle.setPvp(detalle.getProductoServicio().getPvp());
-                detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
+                detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(ivaProducto(detalle.getProductoServicio()).divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
                 this.facturaVenta.getFacturaDetalleList().add(detalle);
             }
         }
@@ -1390,6 +1398,26 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         }
         return BigDecimal.ZERO;
     }
+    
+    public void agregarInfoAdicional() {
+        if(this.facturaVenta.getFacturaInfoAdicionalList() == null){
+            this.facturaVenta.setFacturaInfoAdicionalList(new ArrayList<>());
+        }
+        FacturaInfoAdicional facturaInfoAdicional = new FacturaInfoAdicional();
+        facturaInfoAdicional.setInfoAdicional(infoAdicionalSlc);
+        facturaInfoAdicional.setFactura(facturaVenta); 
+        this.facturaVenta.getFacturaInfoAdicionalList().add(facturaInfoAdicional);
+    }
+    
+    public void eliminarInfoAdicional(int facturaInfoAdicional) {
+        try {
+            facturaVenta.getFacturaInfoAdicionalList().remove(facturaInfoAdicional);
+            FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroEliminado"));
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "No se puede eliminar.", e);
+            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registronoEliminado"));
+        }
+    }
 
     public Boolean getConsumidor() {
         return consumidor;
@@ -1586,12 +1614,25 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     }
     
     public void verificarLores(){
+        String cantidad = null;
         if(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta() != null)
         {
+            if(super.getEmpresa().getUsaBalanza()){
+                if(super.getCodigoBarras().length() >= super.getEmpresa().getNumeroCaracteresBalanza() + 4){
+                    String entero = super.getCodigoBarras().substring(super.getEmpresa().getNumeroCaracteresBalanza(), super.getEmpresa().getNumeroCaracteresBalanza() + 2);
+                    String decimal= super.getCodigoBarras().substring(super.getEmpresa().getNumeroCaracteresBalanza() + 2, super.getEmpresa().getNumeroCaracteresBalanza() + 4);;
+                    cantidad = entero + "." + decimal;
+                    super.setCodigoBarras(super.getCodigoBarras().substring(0, super.getEmpresa().getNumeroCaracteresBalanza()));
+                }
+            }
             super.setProductoVer(this.productoBodegaServicio.buscarCodigoBarras(super.getCodigoBarras(), super.getEmpresa().getCodigo(), ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta().getBodega().getCodigo()));
         }
         if(super.getProductoVer() != null)
         {
+            if(super.getEmpresa().getUsaBalanza()){
+                
+                super.getProductoVer().setCantidad(new BigDecimal(cantidad));  
+            }
             if(super.getProductoVer() instanceof ProductoBodega){
                 this.lotes.clear();
                 this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCero(super.getProductoVer().getCodigo()));
@@ -1773,8 +1814,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                             factura.getSubtotal().toString(),
                             BigDecimal.ZERO.toString(),
                             BigDecimal.ZERO.toString(),
-//                                       factura.getSubtotalSinIva().setScale(2,RoundingMode.FLOOR).toString(),
-//                                       factura.getSubtotalConIva().setScale(2,RoundingMode.FLOOR).toString(),
                             factura.getIva().toString(),
                             factura.getTotal().toString(),
                             mesa == null ? " " : mesa);
@@ -1799,7 +1838,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 {
                     Ticket ticket = new Ticket(factura.getEmpresa(),
                             factura.getPuntoVenta(),
-                            factura.getNumero().toString(),
+                            "FACTURA Nº: "+factura.getPuntoVenta().getCodigoSriEmpresa()+"-"+factura.getPuntoVenta().getCodigoSri()+"-"+factura.getDespacharA(),
                             factura.getCodigoBarras(),
                             super.getEmpresa().getCiudad().getNombre() + "," + Fecha.formatoDateStringF0(factura.getFecha()),
                             nombreCompleto,
@@ -1840,5 +1879,21 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
 
     public void setRecepcion(BigDecimal recepcion) {
         this.recepcion = recepcion;
+    }
+
+    public CatalogoInfoAdicional getInfoAdicionalSlc() {
+        return infoAdicionalSlc;
+    }
+
+    public void setInfoAdicionalSlc(CatalogoInfoAdicional infoAdicionalSlc) {
+        this.infoAdicionalSlc = infoAdicionalSlc;
+    }
+    
+    public List<CatalogoInfoAdicional> getListaCatalogoInfoAdicional() {
+        return listaCatalogoInfoAdicional;
+    }
+
+    public void setListaCatalogoInfoAdicional(List<CatalogoInfoAdicional> listaCatalogoInfoAdicional) {
+        this.listaCatalogoInfoAdicional = listaCatalogoInfoAdicional;
     }
 }

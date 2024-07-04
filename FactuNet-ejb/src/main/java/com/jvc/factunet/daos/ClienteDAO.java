@@ -14,7 +14,7 @@ import javax.persistence.Query;
 public class ClienteDAO extends GenericDAO{
     
     public List<Cliente> listar(Integer empresa, int maxResults, int firstResult) {
-        Query q = em.createQuery("select o from Cliente o Where o.empresa.codigo = ?1");
+        Query q = em.createQuery("select o from Cliente o Where o.empresa.codigo = ?1 order by o.persona.nombres,o.persona.apellidos");
         q.setParameter(1, empresa);
         q.setMaxResults(maxResults);
         q.setFirstResult(firstResult);
@@ -69,7 +69,7 @@ public class ClienteDAO extends GenericDAO{
             }
             Query q = em.createQuery("select o from Cliente o Where o.empresa.codigo = :empresa "
                     + sql
-                    + "order by o.persona.nombres");
+                    + "order by o.persona.nombres, o.persona.apellidos");
             q.setParameter("empresa", empresa);
             if((nombres != null) && (!nombres.isEmpty())){
                 nombres = nombres.trim();

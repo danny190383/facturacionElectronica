@@ -369,8 +369,32 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 			</frame>
 		</band>
 	</pageFooter>
+	<lastPageFooter>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="30" width="180" height="15" uuid="ac8c16ea-e850-4467-89e3-4655a0e1c6fd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[RECIBI CONFORME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="30" width="175" height="15" uuid="cf29e8ad-8fa9-4312-8a39-ba591052b611">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[ENTREGUE CONFORME]]></text>
+			</staticText>
+		</band>
+	</lastPageFooter>
 	<summary>
-		<band height="69">
+		<band height="66">
 			<subreport>
 				<reportElement x="330" y="0" width="225" height="64" uuid="4b202438-a736-483d-881f-fc13022a9fca"/>
 				<subreportParameter name="factura">
@@ -380,7 +404,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "totalesDocumento.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="15" width="310" height="38" uuid="9c1cb369-3d2a-4588-93c1-b82fd9dd590c">
+				<reportElement x="0" y="5" width="310" height="25" uuid="9c1cb369-3d2a-4588-93c1-b82fd9dd590c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<subreportParameter name="factura">
@@ -388,6 +412,16 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "formaPagoDocumento.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="39" width="310" height="25" uuid="47cc363f-0917-44d9-bb06-d377df9395af">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<subreportParameter name="factura">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "infoAdicionalDocumento.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</summary>

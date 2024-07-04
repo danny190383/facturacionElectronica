@@ -24,8 +24,18 @@ public class TipoIdentificacion extends Mantenimiento implements Serializable {
     @JoinColumn(name = "validacion", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private TipoValidacion tipoValidacion;
+    @Column(name = "estado")
+    private Boolean estadoVer;
 
     public TipoIdentificacion() {
+    }
+
+    public Boolean getEstadoVer() {
+        return estadoVer;
+    }
+
+    public void setEstadoVer(Boolean estadoVer) {
+        this.estadoVer = estadoVer;
     }
 
     public String getDescripcion() {

@@ -68,6 +68,10 @@ public class PuntoVenta implements Serializable {
     //Facturacion Electronica
     @Column(name = "facturacion_electronica")
     private Boolean facturacionElectronica;
+    @Column(name = "rimpe")
+    private Boolean rimpe;
+    @Column(name = "contribuyente_rimpe")
+    private String contribuyenteRimpe;
     @Column(name = "ambiente_electronica")
     private String ambienteElectronica;
     @Lob
@@ -275,6 +279,22 @@ public class PuntoVenta implements Serializable {
 
     public void setCodigoSriEmpresa(String codigoSriEmpresa) {
         this.codigoSriEmpresa = codigoSriEmpresa;
+    }
+
+    public Boolean getRimpe() {
+        return rimpe;
+    }
+
+    public void setRimpe(Boolean rimpe) {
+        this.rimpe = rimpe;
+    }
+
+    public String getContribuyenteRimpe() {
+        return contribuyenteRimpe;
+    }
+
+    public void setContribuyenteRimpe(String contribuyenteRimpe) {
+        this.contribuyenteRimpe = contribuyenteRimpe;
     }
     
     @Override

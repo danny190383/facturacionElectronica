@@ -107,7 +107,7 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
                         if(visible)
                         {
                             List<ProductoServicio> result;
-                            if(codigoBarras.trim().isEmpty())
+                            if(codigoBarras == null || codigoBarras.trim().isEmpty())
                             {
                                 result = productoServiciosServicio.listarBuscarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar(), true, pageSize, first);
                                 lazyModelServicios.setRowCount(productoServiciosServicio.contarPadre(nombre,empresa.getCodigo(), getListaGruposBuscar(), true).intValue());
@@ -267,8 +267,17 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
             }
             else
             {
-                producto.setCantidad(BigDecimal.ONE);
-                this.listaProductosTodosSelc.add(producto);
+                Boolean banExiste = Boolean.FALSE;
+                for(Producto productoLista : this.listaProductosTodosSelc){
+                    if(Objects.equals(producto.getCodigo(), productoLista.getCodigo())){
+                        productoLista.setCantidad(productoLista.getCantidad().add(BigDecimal.ONE)); 
+                        banExiste = Boolean.TRUE;
+                    }
+                }
+                if(!banExiste){
+                    producto.setCantidad(BigDecimal.ONE);
+                    this.listaProductosTodosSelc.add(producto);
+                }
             }
         }
         else

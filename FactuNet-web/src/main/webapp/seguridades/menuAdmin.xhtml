@@ -81,6 +81,17 @@
                                            min="1" max="100" 
                                            size="10"/>
                                 
+                                <h:outputLabel value="Icon:" />
+                                <h:panelGroup>
+                                    <p:inputText value="#{menuBean.opcionMenu.icon}"
+                                                 style="width: 300px" maxlength="110" transient="true">
+                                        <p:ajax event="change" update="btnPrueba"/>
+                                    </p:inputText>
+                                    <p:commandButton icon="#{menuBean.opcionMenu.icon}"
+                                                     id="btnPrueba"
+                                                     style="width: 70px;height: 70px;font-size: 20px"/>
+                                </h:panelGroup>
+                                
                                 <h:outputLabel value="#{msg.color}" />
                                 <p:colorPicker value="#{menuBean.opcionMenu.color}"/> 
 

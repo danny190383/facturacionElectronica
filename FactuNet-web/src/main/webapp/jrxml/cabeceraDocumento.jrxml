@@ -30,7 +30,8 @@ estado,
 discriminador, 
 codigo_barras,
 fecha_autorizacion_sri,
-punto_venta.ambiente_electronica
+punto_venta.ambiente_electronica,
+despachar_a
 FROM factura left outer join punto_venta
 on punto_venta.codigo = factura.punto_venta
  where factura.codigo = $P{factura}]]>
@@ -80,6 +81,11 @@ on punto_venta.codigo = factura.punto_venta
 		<property name="com.jaspersoft.studio.field.label" value="ambiente_electronica"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
 	</field>
+	<field name="despachar_a" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="despachar_a"/>
+		<property name="com.jaspersoft.studio.field.label" value="despachar_a"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
 	<title>
 		<band height="55">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -98,14 +104,14 @@ on punto_venta.codigo = factura.punto_venta
 				<text><![CDATA[FECHA DE CREACION]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="110" y="0" width="90" height="11" uuid="bcfcd738-638b-427e-9ee3-6a756263deee"/>
+				<reportElement x="110" y="0" width="190" height="11" uuid="bcfcd738-638b-427e-9ee3-6a756263deee"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{observacion} == null  ? "000-000" : $F{observacion}) + "-" + $F{numero}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{observacion} == null  ? "000-000" : $F{observacion}) + "-" + ($F{despachar_a}== null  ? $F{numero} : $F{despachar_a}) ]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="110" y="11" width="90" height="11" uuid="1f3dea64-80c0-4dd9-b776-75763c62f493"/>
+				<reportElement x="110" y="11" width="190" height="11" uuid="1f3dea64-80c0-4dd9-b776-75763c62f493"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>

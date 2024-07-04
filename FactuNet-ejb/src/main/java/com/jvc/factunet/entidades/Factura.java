@@ -22,6 +22,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -123,6 +124,9 @@ public class Factura implements Serializable {
     private List<FacturaPago> facturaPagoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cabeceraFactura", fetch = FetchType.LAZY,orphanRemoval = true)
     private List<CabeceraFacturaImpuestoTarifa> cabeceraFacturaImpuestoTarifaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.LAZY,orphanRemoval = true)
+    @OrderBy("id ASC")
+    private List<FacturaInfoAdicional> facturaInfoAdicionalList;
     @OneToMany(mappedBy = "documentoRelacionado", fetch = FetchType.LAZY)
     private List<NotaCredito> notaCreditoList;
     @OneToMany(mappedBy = "documentoRelacionado", fetch = FetchType.LAZY)
@@ -639,6 +643,14 @@ public class Factura implements Serializable {
 
     public void setTotalSinDescuento(BigDecimal totalSinDescuento) {
         this.totalSinDescuento = totalSinDescuento;
+    }
+
+    public List<FacturaInfoAdicional> getFacturaInfoAdicionalList() {
+        return facturaInfoAdicionalList;
+    }
+
+    public void setFacturaInfoAdicionalList(List<FacturaInfoAdicional> facturaInfoAdicionalList) {
+        this.facturaInfoAdicionalList = facturaInfoAdicionalList;
     }
     
     @Override

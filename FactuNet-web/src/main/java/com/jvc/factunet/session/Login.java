@@ -1,8 +1,8 @@
 package com.jvc.factunet.session;
 
 import com.jvc.factunet.entidades.Controles;
-import com.jvc.factunet.entidades.Cuenta;
 import com.jvc.factunet.entidades.Empleado;
+import com.jvc.factunet.entidades.EmpresaCatalogoParametro;
 import com.jvc.factunet.entidades.OpcionesMenu;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
 import static com.jvc.factunet.icefacesUtil.FacesUtils.getServletContext;
@@ -11,15 +11,12 @@ import com.jvc.factunet.servicios.OpcionesMenuServicio;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -43,22 +40,9 @@ public class Login implements Serializable{
     private MenuModel menuModelBoton;
     private String urlLogo;
     private String urlFotoLogin;
-    private BigDecimal ivaEmpresa;
     private String pathEmpresa;
     
     public Login() {
-    }
-    
-    public void verIVA()
-    {
-        for(Controles obj : empleado.getEmpresa().getControlesList())
-        {
-            if("IVA".equals(obj.getNombre()))
-            {
-                this.ivaEmpresa =  obj.getValor();
-                break;
-            }
-        }
     }
     
     public void verPath()
@@ -232,6 +216,15 @@ public class Login implements Serializable{
             }
         }
     }
+    
+    public Boolean estadoOpcion(Integer opcion){
+        for(EmpresaCatalogoParametro catalogo : empleado.getEmpresa().getEmpresaCatalogoParametroList()){
+            if(Objects.equals(opcion, catalogo.getCatalogoParametrosEmpresa().getId())){
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
 
     public void logout() {
         HttpSession session = SessionBean.getSession();
@@ -261,14 +254,6 @@ public class Login implements Serializable{
 
     public void setUrlFotoLogin(String urlFotoLogin) {
         this.urlFotoLogin = urlFotoLogin;
-    }
-
-    public BigDecimal getIvaEmpresa() {
-        return ivaEmpresa;
-    }
-
-    public void setIvaEmpresa(BigDecimal ivaEmpresa) {
-        this.ivaEmpresa = ivaEmpresa;
     }
 
     public String getPathEmpresa() {

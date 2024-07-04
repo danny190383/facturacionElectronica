@@ -59,9 +59,12 @@
                     <p:remoteCommand name="rcDireccion" update="frmCabecera:tabPrincipal:txtDireccion" process="frmCabecera:tabPrincipal:txtDireccion"/>
                     <p:tabView id="tabPrincipal">
                         <p:tab title="Datos Generales">
-                            <h:panelGrid columns="2">
+                            <h:panelGrid columns="2"
+                                         width="100%">
                                 <h:panelGrid columns="4"
-                                             style="margin-bottom:10px" cellpadding="5">
+                                             style="margin-bottom:10px" 
+                                             cellpadding="5"
+                                             width="90%">
 
                                     <h:outputLabel value="#{msg.nombre} Comercial: "/>
                                     <p:inputTextarea rows="2" cols="40" 
@@ -89,34 +92,38 @@
 
                                     <h:outputLabel value="#{msg.nombreAbreviado}: "/>
                                     <p:inputText value="#{empresaBean.empresa.nombreAbreviado}"
-                                                 style="background-color: khaki "
+                                                 style="background-color: khaki;width: 200px"
                                                  maxlength="50"
                                                  required="true"/> 
 
                                     <h:outputLabel value="#{msg.ruc}"/>   
                                     <p:inputText value="#{empresaBean.empresa.ruc}"
-                                                 style="background-color: khaki"
+                                                 style="background-color: khaki;width: 200px"
                                                  required="true">
                                         <p:keyFilter regEx="/[\d\-\.]/" />
                                     </p:inputText> 
 
                                     <h:outputLabel value="#{msg.telefono}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.telefono1}">
+                                    <p:inputText value="#{empresaBean.empresa.telefono1}"
+                                                 style="width: 200px">
                                         <p:keyFilter regEx="/[\d\-\.]/" />
                                     </p:inputText> 
 
                                     <h:outputLabel value="#{msg.telefono}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.telefono2}">
+                                    <p:inputText value="#{empresaBean.empresa.telefono2}"
+                                                 style="width: 200px">
                                         <p:keyFilter regEx="/[\d\-\.]/" />
                                     </p:inputText> 
 
                                     <h:outputLabel value="#{msg.correo}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.email}">
+                                    <p:inputText value="#{empresaBean.empresa.email}"
+                                                 style="width: 200px">
                                         <p:keyFilter regEx="/[a-z0-9_\.\-@]/i" />
                                     </p:inputText> 
 
                                     <h:outputLabel value="#{msg.correo} #{msg.clave}"/>   
-                                    <p:inputText value="#{empresaBean.empresa.emailClave}"/>
+                                    <p:inputText value="#{empresaBean.empresa.emailClave}"
+                                                 style="width: 200px"/>
 
                                     <p:outputLabel value="#{msg.tarifa} IVA:" 
                                                    for="txtTarifaSRI"/>
@@ -142,27 +149,6 @@
                                         <p:message display="text" for="txtTarifaSRI" />
                                     </h:panelGrid>
 
-                                    <h:outputLabel value="#{msg.ciudad}"/>
-                                    <h:panelGrid id="pnlCiudad"
-                                                 columns="2">
-                                        <p:selectOneMenu value="#{empresaBean.empresa.ciudad}"
-                                                         style="width: 147px"
-                                                         id="slcCiudad"
-                                                         converter="omnifaces.SelectItemsConverter"
-                                                         filter="true" filterMatchMode="startsWith">
-                                            <f:selectItems value="#{empresaBean.listaCiudad}" 
-                                                           var="ciudad"
-                                                           itemLabel="#{ciudad.nombre}"
-                                                           itemValue="#{ciudad}"/>
-                                        </p:selectOneMenu>
-                                        <p:commandButton actionListener="#{empresaBean.refreshCiudad()}"
-                                                         icon="ui-icon-arrowrefresh-1-w"
-                                                         title="#{msg.recargar}" 
-                                                         update=":frmCabecera:tabPrincipal:slcCiudad"
-                                                         partialSubmit="true"
-                                                         process="pnlCiudad"/>
-                                    </h:panelGrid>
-
                                     <h:outputLabel value="Obligado Contabilidad"/> 
                                     <p:selectOneRadio value="#{empresaBean.empresa.obligadoContabilidad}"
                                                       required="true">
@@ -177,9 +163,11 @@
                                       <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
                                     </p:selectOneRadio>
 
-                                    <h:outputLabel value="#{msg.tipo} #{msg.empresa}"/>
+                                    <h:outputLabel value="#{msg.tipo} #{msg.empresa}"
+                                                   rendered="false"/>
                                     <p:selectOneMenu value="#{empresaBean.empresa.tipoEmpresaWeb}"
                                                      style="width:180px"
+                                                     rendered="false"
                                                      converter="omnifaces.SelectItemsConverter">
                                         <f:selectItems value="#{empresaBean.listaTipoEmpresa}" 
                                                        var="tipoEm" 
@@ -193,9 +181,23 @@
                                       <f:selectItem itemLabel="#{msg.completo}" itemValue="1" />
                                       <f:selectItem itemLabel="#{msg.simple}" itemValue="2" />
                                     </p:selectOneRadio>
+                                    
+                                    <h:outputLabel value="Usa Balanza"/> 
+                                    <p:selectOneRadio value="#{empresaBean.empresa.usaBalanza}"
+                                                      required="true">
+                                      <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                                      <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                                      <p:ajax update="spNumeroCracteres"/>
+                                    </p:selectOneRadio>
+                                    
+                                    <h:outputLabel value="#{msg.numero} Caracteres"/> 
+                                    <p:spinner value="#{empresaBean.empresa.numeroCaracteresBalanza}" 
+                                               min="2" max="10"
+                                               id="spNumeroCracteres"
+                                               disabled="#{!empresaBean.empresa.usaBalanza}"/>
 
                                     <h:outputLabel value="#{msg.tema}" /> 
-                                    <p:themeSwitcher style="width:165px;z-index: 5000" 
+                                    <p:themeSwitcher style="width:180px;z-index: 5000" 
                                                      value="#{empresaBean.empresa.tema}">
                                         <f:selectItems value="#{themeService.themes}"
                                                        itemLabel="#{theme.displayName}" itemValue="#{theme.name}"/>
@@ -206,8 +208,8 @@
                                     <h:outputLabel value="#{msg.logo}" />
                                     <p:graphicImage id="logo"
                                                         url="#{empresaBean.urlLogo}"
-                                                        width="100px"
-                                                        height="100px"
+                                                        width="150px"
+                                                        height="150px"
                                                         style="border: solid 1px"
                                                         cache="false" />
                                     <p:fileUpload  mode="advanced" 
@@ -477,7 +479,28 @@
                                     <h:inputHidden value="#{empresaBean.empresa.coordenadaLatitud}" id="hidLatitud"/>
                                     <h:inputHidden value="#{empresaBean.empresa.coordenadaLongitud}" id="hidLongitud"/>
                                 </h:panelGrid>
-                                <p:spacer/>
+                                <h:panelGrid columns="1">
+                                    <h:outputLabel value="#{msg.ciudad}"/>
+                                    <h:panelGrid id="pnlCiudad"
+                                                 columns="2">
+                                        <p:selectOneMenu value="#{empresaBean.empresa.ciudad}"
+                                                         style="width: 230px"
+                                                         id="slcCiudad"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         filter="true" filterMatchMode="startsWith">
+                                            <f:selectItems value="#{empresaBean.listaCiudad}" 
+                                                           var="ciudad"
+                                                           itemLabel="#{ciudad.nombre}"
+                                                           itemValue="#{ciudad}"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton actionListener="#{empresaBean.refreshCiudad()}"
+                                                         icon="ui-icon-arrowrefresh-1-w"
+                                                         title="#{msg.recargar}" 
+                                                         update=":frmCabecera:tabPrincipal:slcCiudad"
+                                                         partialSubmit="true"
+                                                         process="pnlCiudad"/>
+                                    </h:panelGrid>
+                                </h:panelGrid>
                                 <p:spacer/>
 
                                 <h:panelGrid columns="1">

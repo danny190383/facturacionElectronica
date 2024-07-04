@@ -80,7 +80,7 @@ public class Ticket {
                                  "{{direccion_empresa}}\n"+
                                  "{{ciudad_empresa}}\n"+
                                  "--------------------------------\n"+
-                                 "FACTURA Nº: {{numero}}\n"+
+                                 "{{numero}}\n"+
                                  "Nº AUTORIZACION / CLAVE ACCESO:\n"+
                                  "{{clave_acceso}}\n"+
                                  "--------------------------------\n"+

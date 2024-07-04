@@ -219,8 +219,13 @@
                                    <h:outputText value="#{cuenta.valorInteres}"
                                                  style="font-size: 13px;font-style: normal;font-weight: bold"/>
                                </p:column>
+                                
+                                <p:column headerText="#{msg.observacion} Cuenta"
+                                          width="15%">
+                                    <h:outputText value="#{cuenta.facturaPago.observacion}"/>
+                               </p:column>
 
-                               <p:column headerText="#{msg.observacion}"
+                               <p:column headerText="#{msg.observacion} Pago"
                                          width="15%">
                                    <p:cellEditor>
                                        <f:facet name="output">

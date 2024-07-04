@@ -90,7 +90,7 @@
                                          style="width: 50px">
                             <f:selectItem itemLabel="#{msg.rise}" itemValue="1" />
                             <f:selectItem itemLabel="#{msg.factura}" itemValue="2" />
-                            <f:selectItem itemLabel="Comprobamte" itemValue="3" />
+                            <f:selectItem itemLabel="Comprobante" itemValue="3" />
                         </p:selectOneMenu>
 
                         <h:outputLabel value="#{msg.movil}: "/>  
@@ -136,16 +136,16 @@
                         <p:inputText value="#{puntoVentaBean.puntoVenta.claveFirma}"/>
 
                         <h:outputLabel value="#{msg.nombre} Comercial: "/>
-                        <p:inputTextarea rows="2" cols="40" 
-                                         style="height: 50px;width: 200px;background-color: khaki"
+                        <p:inputTextarea rows="1" cols="40" 
+                                         style="width: 200px;background-color: khaki"
                                          autoResize="false" 
                                          maxlength="200"
                                          required="true"
                                          value="#{puntoVentaBean.puntoVenta.nombreEmpresa}"/> 
 
                         <h:outputLabel value="Razón Social: "/>
-                        <p:inputTextarea rows="2" cols="40" 
-                                         style="height: 50px;width: 200px;background-color: khaki"
+                        <p:inputTextarea rows="1" cols="40" 
+                                         style="width: 200px;background-color: khaki"
                                          autoResize="false" 
                                          maxlength="200"
                                          required="true"
@@ -159,13 +159,33 @@
                         </p:inputText> 
                         
                         <h:outputLabel value="#{msg.direccion}: "/>
-                        <p:inputTextarea rows="2" cols="40" 
+                        <p:inputTextarea rows="1" cols="40" 
                                          autoResize="false" 
-                                         style="background-color: khaki"
+                                         style="width: 200px;background-color: khaki"
                                          id="txtDireccion"
                                          maxlength="200"
                                          required="true"
                                          value="#{puntoVentaBean.puntoVenta.direccion}"/>
+                        
+                        <h:outputLabel value="RIMPE: "/>
+                        <p:selectBooleanButton onLabel="#{msg.si}" offLabel="#{msg.no}"
+                                               value="#{puntoVentaBean.puntoVenta.rimpe}"
+                                               onIcon="pi pi-check" 
+                                               offIcon="pi pi-times" 
+                                               style="width:6rem" >
+                            <p:ajax update="slcContribRimpe"/>
+                        </p:selectBooleanButton>
+                        
+                        <h:outputLabel value="Contribuyente RIMPE"/>
+                        <p:selectOneMenu value="#{puntoVentaBean.puntoVenta.contribuyenteRimpe}"
+                                         required="#{puntoVentaBean.puntoVenta.rimpe}"
+                                         disabled="#{not puntoVentaBean.puntoVenta.rimpe}"
+                                         id="slcContribRimpe"
+                                         style="width: 100px">
+                            <f:selectItem itemLabel="Seleccione" itemValue=""/>
+                            <f:selectItem itemLabel="CONTRIBUYENTE RÉGIMEN RIMPE" itemValue="CONTRIBUYENTE RÉGIMEN RIMPE"/>
+                            <f:selectItem itemLabel="CONTRIBUYENTE NEGOCIO POPULAR - RÉGIMEN RIMPE" itemValue="CONTRIBUYENTE NEGOCIO POPULAR - RÉGIMEN RIMPE"/>
+                        </p:selectOneMenu>
                     </h:panelGrid>
                 </p:tab>
             </p:tabView>
@@ -183,13 +203,13 @@
                                 showTargetFilter="true" 
                                 filterMatchMode="contains" 
                                 converter="empleadoConverter"
-                                style="width: 600px">
+                                style="width: 800px">
 
                         <f:facet name="sourceCaption">#{msg.disponibles}</f:facet>
                         <f:facet name="targetCaption">#{msg.asignados}</f:facet>
 
                         <p:column >
-                            <h:outputLabel value="#{cuenta.cuenta.identificador}"/><br/>
+                            <h:outputLabel value="#{cuenta.cuenta.identificador}"/> -
                             <h:outputLabel value="#{cuenta.persona.nombres} #{cuenta.persona.apellidos}" />
                         </p:column>
                     </p:pickList>

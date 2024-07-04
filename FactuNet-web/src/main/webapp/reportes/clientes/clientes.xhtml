@@ -12,10 +12,12 @@
 
             <ui:define name="content">
                 <p:fieldset legend="#{msg.criterioBusqueda}">
-                    <h:panelGrid columns="2">
+                    <h:panelGrid columns="2"
+                                 id="pnlDatos">
                         <h:outputLabel value="#{msg.reporte}: "/>
                         <p:selectOneMenu value="#{reportesClientesBean.reporteSeleccionado}" 
                                          style="width: 250px">
+                            <p:ajax update="pnlDatos"/>
                             <f:selectItems value="#{reportesClientesBean.listaReportes}"
                                            var="repo"
                                            itemLabel="#{repo.descripcion}"
@@ -58,21 +60,25 @@
                                            itemValue="#{sexo.codigo}"/>
                         </p:selectOneMenu>
                         
-                        <h:outputText value="#{msg.fechaNacimiento} #{msg.desde}: "/>
+                        <h:outputText value="#{msg.fechaNacimiento} #{msg.desde}: "
+                                      rendered="#{reportesClientesBean.reporteSeleccionado eq 4.2}"/>
                         <p:calendar value="#{reportesClientesBean.fechaInicio}" 
                                     timeZone="#{parametrosApplication.timeZone}"
                                     locale="#{parametrosApplication.local}" 
                                     pattern="#{parametrosApplication.formatoFecha}"
                                     showButtonPanel="true"  showOn="button" 
-                                    showOtherMonths="true" navigator="true"/>
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesClientesBean.reporteSeleccionado eq 4.2}"/>
                         
-                        <h:outputText value="#{msg.fechaNacimiento} #{msg.hasta}: "/>
+                        <h:outputText value="#{msg.fechaNacimiento} #{msg.hasta}: "
+                                      rendered="#{reportesClientesBean.reporteSeleccionado eq 4.2}"/>
                         <p:calendar value="#{reportesClientesBean.fechaFin}" 
                                     timeZone="#{parametrosApplication.timeZone}"
                                     locale="#{parametrosApplication.local}" 
                                     pattern="#{parametrosApplication.formatoFecha}"
                                     showButtonPanel="true" showOn="button" 
-                                    showOtherMonths="true" navigator="true"/>
+                                    showOtherMonths="true" navigator="true"
+                                    rendered="#{reportesClientesBean.reporteSeleccionado eq 4.2}"/>
                     </h:panelGrid>
                     <h:panelGrid columns="3" cellspacing="5" >
                         <h:commandLink target="_blank" actionListener="#{reportesClientesBean.generarReportePDF()}">

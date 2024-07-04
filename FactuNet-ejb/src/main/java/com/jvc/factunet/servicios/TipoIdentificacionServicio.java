@@ -18,6 +18,10 @@ public class TipoIdentificacionServicio {
         return tipoIdentificacionDAO.listar();
     }
     
+    public List<TipoIdentificacion> listarVer() {
+        return tipoIdentificacionDAO.listarVer();
+    }
+    
     public List<TipoIdentificacion> listarNombre(String nombre) {
         return tipoIdentificacionDAO.listarNombre(nombre);
     }

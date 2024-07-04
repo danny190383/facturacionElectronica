@@ -207,6 +207,10 @@ public class DocumentosServicios {
         return this.documentosDAO.listarFacturasVentaElectronica(empresa, estado);
     }
     
+    public List<FacturaVenta> listarFacturasVentaElectronicaTodasPorAutorizar(Integer empresa){
+        return this.documentosDAO.listarFacturasVentaElectronicaTodasPorAutorizar(empresa);
+    }
+    
     public List<GuiaRemision> listarGuiasRemision(Integer empresa, String estado){
         return this.documentosDAO.listarGuiasRemision(empresa, estado);
     }
@@ -587,6 +591,7 @@ public class DocumentosServicios {
                 }
             }
         }
+        parametro.setDespacharA(this.numerocomprobanteSRI(parametro.getNumero())); 
         this.documentosDAO.insertar(parametro);
         if((parametro instanceof FacturaCompra) || (parametro instanceof FacturaVenta))
         {

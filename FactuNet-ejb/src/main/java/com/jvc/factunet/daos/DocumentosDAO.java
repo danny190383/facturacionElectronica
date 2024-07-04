@@ -1335,4 +1335,14 @@ public class DocumentosDAO extends GenericDAO{
             return null;
         }
     }
+    
+    public List<FacturaVenta> listarFacturasVentaElectronicaTodasPorAutorizar(Integer empresa) {
+        try {
+            Query q = em.createQuery("select o from FacturaVenta o where o.empresa.codigo = ?1 and (o.tipoDocumento = 21 or o.tipoDocumento = 23) and (o.estadoAutorizacionSri != 'AUTORIZADO' or o.estadoAutorizacionSri = null ) and o.puntoVenta.facturacionElectronica = true order by o.fecha desc");
+            q.setParameter(1, empresa);
+            return q.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

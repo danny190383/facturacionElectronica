@@ -60,7 +60,7 @@ public class CatalogosPersonaMovilBean extends CatalogosVeterinariaMovilBean{
         this.listaEstadoCivil.addAll(this.estadoCivilServicio.listar());
         this.listaSexo.addAll(this.sexoServicio.listar());
         this.listaCargo.addAll(this.cargoServicio.listar());
-        this.listaTipoIdentificacion.addAll(this.tipoIdentificacionServicio.listar());
+        this.listaTipoIdentificacion.addAll(this.tipoIdentificacionServicio.listarVer());
     }
     
     public void refreshTipoCliente()

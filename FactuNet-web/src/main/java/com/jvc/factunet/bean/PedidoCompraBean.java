@@ -2,6 +2,7 @@ package com.jvc.factunet.bean;
 
 import com.jvc.factunet.entidades.Bodega;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
+import com.jvc.factunet.entidades.CatalogoInfoAdicional;
 import com.jvc.factunet.entidades.DocumentoRetencion;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.Factura;
@@ -32,6 +33,7 @@ import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.ImprimirReportesBean;
 import com.jvc.factunet.icefacesUtil.JasperReportUtil;
 import com.jvc.factunet.servicios.BodegaServicio;
+import com.jvc.factunet.servicios.CatalogoInfoAdicionalServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.FormaPagoServicio;
 import com.jvc.factunet.servicios.ProductoBodegaServicio;
@@ -91,7 +93,6 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     private Integer retencionSlc;
     private BigDecimal totalTransporte;
     private BigDecimal totalProrrateo;
-    private BigDecimal ivaEmpresa;
     private BigDecimal descuento;
     private BigDecimal comision;
     private Empresa empresa = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getEmpresa();
@@ -122,7 +123,6 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         this.retencionSlc = this.listaTipoRetencion.get(0).getCodigo();
         this.totalTransporte = BigDecimal.ZERO;
         this.totalProrrateo = BigDecimal.ZERO;
-        this.ivaEmpresa = ((Login)FacesUtils.getManagedBean("login")).getIvaEmpresa();
         this.inicializar();
     }
     
@@ -294,9 +294,9 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 detalle.setImpuestoTarifa(tarifaImpuesto.getImpuestoTarifa());
                 break;
             }
-        }
+        } 
         detalle.setValorProrrateo(BigDecimal.ZERO);
-        detalle.setPvpIva((detalle.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        detalle.setPvpIva((detalle.getPvp().multiply((ivaProducto(detalle.getProductoServicio()).divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
         detalle.setBodega(new Bodega(this.bodegaSelect));
         return detalle;
     }
@@ -563,10 +563,16 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         factura.setIrbpnr(subtotalIRBPNR);
 
         if (subtotalConIva.doubleValue() > 0) {
-            factura.setIva((subtotalConIva.multiply(this.ivaEmpresa.divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
+            BigDecimal valorIvaFactura = BigDecimal.ZERO;
+            for(CabeceraFacturaImpuestoTarifa impuesto : factura.getCabeceraFacturaImpuestoTarifaList()){
+                valorIvaFactura = valorIvaFactura.add(impuesto.getValor());
+                
+            }
+            factura.setIva(valorIvaFactura);
         } else {
             factura.setIva(new BigDecimal(0));
         }
+        
         factura.setTotal((subtotalConIva.add(factura.getIva()).add(subtotalSinIva)).setScale(2, BigDecimal.ROUND_HALF_UP));
         factura.setTotalPagar((factura.getTotal().subtract(factura.getTotalRetencion())).setScale(2, BigDecimal.ROUND_HALF_UP));
         factura.setTotalSinDescuento((factura.getSubtotal().add(factura.getIva())).setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -642,6 +648,9 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
             if(lote != null){
                 proTMP.setLote(lote); 
             }
+            if(this.getEmpresa().getUsaBalanza()){
+                proTMP.setCantidad(this.productoVer.getCantidad());
+            }
             this.productoVer = proTMP;
             lista.add(proTMP);
             this.agregarCalcular(lista);
@@ -700,8 +709,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     }
     
     public void onCellEditPVPIVA(FacturaDetalle event) {
-        event.setPvp(event.getPvpIva().divide(this.getIvaEmpresa().divide(new BigDecimal("100")).add(BigDecimal.ONE),4,1));
-//        event.setPvp(event.getPvp().setScale(2,RoundingMode.HALF_UP)); //floor
+        event.setPvp(event.getPvpIva().divide(ivaProducto(event.getProductoServicio()).divide(new BigDecimal("100")).add(BigDecimal.ONE),4,1));
         if(event.getPrecioVentaUnitarioTransporte().floatValue()>0){
             event.setUtilidad(((event.getPvp().subtract(event.getPrecioVentaUnitarioTransporte())).divide(event.getPrecioVentaUnitarioTransporte(),4, 1)).multiply(new BigDecimal("100")).setScale(2));
         }
@@ -709,7 +717,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
     
     public void onCellEditUtilidad(FacturaDetalle event) {
         event.setPvp((event.getPrecioVentaUnitarioTransporte().add(event.getPrecioVentaUnitarioTransporte().multiply(event.getUtilidad().divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
-        event.setPvpIva((event.getPvp().add(event.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        event.setPvpIva((event.getPvp().add(event.getPvp().multiply(ivaProducto(event.getProductoServicio()).divide(new BigDecimal("100"))))).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
     
     public void onCellEditCantidad(FacturaDetalle event){
@@ -768,7 +776,7 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
             }
         }
         event.setPvp((event.getPrecioVentaUnitarioDescuento().add(valorUtilidad)).setScale(2, BigDecimal.ROUND_HALF_UP));
-        event.setPvpIva((event.getPvp().multiply((this.getIvaEmpresa().divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
+        event.setPvpIva((event.getPvp().multiply((ivaProducto(event.getProductoServicio()).divide(new BigDecimal("100"))).add(BigDecimal.ONE))).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
     
     public void calcularTotalProrrateo(Factura factura)
@@ -1120,10 +1128,10 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 }
             }
         }
-        if(subtotalIVA.floatValue() > 0)
-        {
-            iva = subtotalIVA.multiply(this.ivaEmpresa.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
-        }
+//        if(subtotalIVA.floatValue() > 0)
+//        {
+//            iva = subtotalIVA.multiply(ivaEmpresa.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+//        }
         List<BigDecimal> totales = new ArrayList<>();
         totales.add(subtotal.setScale(2, BigDecimal.ROUND_HALF_UP));
         totales.add(iva); 
@@ -1153,10 +1161,10 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
                 }
             }
         }
-        if(subtotalIVA.floatValue() > 0)
-        {
-            iva = subtotalIVA.multiply(this.ivaEmpresa.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
-        }
+//        if(subtotalIVA.floatValue() > 0)
+//        {
+//            iva = subtotalIVA.multiply(this.ivaEmpresa.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+//        }
         List<BigDecimal> totales = new ArrayList<>();
         totales.add(subtotal.setScale(2, BigDecimal.ROUND_HALF_UP));
         totales.add(iva); 
@@ -1233,6 +1241,15 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
         }
     }
     
+    public BigDecimal ivaProducto(Producto producto){
+        for(ProductoImpuestoTarifa impuesto : producto.getProductoImpuestoTarifaList()){
+            if(impuesto.getImpuestoTarifa().getImpuesto().getCodigoSri().equals("2")){ 
+                return new BigDecimal(impuesto.getImpuestoTarifa().getPorcentaje());
+            }
+        }
+        return null;
+    }
+    
     public List<Bodega> getListaBodegas() {
         return listaBodegas;
     }
@@ -1287,14 +1304,6 @@ public class PedidoCompraBean extends ImprimirReportesBean implements Serializab
 
     public void setRetencionSlc(Integer retencionSlc) {
         this.retencionSlc = retencionSlc;
-    }
-
-    public BigDecimal getIvaEmpresa() {
-        return ivaEmpresa;
-    }
-
-    public void setIvaEmpresa(BigDecimal ivaEmpresa) {
-        this.ivaEmpresa = ivaEmpresa;
     }
 
     public BigDecimal getDescuento() {

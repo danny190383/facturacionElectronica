@@ -8,6 +8,7 @@ import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.Factura;
 import com.jvc.factunet.entidades.FacturaCompra;
 import com.jvc.factunet.entidades.FacturaDetalle;
+import com.jvc.factunet.entidades.FacturaInfoAdicional;
 import com.jvc.factunet.entidades.FacturaPago;
 import com.jvc.factunet.entidades.FacturaVenta;
 import com.jvc.factunet.entidades.GuiaRemision;
@@ -122,6 +123,13 @@ public class FacturacionElectronicaBean implements Serializable{
         {
             this.listaGuiasRemision = (List) event.getObject();
         }
+    }
+    
+    public void cargarFacturas(){
+        this.listaDocumentos.clear();
+        this.listaGuiasRemision.clear();
+        this.listaDocumentoRetencion.clear();
+        this.listaDocumentos.addAll(this.documentosServicios.listarFacturasVentaElectronicaTodasPorAutorizar(this.empresa.getCodigo()));
     }
     
     public void verBusquedaFacturas() {
@@ -537,11 +545,18 @@ public class FacturacionElectronicaBean implements Serializable{
     
     public void envioFacturaEmail(String xml, String destinatarioFactura, Integer factura, String nombreDocumento, Integer tipo, String ruc) {
         try {
-            String asunto = "Documento Eléctronico ";
+            String asunto = empresa.getNombreAbreviado() + " Documento Electrónico";
             String usuario = empresa.getEmail().trim();
             String password = empresa.getEmailClave().trim();
             String destinatario = destinatarioFactura;
-            String mensaje = "Sistema FactuYES documento electrónico SRI";
+            String mensaje = "<html>"
+                    + "<body>"
+                    + "<h2>"
+                    + "Sistema FactuYES Facturacion e Inventario <br> (Contacto Ventas: 0979319031)"
+                    + "</h2> <br>"
+                    + "<h2> https://wa.me/5930979319031 </h2> "
+                    + "</body>"
+                    + "</html>";
             String archivo = "";
             if(tipo == 1){ // Documento
                 archivo = this.generarReporte(factura, nombreDocumento, ruc);
@@ -552,7 +567,7 @@ public class FacturacionElectronicaBean implements Serializable{
             if(tipo == 3){ // Documento Retencion
                 archivo = this.generarReporteDocumentoRetencion(factura);
             }
-            EmailSenderThread emailSenderThread = new EmailSenderThread(usuario, password, destinatario, asunto, mensaje, archivo, xml);
+            EmailSenderThread emailSenderThread = new EmailSenderThread(usuario, password, destinatario, asunto, mensaje, archivo, xml, ((Login)FacesUtils.getManagedBean("login")).getPathEmpresa());
             emailSenderThread.sendMail();
             FacesUtils.addInfoMessage("Envío Exitoso"); 
         } catch (Exception e) {
@@ -641,6 +656,12 @@ public class FacturacionElectronicaBean implements Serializable{
         itemInfoTributariaNode.appendChild(ptoEmi);
         itemInfoTributariaNode.appendChild(secuencial);
         itemInfoTributariaNode.appendChild(dirMatriz);
+        if(factura.getPuntoVenta().getRimpe()){
+            Element contribuyenteRimpe = document.createElement("contribuyenteRimpe"); 
+            Text contribuyenteRimpeValue = document.createTextNode(factura.getPuntoVenta().getContribuyenteRimpe().trim());
+            contribuyenteRimpe.appendChild(contribuyenteRimpeValue); 
+            itemInfoTributariaNode.appendChild(contribuyenteRimpe);
+        }
 
         raiz.appendChild(itemInfoTributariaNode);
         
@@ -880,6 +901,21 @@ public class FacturacionElectronicaBean implements Serializable{
             infoAdicional.appendChild(campoAdicional1);
             infoAdicional.appendChild(campoAdicional2);
             
+            if(factura.getFacturaInfoAdicionalList() != null || 
+               !factura.getFacturaInfoAdicionalList().isEmpty()){
+                for(FacturaInfoAdicional adicional : factura.getFacturaInfoAdicionalList()){
+                    Element campoAdicional  = document.createElement("campoAdicional"); 
+                    Text campoAdicionalValue = document.createTextNode(adicional.getValor());
+                    campoAdicional.appendChild(campoAdicionalValue);
+
+                    Attr attrNombre = document.createAttribute("nombre");
+                    attrNombre.setValue(adicional.getInfoAdicional().getNombre());
+                    campoAdicional.setAttributeNode(attrNombre);
+
+                    infoAdicional.appendChild(campoAdicional);
+                }
+            }
+            
         raiz.appendChild(infoAdicional);
     
         //Generate XML
@@ -962,7 +998,7 @@ public class FacturacionElectronicaBean implements Serializable{
             Element dirMatriz = document.createElement("dirMatriz"); 
             Text dirMatrizValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
-
+           
         itemInfoTributariaNode.appendChild(ambiente);
         itemInfoTributariaNode.appendChild(tipoEmision);
         itemInfoTributariaNode.appendChild(razonSocial);
@@ -974,6 +1010,12 @@ public class FacturacionElectronicaBean implements Serializable{
         itemInfoTributariaNode.appendChild(ptoEmi);
         itemInfoTributariaNode.appendChild(secuencial);
         itemInfoTributariaNode.appendChild(dirMatriz);
+        if(factura.getPuntoVenta().getRimpe()){
+            Element contribuyenteRimpe = document.createElement("contribuyenteRimpe"); 
+            Text contribuyenteRimpeValue = document.createTextNode(factura.getPuntoVenta().getContribuyenteRimpe().trim());
+            contribuyenteRimpe.appendChild(contribuyenteRimpeValue); 
+           itemInfoTributariaNode.appendChild(contribuyenteRimpe);
+        }
 
         raiz.appendChild(itemInfoTributariaNode);
         
@@ -1252,7 +1294,7 @@ public class FacturacionElectronicaBean implements Serializable{
             Element dirMatriz = document.createElement("dirMatriz"); 
             Text dirMatrizValue = document.createTextNode(factura.getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
-
+            
         itemInfoTributariaNode.appendChild(ambiente);
         itemInfoTributariaNode.appendChild(tipoEmision);
         itemInfoTributariaNode.appendChild(razonSocial);
@@ -1264,6 +1306,12 @@ public class FacturacionElectronicaBean implements Serializable{
         itemInfoTributariaNode.appendChild(ptoEmi);
         itemInfoTributariaNode.appendChild(secuencial);
         itemInfoTributariaNode.appendChild(dirMatriz);
+        if(factura.getPuntoVenta().getRimpe()){
+            Element contribuyenteRimpe = document.createElement("contribuyenteRimpe"); 
+            Text contribuyenteRimpeValue = document.createTextNode(factura.getPuntoVenta().getContribuyenteRimpe().trim());
+            contribuyenteRimpe.appendChild(contribuyenteRimpeValue); 
+           itemInfoTributariaNode.appendChild(contribuyenteRimpe);
+        }
 
         raiz.appendChild(itemInfoTributariaNode);
         
@@ -1509,6 +1557,12 @@ public class FacturacionElectronicaBean implements Serializable{
             Element dirMatriz = document.createElement("dirMatriz"); 
             Text dirMatrizValue = document.createTextNode(factura.getFactura().getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
+            
+            if(factura.getFactura().getPuntoVenta().getRimpe()){
+               Element contribuyenteRimpe = document.createElement("contribuyenteRimpe"); 
+               Text contribuyenteRimpeValue = document.createTextNode(factura.getFactura().getPuntoVenta().getContribuyenteRimpe().trim());
+               contribuyenteRimpe.appendChild(contribuyenteRimpeValue); 
+            }
 
         itemInfoTributariaNode.appendChild(ambiente);
         itemInfoTributariaNode.appendChild(tipoEmision);
@@ -1737,6 +1791,12 @@ public class FacturacionElectronicaBean implements Serializable{
             Element dirMatriz = document.createElement("dirMatriz"); 
             Text dirMatrizValue = document.createTextNode(factura.getFactura().getEmpleado().getPuntoVenta().getDireccion().trim());
             dirMatriz.appendChild(dirMatrizValue);
+            
+            if(factura.getFactura().getPuntoVenta().getRimpe()){
+               Element contribuyenteRimpe = document.createElement("contribuyenteRimpe"); 
+               Text contribuyenteRimpeValue = document.createTextNode(factura.getFactura().getPuntoVenta().getContribuyenteRimpe().trim());
+               contribuyenteRimpe.appendChild(contribuyenteRimpeValue); 
+            }
 
         itemInfoTributariaNode.appendChild(ambiente);
         itemInfoTributariaNode.appendChild(tipoEmision);

@@ -24,6 +24,4 @@ public class TipoRetencionDAO extends GenericDAO {
         q.setParameter(1, StringUtils.isEmpty(nombre) ? "%%" : "%" + nombre.toUpperCase() + "%");
         return q.getResultList();
     }
-    
-    
 }

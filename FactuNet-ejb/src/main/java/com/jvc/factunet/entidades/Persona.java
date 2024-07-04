@@ -280,6 +280,22 @@ public class Persona implements Serializable {
         this.obligadoContabilidad = obligadoContabilidad;
     }
     
+    public String getNombreApellido(){
+        String concat = null;
+        if(this.getApellidos() == null || this.getApellidos().isEmpty()){
+            return this.getNombres();
+        }
+        if(this.getNombres() != null){
+            String[] nombresSeparado = this.getNombres().split(" ");
+            concat = nombresSeparado[0];
+        }
+        if(this.getApellidos() != null){
+            String[] apellidosSeparado = this.getApellidos().split(" ");
+            concat = concat + " " + apellidosSeparado[0];
+        }
+        return concat;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

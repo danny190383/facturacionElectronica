@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventas-clientes" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6dbca12d-137e-44d0-93b3-56435d1bdbe8">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FacMar"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Detail" backcolor="#FFFFFF" fontName="Arial" fontSize="12">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{contador}%2==0]]></conditionExpression>
@@ -31,11 +34,10 @@ on sexo.codigo = persona.sexo inner join mantenimiento as mantenimiento_sexo
 on mantenimiento_sexo.codigo = sexo.codigo
 where persona.ciudad::text like $P{ciudad} and persona.sexo::text like $P{sexo} and
 cliente.tipo_cliente::text like $P{tipo} and persona.fecha_nacimiento between $P{ad_fini}  and  $P{ad_ffin} and
-empresa = $P{empresa} order by persona.nombres]]>
+tipo_persona.empresa = $P{empresa} order by persona.nombres]]>
 	</queryString>
 	<field name="codigo" class="java.lang.Integer">
-		<fieldDescription><![CDATA[Numero entero que indica la cuenta por cobrar a la que se esta realizando el abono o pago.
-]]></fieldDescription>
+		<fieldDescription><![CDATA[Numero entero que indica la cuenta por cobrar a la que se esta realizando el abono o pago.]]></fieldDescription>
 	</field>
 	<field name="cedula" class="java.lang.String"/>
 	<field name="nombres" class="java.lang.String"/>

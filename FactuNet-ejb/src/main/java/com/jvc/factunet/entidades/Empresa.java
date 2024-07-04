@@ -129,10 +129,16 @@ public class Empresa implements Serializable {
     private List<Seccion> seccionList;
     @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bodega> bodegaList;
+    @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmpresaCatalogoParametro> empresaCatalogoParametroList;
     @Column(name = "obligado_contabilidad ")
     private Boolean obligadoContabilidad ;
-    @Column(name = "usa_tablet ")
-    private Boolean usaTablet ;
+    @Column(name = "usa_tablet")
+    private Boolean usaTablet;
+    @Column(name = "usa_balanza")
+    private Boolean usaBalanza;
+    @Column(name = "numero_caracteres_balanza")
+    private Integer numeroCaracteresBalanza;
     
     public Empresa() {
         this.obligadoContabilidad = Boolean.FALSE;
@@ -142,6 +148,22 @@ public class Empresa implements Serializable {
 
     public Empresa(Integer codigo) {
         this.codigo = codigo;
+    }
+
+    public Boolean getUsaBalanza() {
+        return usaBalanza;
+    }
+
+    public void setUsaBalanza(Boolean usaBalanza) {
+        this.usaBalanza = usaBalanza;
+    }
+
+    public Integer getNumeroCaracteresBalanza() {
+        return numeroCaracteresBalanza;
+    }
+
+    public void setNumeroCaracteresBalanza(Integer numeroCaracteresBalanza) {
+        this.numeroCaracteresBalanza = numeroCaracteresBalanza;
     }
 
     public Integer getCodigo() {
@@ -422,6 +444,14 @@ public class Empresa implements Serializable {
 
     public void setImpuestoTarifa(ImpuestoTarifa impuestoTarifa) {
         this.impuestoTarifa = impuestoTarifa;
+    }
+
+    public List<EmpresaCatalogoParametro> getEmpresaCatalogoParametroList() {
+        return empresaCatalogoParametroList;
+    }
+
+    public void setEmpresaCatalogoParametroList(List<EmpresaCatalogoParametro> empresaCatalogoParametroList) {
+        this.empresaCatalogoParametroList = empresaCatalogoParametroList;
     }
     
     @Override

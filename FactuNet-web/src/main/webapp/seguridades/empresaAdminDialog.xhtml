@@ -579,6 +579,31 @@
 
                             </h:panelGrid>
                         </p:tab>
+                        <p:tab title="Parametrizacion Empresa">
+                            <h:panelGrid columns="1">
+                                
+                                <p:pickList value="#{empresaBean.listaCatalogoParametrosEmpresa}" 
+                                            var="cuenta" 
+                                            itemValue="#{cuenta}" 
+                                            itemLabel="#{cuenta.nombre}" 
+                                            showCheckbox="true" 
+                                            responsive="true"
+                                            showSourceFilter="true" 
+                                            showTargetFilter="true" 
+                                            filterMatchMode="contains" 
+                                            converter="parametroEmpresaConverter"
+                                            style="width: 800px">
+
+                                    <f:facet name="sourceCaption">#{msg.inactivo}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.activo}</f:facet>
+
+                                    <p:column>
+                                        <h:outputLabel value="#{cuenta.nombre}"/>
+                                    </p:column>
+                                </p:pickList>
+                                
+                            </h:panelGrid>
+                        </p:tab>
                     </p:tabView>
                 </p:panel>
             </ui:define>

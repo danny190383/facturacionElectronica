@@ -220,11 +220,13 @@ public class ProductoServiciosDAO extends GenericDAO{
                 sql = "select o from ProductoServicio o Where "
                 + "o.empresa.codigo = ?1 "
                 + "and o.estado = true "
-                + "and o.grupo.codigo IN ?2";
+                + "and o.grupo.codigo IN ?2 "
+                + "order by o.nombre";
             }else{
                 sql = "select o from ProductoServicio o Where "
                 + "o.empresa.codigo = ?1 "
-                + "and o.grupo.codigo IN ?2";
+                + "and o.grupo.codigo IN ?2 "
+                + "order by o.nombre";;
             }
         Query q = em.createQuery(sql);
               q.setParameter(1, empresa);

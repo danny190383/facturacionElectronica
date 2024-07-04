@@ -3,9 +3,11 @@ package com.jvc.factunet.bean;
 import com.jvc.factunet.daos.NotaMedicaVeterinariaDAO;
 import com.jvc.factunet.entidades.Bodega;
 import com.jvc.factunet.entidades.Canton;
+import com.jvc.factunet.entidades.CatalogoParametrosEmpresa;
 import com.jvc.factunet.entidades.Ciudad;
 import com.jvc.factunet.entidades.Controles;
 import com.jvc.factunet.entidades.Empresa;
+import com.jvc.factunet.entidades.EmpresaCatalogoParametro;
 import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.MascotaNotaMedica;
 import com.jvc.factunet.entidades.Parroquia;
@@ -23,6 +25,7 @@ import com.jvc.factunet.icefacesUtil.ParametrosApplication;
 import com.jvc.factunet.servicios.CantonServicio;
 import com.jvc.factunet.servicios.CiudadServicio;
 import com.jvc.factunet.servicios.EmpresaServicio;
+import com.jvc.factunet.servicios.ParametroEmpresaServicio;
 import com.jvc.factunet.servicios.ParroquiaServicio;
 import com.jvc.factunet.servicios.ProvinciaServicio;
 import com.jvc.factunet.servicios.TipoEmpresaServicio;
@@ -60,6 +63,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.map.MarkerDragEvent;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.map.DefaultMapModel;
 import org.primefaces.model.map.LatLng;
 import org.primefaces.model.map.MapModel;
@@ -89,6 +93,8 @@ public class EmpresaBean implements Serializable{
     private ParametrosApplication parametrosApplication;
     @EJB
     private TipoTarifaImpuestoServicio tipoTarifaImpuestoServicio;
+    @EJB
+    private ParametroEmpresaServicio parametroEmpresaServicio;
     
     private Integer zoom;
     private Empresa empresa;
@@ -105,6 +111,7 @@ public class EmpresaBean implements Serializable{
     private MapModel simpleModel;
     private Marker marker;
     private List<ImpuestoTarifa> listaTarifaImpuesto;
+    private DualListModel<CatalogoParametrosEmpresa> ListaCatalogoParametrosEmpresa;
     
     public EmpresaBean() {
         this.empresa = new Empresa();
@@ -113,6 +120,7 @@ public class EmpresaBean implements Serializable{
         this.listaCantones = new ArrayList<>();
         this.listaParroquias = new ArrayList<>();
         this.listaTarifaImpuesto = new ArrayList<>();
+        this.ListaCatalogoParametrosEmpresa = new DualListModel<>();
     }
     
     @PostConstruct
@@ -172,7 +180,7 @@ public class EmpresaBean implements Serializable{
                 this.pathLogo = getServletContext().getRealPath("/") + "resources" + File.separator + "imagenes";
                 this.urlLogo = "/resources/imagenes/" + this.nombreLogo;
             }
-            
+            this.cargarParametrosEmpresa();
         } catch (Exception e) {
             } finally {
             try {
@@ -180,6 +188,23 @@ public class EmpresaBean implements Serializable{
             } catch (Exception e) {
             }
         }
+    }
+    
+    public void cargarParametrosEmpresa(){
+        List<CatalogoParametrosEmpresa> cuentaSource = this.parametroEmpresaServicio.listar();
+        List<CatalogoParametrosEmpresa> cuentaTarget = new ArrayList<>();
+        for(EmpresaCatalogoParametro catalogo : this.empresa.getEmpresaCatalogoParametroList()){
+            cuentaTarget.add(catalogo.getCatalogoParametrosEmpresa());
+        }
+        for(CatalogoParametrosEmpresa target : cuentaTarget){
+            for(CatalogoParametrosEmpresa source : cuentaSource){
+                if(Objects.equals(target.getId(), source.getId())){
+                    cuentaSource.remove(source);
+                    break;
+                }
+            }
+        }
+        this.ListaCatalogoParametrosEmpresa = new DualListModel<>(cuentaSource, cuentaTarget);
     }
     
     public void guardar() {
@@ -200,6 +225,13 @@ public class EmpresaBean implements Serializable{
                 this.empresa.getBodegaList().add(bodega);
                 this.empresaServicio.insertar(this.empresa);
             } else {
+                this.empresa.getEmpresaCatalogoParametroList().clear();
+                ListaCatalogoParametrosEmpresa.getTarget().forEach((catalogo) -> {
+                    EmpresaCatalogoParametro empresaCatalogoParametro = new EmpresaCatalogoParametro();
+                    empresaCatalogoParametro.setEmpresa(empresa);
+                    empresaCatalogoParametro.setCatalogoParametrosEmpresa(catalogo);
+                    empresa.getEmpresaCatalogoParametroList().add(empresaCatalogoParametro);
+                });
                 this.empresaServicio.actualizar(this.empresa);
             }
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
@@ -249,7 +281,7 @@ public class EmpresaBean implements Serializable{
         options.put("resizable", true);
         options.put("draggable", true);
         options.put("modal", true);
-        options.put("contentWidth", 900);
+        options.put("contentWidth", 1100);
         options.put("includeViewParams", true);
         PrimeFaces.current().dialog().openDynamic("/seguridades/opcionesEmpresa/nuevoPuntoVentaDialog", options, null);
     }
@@ -427,7 +459,7 @@ public class EmpresaBean implements Serializable{
             String destinatario = empresa.getEmail();
             String mensaje = "Esta es una prueba de correo...";
             String archivo = this.generarReporte();
-            EmailSenderThread emailSenderThread = new EmailSenderThread(usuario, password, destinatario, asunto, mensaje, archivo, null);
+            EmailSenderThread emailSenderThread = new EmailSenderThread(usuario, password, destinatario, asunto, mensaje, archivo, null,((Login)FacesUtils.getManagedBean("login")).getPathEmpresa());
             emailSenderThread.sendMail();
         } catch (Exception e) {
             String danny = "";
@@ -663,5 +695,13 @@ public class EmpresaBean implements Serializable{
 
     public void setListaTarifaImpuesto(List<ImpuestoTarifa> listaTarifaImpuesto) {
         this.listaTarifaImpuesto = listaTarifaImpuesto;
+    }
+
+    public DualListModel<CatalogoParametrosEmpresa> getListaCatalogoParametrosEmpresa() {
+        return ListaCatalogoParametrosEmpresa;
+    }
+
+    public void setListaCatalogoParametrosEmpresa(DualListModel<CatalogoParametrosEmpresa> ListaCatalogoParametrosEmpresa) {
+        this.ListaCatalogoParametrosEmpresa = ListaCatalogoParametrosEmpresa;
     }
 }

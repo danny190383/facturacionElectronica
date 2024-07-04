@@ -220,7 +220,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                 detalle.setValorProrrateo(BigDecimal.ZERO);
                 detalle.setPrecioVentaUnitarioTransporte(detalle.getPrecioVentaUnitarioDescuento()); 
                 detalle.setPvp(detalle.getPrecioVentaUnitario().add(detalle.getPrecioVentaUnitario().multiply(productoBodega.getUtilidad().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
-                detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(this.getIvaEmpresa().divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
+                detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(new BigDecimal(detalle.getImpuestoTarifa().getPorcentaje()).divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP))));
                 this.facturaCompra.getFacturaDetalleList().add(detalle);
             }
         }
@@ -550,6 +550,9 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
     
     private void leer(List cellDataList) {
         for (int i = 0; i < cellDataList.size(); i++) {
+            if(i==330){
+                String d = "danny";
+            }
             List cellTempList = (List) cellDataList.get(i);
             if(!(((XSSFCell) cellTempList.get(1)).getStringCellValue().trim().isEmpty()))
             {
@@ -604,7 +607,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
                     detalle.setStock(this.setStockBodega(productoBodega, super.getBodegaSelect()));
                     detalle.setUtilidad((new BigDecimal(((XSSFCell) cellTempList.get(4)).getNumericCellValue())).setScale(2, RoundingMode.DOWN));
                     detalle.setPvpIva((new BigDecimal(((XSSFCell) cellTempList.get(5)).getNumericCellValue())).setScale(2, RoundingMode.DOWN));
-                    detalle.setPvp(detalle.getPvpIva().divide((super.getIvaEmpresa().divide(new BigDecimal("100")).add(BigDecimal.ONE)), RoundingMode.HALF_UP));
+                    detalle.setPvp(detalle.getPvpIva().divide((new BigDecimal(detalle.getImpuestoTarifa().getPorcentaje()).divide(new BigDecimal("100")).add(BigDecimal.ONE)), RoundingMode.HALF_UP));
                     detalle.setBodega(new Bodega(super.getBodegaSelect()));
                     if(detalle.getUtilidad().floatValue() == 0){
                         if(detalle.getPrecioVentaUnitario().floatValue()>0){

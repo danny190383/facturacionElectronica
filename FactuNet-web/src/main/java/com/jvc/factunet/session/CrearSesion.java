@@ -97,7 +97,6 @@ public class CrearSesion implements Serializable{
             this.login.crearMenuBoton(this.login.getEmpleado().getCuenta().getRol().getCodigo());
             this.login.cargarLogo();
             this.login.cargarFotoLogin();
-            this.login.verIVA();
             this.login.verPath();
             ThemeSwitcherBean theme = (ThemeSwitcherBean) FacesUtils.getManagedBean("themeSwitcherBean");
             theme.setTheme(this.login.getEmpleado().getEmpresa().getTema());

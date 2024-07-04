@@ -15,11 +15,16 @@ public class TipoIdentificacionDAO extends GenericDAO{
         return q.getResultList();
     }
     
-     public List<TipoIdentificacion> listarNombre(String nombre) {
-        Query q = em.createQuery("select o from TipoIdentificacion o "
-                + "where upper(o.nombre) like ?1 "
-                + "order by o.nombre");
-        q.setParameter(1, StringUtils.isEmpty(nombre) ? "%%" : "%" + nombre.toUpperCase() + "%");
+    public List<TipoIdentificacion> listarVer() {
+        Query q = em.createQuery("select o from TipoIdentificacion o where o.estadoVer = true ORDER BY o.nombre");
         return q.getResultList();
-     }
+    }
+    
+    public List<TipoIdentificacion> listarNombre(String nombre) {
+       Query q = em.createQuery("select o from TipoIdentificacion o "
+               + "where upper(o.nombre) like ?1 "
+               + "order by o.nombre");
+       q.setParameter(1, StringUtils.isEmpty(nombre) ? "%%" : "%" + nombre.toUpperCase() + "%");
+       return q.getResultList();
+    }
 }

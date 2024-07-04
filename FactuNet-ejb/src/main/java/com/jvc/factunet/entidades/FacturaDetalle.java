@@ -375,6 +375,10 @@ public class FacturaDetalle implements Serializable {
     public void setCantidad(BigDecimal cantidad) {
         this.cantidad = cantidad;
     }
+    
+    public Integer getCantidadInt(){
+        return cantidad.intValue();
+    }
 
     public String getDescripcion() {
         return descripcion;
