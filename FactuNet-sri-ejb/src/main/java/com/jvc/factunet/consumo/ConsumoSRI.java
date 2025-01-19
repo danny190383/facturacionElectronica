@@ -9,6 +9,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @Stateless
 public class ConsumoSRI {
@@ -56,7 +57,7 @@ public class ConsumoSRI {
                                                        "cel.sri.gob.ec", 
                                                        xml, 
                                                        Proxy.NO_PROXY);
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             return null;
         }
     }

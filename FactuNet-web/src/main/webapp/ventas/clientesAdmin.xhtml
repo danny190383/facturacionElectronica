@@ -337,8 +337,13 @@
                                     </h:outputLabel>
                                 </p:column>
                                 
+                                <p:column headerText="Vivo"
+                                          width="80">
+                                    <h:outputLabel value="#{mascota.vivo ? msg.si : msg.no}"/>
+                                </p:column>
+                                
                                 <p:column headerText="#{msg.opcion}" 
-                                          width="70"
+                                          width="100"
                                           style="text-align: center">
 
                                     <p:commandButton  icon="ui-icon-close" 
@@ -358,6 +363,14 @@
                                                listener="#{clienteBean.onMascotaSelect}"
                                                update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaMascotas"/>
                                    </p:commandButton>   
+                                    
+                                    <p:commandButton process=":frmCabecera:tabDatos:tablaMascotas"
+                                                     icon="ui-icon-search"
+                                                     actionListener="#{clienteBean.verBusquedaPersonasMascota(mascota)}" >
+                                      <p:ajax event="dialogReturn" 
+                                              listener="#{clienteBean.onPersonaMascotaSelect}" 
+                                              update=":frmCabecera:grMensajes, :frmCabecera:tabDatos:tablaMascotas"/>
+                                    </p:commandButton>
                                 </p:column>
                             </p:dataTable>
                         </p:tab>
@@ -453,7 +466,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="#{msg.opcion}" 
-                                          width="70"
+                                          width="100"
                                           style="text-align: center">
 
                                     <p:commandButton  icon="ui-icon-close" 

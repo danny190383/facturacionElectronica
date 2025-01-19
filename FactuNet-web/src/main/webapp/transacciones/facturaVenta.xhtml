@@ -371,6 +371,11 @@
                                                       listener="#{facturaVentaBean.cambiarFormaPago}"/>
                                             </p:selectBooleanCheckbox>
                                             
+                                            <h:outputLabel value="#{msg.transferencia}:" />
+                                            <p:selectBooleanCheckbox value="#{facturaVentaBean.transferencia}">
+                                              <p:ajax update=":frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, pnlFormaPago, pnlValorComision, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
+                                                      listener="#{facturaVentaBean.cambiarFormaPago}"/>
+                                            </p:selectBooleanCheckbox>
                                             
                                             <h:outputLabel value="#{msg.tarjetaDebito}:" />
                                             <p:selectBooleanCheckbox value="#{facturaVentaBean.debito}">
@@ -466,6 +471,11 @@
                                                  <p:keyFilter regEx="/[\d\.]/"/>
                                                  <f:validateDoubleRange minimum="0" /> 
                                             </p:inputText> 
+                                            
+                                            <h:outputLabel value="#{msg.descripcion} :" 
+                                                           rendered="#{facturaVentaBean.transferencia}"/>
+                                            <p:inputTextarea value="#{facturaVentaBean.desTransferencia}"       
+                                                             rendered="#{facturaVentaBean.transferencia}"/>
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </p:fieldset>

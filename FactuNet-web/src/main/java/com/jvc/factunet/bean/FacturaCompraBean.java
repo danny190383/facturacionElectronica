@@ -550,7 +550,7 @@ public class FacturaCompraBean extends PedidoCompraBean implements Serializable{
     
     private void leer(List cellDataList) {
         for (int i = 0; i < cellDataList.size(); i++) {
-            if(i==330){
+            if(i==295){
                 String d = "danny";
             }
             List cellTempList = (List) cellDataList.get(i);

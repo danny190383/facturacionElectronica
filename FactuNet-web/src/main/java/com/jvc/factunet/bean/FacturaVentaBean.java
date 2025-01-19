@@ -89,6 +89,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private Boolean credito;
     private Boolean otraFP;
     private Boolean debito;
+    private Boolean transferencia;
+    private String desTransferencia;
     private Integer numeroCuentas;
     private Integer diasCredito;
     private List<TarjetaEmpresa> listaTarjetaEmpresa;
@@ -115,6 +117,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.credito = Boolean.FALSE;
         this.debito = Boolean.FALSE;
         this.otraFP = Boolean.FALSE;
+        this.transferencia = Boolean.FALSE;
     }
     
     public void cargarPuntosVenta(){
@@ -199,6 +202,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.credito = Boolean.FALSE;
         this.debito = Boolean.FALSE;
         this.otraFP = Boolean.FALSE;
+        this.transferencia = Boolean.FALSE;
         this.numeroCuentas = 1;
         this.diasCredito = 1;
         this.cargarPuntosVenta();
@@ -625,7 +629,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     }
     
     public void verPago(String tipo) {
-        if(!this.efectivo && !this.tarjeta && !this.credito && !this.debito && !this.otraFP){
+        if(!this.efectivo && !this.tarjeta && !this.credito && !this.debito && !this.otraFP && !this.transferencia){
             FacesUtils.addErrorMessage("Debe seleccionar una forma de pago.");
             return;
         }
@@ -686,6 +690,14 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                             for(FacturaVenta factura : this.listaFacturaVentas){
                                 factura.setTipoDocuemento(tipo);
                                 factura = this.pagoDebito(factura);
+                                this.guardar(factura);
+                            }
+                            this.facturaVenta = this.listaFacturaVentas.get(0);
+                        } else if(this.transferencia){
+                            this.listaFacturaVentas.addAll(this.generarFacturasGuardar());
+                            for(FacturaVenta factura : this.listaFacturaVentas){
+                                factura.setTipoDocuemento(tipo);
+                                factura = this.pagoTransferencia(factura);
                                 this.guardar(factura);
                             }
                             this.facturaVenta = this.listaFacturaVentas.get(0);
@@ -812,6 +824,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     
     public FacturaVenta pagoEfectivo(FacturaVenta factura){
         CuentaCobroBean cuentaCobroBean = (CuentaCobroBean) FacesUtils.getManagedBean("cuentaCobroBean");
+        cuentaCobroBean.init();
+        cuentaCobroBean.getListaFacturaPago().clear();
         cuentaCobroBean.setListaFacturaPago(factura.getFacturaPagoList());
         cuentaCobroBean.setTotalFactura(factura.getTotal());
         cuentaCobroBean.setTotalPagos(BigDecimal.ZERO);
@@ -827,6 +841,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     
     public FacturaVenta pagoDebito(FacturaVenta factura){
         CuentaCobroBean cuentaCobroBean = (CuentaCobroBean) FacesUtils.getManagedBean("cuentaCobroBean");
+        cuentaCobroBean.init();
+        cuentaCobroBean.getListaFacturaPago().clear();
         cuentaCobroBean.setListaFacturaPago(factura.getFacturaPagoList());
         cuentaCobroBean.setTotalFactura(factura.getTotal());
         cuentaCobroBean.setTotalPagos(BigDecimal.ZERO);
@@ -842,6 +858,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     
     public FacturaVenta pagoTarjeta(FacturaVenta factura){
         CuentaCobroBean cuentaCobroBean = (CuentaCobroBean) FacesUtils.getManagedBean("cuentaCobroBean");
+        cuentaCobroBean.init();
+        cuentaCobroBean.getListaFacturaPago().clear();
         cuentaCobroBean.setListaFacturaPago(factura.getFacturaPagoList());
         cuentaCobroBean.setTotalFactura(factura.getTotal());
         cuentaCobroBean.setTotalPagos(BigDecimal.ZERO);
@@ -860,6 +878,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     
     public FacturaVenta pagoCredito(FacturaVenta factura){
         CuentaCobroBean cuentaCobroBean = (CuentaCobroBean) FacesUtils.getManagedBean("cuentaCobroBean");
+        cuentaCobroBean.init();
+        cuentaCobroBean.getListaFacturaPago().clear();
         cuentaCobroBean.setListaFacturaPago(factura.getFacturaPagoList());
         cuentaCobroBean.setTotalFactura(factura.getTotal());
         cuentaCobroBean.setTotalPagos(BigDecimal.ZERO);
@@ -869,6 +889,24 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         cuentaCobroBean.setNumeroCuentas(this.numeroCuentas);
         cuentaCobroBean.setDiasCredito(this.diasCredito);
         cuentaCobroBean.calcularFechaVencimiento();
+        if(cuentaCobroBean.agregarPago()){
+            for(FacturaPago pago : cuentaCobroBean.getListaFacturaPago()){
+                pago.setFactura(factura);  
+            }
+        }
+        return factura;
+    }
+    
+    public FacturaVenta pagoTransferencia(FacturaVenta factura){
+        CuentaCobroBean cuentaCobroBean = (CuentaCobroBean) FacesUtils.getManagedBean("cuentaCobroBean");
+        cuentaCobroBean.init();
+        cuentaCobroBean.getListaFacturaPago().clear();
+        cuentaCobroBean.setListaFacturaPago(factura.getFacturaPagoList());
+        cuentaCobroBean.setTotalFactura(factura.getTotal());
+        cuentaCobroBean.setTotalPagos(BigDecimal.ZERO);
+        cuentaCobroBean.setMontoPago(factura.getTotal());
+        cuentaCobroBean.setFormaSlc(148);
+        cuentaCobroBean.getCuentaFactura().setDetalle(this.desTransferencia); 
         if(cuentaCobroBean.agregarPago()){
             for(FacturaPago pago : cuentaCobroBean.getListaFacturaPago()){
                 pago.setFactura(factura);  
@@ -1365,6 +1403,10 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         if(this.otraFP){
             super.setComision(BigDecimal.ZERO);
         }
+        if(this.transferencia){
+            super.setComision(BigDecimal.ZERO);
+            this.desTransferencia = StringUtils.EMPTY;
+        }
         this.generalRecargo();
     }
     
@@ -1451,6 +1493,21 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         this.facturaDetalleSelect = facturaDetalleSelect;
     }
 
+    public Boolean getTransferencia() {
+        return transferencia;
+    }
+
+    public void setTransferencia(Boolean transferencia) {
+        this.transferencia = transferencia;
+        if(this.transferencia){
+            this.tarjeta = Boolean.FALSE;
+            this.credito = Boolean.FALSE;
+            this.debito = Boolean.FALSE;
+            this.efectivo = Boolean.FALSE;
+            this.otraFP = Boolean.FALSE;
+        }
+    }
+
     public Boolean getOtraFP() {
         return otraFP;
     }
@@ -1462,6 +1519,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.credito = Boolean.FALSE;
             this.debito = Boolean.FALSE;
             this.efectivo = Boolean.FALSE;
+            this.transferencia = Boolean.FALSE;
         }
     }
 
@@ -1476,6 +1534,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.credito = Boolean.FALSE;
             this.debito = Boolean.FALSE;
             this.otraFP = Boolean.FALSE;
+            this.transferencia = Boolean.FALSE;
         }
     }
 
@@ -1490,6 +1549,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.credito = Boolean.FALSE;
             this.debito = Boolean.FALSE;
             this.otraFP = Boolean.FALSE;
+            this.transferencia = Boolean.FALSE;
         }
     }
     
@@ -1504,6 +1564,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.tarjeta = Boolean.FALSE;
             this.debito = Boolean.FALSE;
             this.otraFP = Boolean.FALSE;
+            this.transferencia = Boolean.FALSE;
         }
     }
     
@@ -1518,6 +1579,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             this.tarjeta = Boolean.FALSE;
             this.credito = Boolean.FALSE;
             this.otraFP = Boolean.FALSE;
+            this.transferencia = Boolean.FALSE;
         }
     }
     
@@ -1895,5 +1957,13 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
 
     public void setListaCatalogoInfoAdicional(List<CatalogoInfoAdicional> listaCatalogoInfoAdicional) {
         this.listaCatalogoInfoAdicional = listaCatalogoInfoAdicional;
+    }
+
+    public String getDesTransferencia() {
+        return desTransferencia;
+    }
+
+    public void setDesTransferencia(String desTransferencia) {
+        this.desTransferencia = desTransferencia;
     }
 }

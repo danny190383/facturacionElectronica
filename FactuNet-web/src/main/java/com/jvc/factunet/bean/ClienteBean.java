@@ -73,6 +73,7 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
     private MascotaServicio mascotaServicio;
     
     private Cliente cliente;
+    private Mascota mascota;
     private String urlLogo;
     private String nombreLogo;
     private String pathLogo;
@@ -160,7 +161,7 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
             Contactar contactar = (Contactar) event.getObject();
             if(this.cliente.getContactarPersonaList() == null)
             {
-                this.cliente.setContactarPersonaList(new ArrayList<Contactar>());
+                this.cliente.setContactarPersonaList(new ArrayList<>());
             }
             if((!this.cliente.getContactarPersonaList().contains(contactar)) && (contactar != null))
             {
@@ -199,6 +200,19 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
         }
     }
     
+    public void verBusquedaPersonasMascota(Mascota mascota) {
+        this.mascota = mascota;
+        Map<String,Object> options = new HashMap<>();
+        options.put("resizable", true);
+        options.put("draggable", false);
+        options.put("modal", true);
+        options.put("width", 850);
+        options.put("height", 400);
+        options.put("contentWidth", 840);
+        options.put("contentHeight", 500);
+        PrimeFaces.current().dialog().openDynamic("/busquedas/buscarPersonasDialog", options, null);
+    }
+    
     public void verBusquedaPersonas() {
         Map<String,Object> options = new HashMap<>();
         options.put("resizable", true);
@@ -221,9 +235,23 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
             contacto.setEstado(Boolean.TRUE); 
             if(this.cliente.getContactoPersonaList() == null)
             {
-                this.cliente.setContactoPersonaList(new ArrayList<Contacto>());
+                this.cliente.setContactoPersonaList(new ArrayList<>());
             }
             this.cliente.getContactoPersonaList().add(contacto);
+        }
+    }
+    
+    public void onPersonaMascotaSelect(SelectEvent event) {
+        if(event.getObject() != null)
+        {
+            try {
+                this.mascota.setPersona((Persona) event.getObject());
+                this.mascotaServicio.actualizar(this.mascota);
+                this.cliente.getPersona().getMascotaPersonaList().remove(mascota);
+                FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
+            } catch (Exception ex) {
+                 FacesUtils.addErrorMessage("Error al cambiar de dueño");
+            }
         }
     }
     
@@ -257,7 +285,6 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
         if(event.getObject() != null)
         {
             this.cliente = (Cliente) event.getObject();
-            
             this.cargarFoto();
         }
     }

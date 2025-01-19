@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -218,6 +219,10 @@ public class Persona implements Serializable {
 
     public List<Mascota> getMascotaPersonaList() {
         return mascotaPersonaList;
+    }
+    
+    public List<Mascota> getMascotaVivasPersonaList() {
+        return mascotaPersonaList.stream().filter(p -> p.getVivo()).collect(Collectors.toList());
     }
 
     public void setMascotaPersonaList(List<Mascota> mascotaPersonaList) {

@@ -123,7 +123,7 @@
                             <p:ajax update="lblReproductor"/>
                         </p:selectOneMenu>
                         
-                        <h:outputLabel value="#{nuevaMascotaBean.mascota.sexo.codigo eq 387 ? msg.reproductor : msg.cachorros}" 
+                        <h:outputLabel value="#{nuevaMascotaBean.mascota.sexo.codigo eq 367 ? msg.reproductor : msg.cachorros}" 
                                        styleClass="texto_etiquetas"
                                        id="lblReproductor"/>
                         <p:selectOneRadio value="#{nuevaMascotaBean.mascota.reproductor}" 
@@ -143,6 +143,14 @@
                                        styleClass="texto_etiquetas"/>
                         <p:inputTextarea rows="8" cols="40" 
                                          value="#{nuevaMascotaBean.mascota.descripcion}"/>
+                        
+                        <h:outputLabel value="Vivo" 
+                                       styleClass="texto_etiquetas"/>
+                        <p:selectOneRadio value="#{nuevaMascotaBean.mascota.vivo}" 
+                                          required="true">
+                            <f:selectItem itemLabel="SI" itemValue="true"/>
+                            <f:selectItem itemLabel="NO" itemValue="false"/>
+                        </p:selectOneRadio>
 
                     </h:panelGrid>
 

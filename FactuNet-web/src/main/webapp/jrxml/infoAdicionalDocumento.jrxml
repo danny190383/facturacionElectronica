@@ -77,14 +77,16 @@ order by factura_info_adicional.id ASC]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="17">
+		<band height="30">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA[$V{REPORT_COUNT} > 0]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
-				<reportElement x="110" y="0" width="200" height="17" isPrintWhenDetailOverflows="true" uuid="4e694e00-3b13-4bd2-9c4c-3e9644d5abea">
+				<reportElement x="110" y="0" width="200" height="30" isPrintWhenDetailOverflows="true" uuid="4e694e00-3b13-4bd2-9c4c-3e9644d5abea">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<box>
+				<box leftPadding="0" rightPadding="0">
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -92,14 +94,13 @@ order by factura_info_adicional.id ASC]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="7" isBold="false"/>
+					<font fontName="Arial" size="6.5" isBold="false"/>
+					<paragraph rightIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="110" height="17" uuid="f6dd96fc-9fb8-4393-b255-8ae16766e8ff">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
+				<reportElement x="0" y="0" width="110" height="30" uuid="f6dd96fc-9fb8-4393-b255-8ae16766e8ff"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>

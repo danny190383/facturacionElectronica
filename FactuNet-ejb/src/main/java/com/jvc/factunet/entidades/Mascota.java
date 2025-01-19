@@ -59,6 +59,8 @@ public class Mascota implements Serializable {
     private byte[] foto;
     @Column(name = "reproductor")
     private Boolean reproductor;
+    @Column(name = "vivo")
+    private Boolean vivo;
     @JoinColumn(name = "sexo", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private SexoMascota sexo;
@@ -75,6 +77,14 @@ public class Mascota implements Serializable {
     private List<MascotaNotaMedica> mascotaNotaMedicaList;
 
     public Mascota() {
+    }
+
+    public Boolean getVivo() {
+        return vivo;
+    }
+
+    public void setVivo(Boolean vivo) {
+        this.vivo = vivo;
     }
 
     public Mascota(Integer codigo) {
