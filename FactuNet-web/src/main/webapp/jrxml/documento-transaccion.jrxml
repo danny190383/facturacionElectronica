@@ -249,11 +249,11 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="13">
+		<band height="13" splitType="Stretch">
 			<frame>
-				<reportElement style="Detail" mode="Opaque" x="0" y="0" width="555" height="13" uuid="4741af49-e55f-471e-a312-05929c02dd8f"/>
+				<reportElement style="Detail" stretchType="ElementGroupHeight" mode="Opaque" x="0" y="0" width="555" height="13" uuid="4741af49-e55f-471e-a312-05929c02dd8f"/>
 				<textField pattern="###0" isBlankWhenNull="true">
-					<reportElement mode="Transparent" x="0" y="0" width="220" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4"/>
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="220" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4"/>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -262,7 +262,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
-						<font fontName="Arial" size="9" isBold="false"/>
+						<font fontName="Arial" size="6" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 				</textField>

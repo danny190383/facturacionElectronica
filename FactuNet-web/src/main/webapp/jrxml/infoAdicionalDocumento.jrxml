@@ -97,7 +97,9 @@ order by factura_info_adicional.id ASC]]>
 					<font fontName="Arial" size="6.5" isBold="false"/>
 					<paragraph rightIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{valor} != null && $F{valor}.matches("-?\\d+(\\.\\d+)?") 
+    ? String.format("%.2f", new BigDecimal($F{valor})) 
+    : $F{valor}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="110" height="30" uuid="f6dd96fc-9fb8-4393-b255-8ae16766e8ff"/>
