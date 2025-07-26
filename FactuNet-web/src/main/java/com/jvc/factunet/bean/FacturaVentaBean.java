@@ -1833,8 +1833,22 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         return cantidad+nombre+total;
     }
     
+    public String generaPagosComprobante(String nombre, String total){
+        if(nombre.length()<21){
+            for(int i = nombre.length() ; i<=20 ; i++){
+                nombre = nombre +temp[0];
+            }
+        }
+        else
+        {
+            nombre = nombre.substring(0, 20)+temp[0];
+        }
+        return nombre+total;
+    }
+    
     public void imprimirTiket(FacturaVenta factura){
         String items = StringUtils.EMPTY;
+        String pagos = StringUtils.EMPTY;
         if(factura.getPuntoVenta().getRise().equals("3")){
             for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
                 items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
@@ -1848,6 +1862,9 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             for(int i = factura.getFacturaDetalleList().size() ; i<=factura.getSecuenciaDocumento().getMaxItems() ; i++){
                 items = items + "\n";
             }
+        }
+        for(FacturaPago pago : factura.getFacturaPagoList()){
+             pagos = pagos + this.generaPagosComprobante(pago.getFormaPago().getNombre(), pago.getValor().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
         }
         String nombreCompleto = factura.getCliente().getPersona().getNombres() + " " + (factura.getCliente().getPersona().getApellidos() == null ? " " : factura.getCliente().getPersona().getApellidos());
         if(nombreCompleto.length()>30){
@@ -1912,7 +1929,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                             factura.getSubtotal().toString(),
                             factura.getIva().toString(),
                             factura.getTotal().toString(),
-                            factura.getDescuento().toString());
+                            factura.getDescuento().toString(),
+                            pagos);
                     ticket.print(factura.getPuntoVenta().getImpresora(),factura.getPuntoVenta().getRise());
                     break;
                 }

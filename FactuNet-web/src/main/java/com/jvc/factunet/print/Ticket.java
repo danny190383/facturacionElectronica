@@ -101,6 +101,10 @@ public class Ticket {
                                  "   SUMA TOTAL:      {{total}}\n"+
                                  "\n"+
                                  "--------------------------------\n"+
+                                 "FORMA DE PAGO            V.TOTAL\n"+
+                                 "--------------------------------\n"+
+                                 "{{pagos}}"+
+                                 "--------------------------------\n"+
                                  "REVICE SU FACTURA ELECTRÓNICA \n"+
                                  "INGRESANDO A SU CORREO        \n"+
                                  "\n"+
@@ -140,13 +144,13 @@ public class Ticket {
       this.contentTicketRise = this.contentTicketRise.replace("{{mesa}}", mesa);
     }
     
-    public Ticket(Empresa empresa,PuntoVenta punto, String numero, String clave, String ciudadFecha, String cliente, String direccion, String telefono,String cedula, String correo,String items, String subTotal,String iva, String total, String descuento) {
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{empresa}}", empresa.getNombreAbreviado());
+    public Ticket(Empresa empresa,PuntoVenta punto, String numero, String clave, String ciudadFecha, String cliente, String direccion, String telefono,String cedula, String correo,String items, String subTotal,String iva, String total, String descuento,String pagos) {
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{empresa}}", punto.getNombreAbreviado());
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{razon_social}}", punto.getRazonSocial());
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ruc}}", punto.getRuc());
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{descripcion}}", empresa.getDescripcion());
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{telefono_empresa}}", empresa.getTelefono1());
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{correo_empresa}}", empresa.getEmail());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{descripcion}}", punto.getDescripcion());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{telefono_empresa}}", punto.getTelefono());
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{correo_empresa}}", punto.getEmail());
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{direccion_empresa}}", punto.getDireccion());
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudad_empresa}}", empresa.getCiudad().getNombre());
       
@@ -165,6 +169,8 @@ public class Ticket {
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{iva}}", iva);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{total}}", total);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{descuento}}", descuento);
+      
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{pagos}}", pagos);
     }
     
     public void print(String impresora, String rise) {

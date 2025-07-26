@@ -99,6 +99,32 @@
                             <f:selectItem itemLabel="#{msg.si}" itemValue="1" />
                             <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
                         </p:selectOneMenu>
+                        
+                        <h:outputLabel value="#{msg.nombreAbreviado}: "/>
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.nombreAbreviado}"
+                                     style="background-color: khaki;width: 200px"
+                                     maxlength="50"
+                                     required="true"/> 
+                        
+                        <h:outputLabel value="#{msg.telefono}"/>   
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.telefono}"
+                                     style="width: 200px">
+                            <p:keyFilter regEx="/[\d\-\.]/" />
+                        </p:inputText> 
+
+                        <h:outputLabel value="#{msg.correo}"/>   
+                        <p:inputText value="#{puntoVentaBean.puntoVenta.email}"
+                                     style="width: 200px">
+                            <p:keyFilter regEx="/[a-z0-9_\.\-@]/i" />
+                        </p:inputText> 
+                        
+                        <h:outputLabel value="#{msg.descripcion}: "/>
+                        <p:inputTextarea rows="2" cols="40" 
+                                         style="height: 50px;width: 200px;background-color: khaki"
+                                         autoResize="false" 
+                                         maxlength="200"
+                                         required="true"
+                                         value="#{puntoVentaBean.puntoVenta.descripcion}"/>
                     </h:panelGrid>
                 </p:tab>
                 <p:tab title="#{msg.factura} #{msg.electronica}">

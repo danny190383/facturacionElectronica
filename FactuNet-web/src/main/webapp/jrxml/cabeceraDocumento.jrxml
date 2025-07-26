@@ -25,7 +25,7 @@
 observacion, 
 numero, 
 fecha, 
-descripcion, 
+factura.descripcion, 
 estado, 
 discriminador, 
 codigo_barras,
@@ -108,7 +108,7 @@ on punto_venta.codigo = factura.punto_venta
 				<textElement verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{observacion} == null  ? "000-000" : $F{observacion}) + "-" + ($F{despachar_a}== null  ? $F{numero} : $F{despachar_a}) ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{observacion} == null  ? "000-000" : $F{observacion}) + "-" + ($F{despachar_a}== null  ? $F{numero} : $F{despachar_a})]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="110" y="11" width="190" height="11" uuid="1f3dea64-80c0-4dd9-b776-75763c62f493"/>

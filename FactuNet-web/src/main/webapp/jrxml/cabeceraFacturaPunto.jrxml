@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cabecera" pageWidth="230" pageHeight="200" whenNoDataType="AllSectionsNoDetail" columnWidth="230" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e2b0710c-48f6-431f-a84d-69c5e84ff5dd">
+	<property name="ireport.zoom" value="7.0"/>
+	<property name="ireport.x" value="2572"/>
+	<property name="ireport.y" value="120"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="FacMar"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="empresa" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 
+ empresa.logo_imagen,
+ punto_venta.nombre_abreviado,
+  punto_venta.razon_social,
+ punto_venta.nombre_empresa,
+ punto_venta.descripcion,
+ punto_venta.email,
+ punto_venta.telefono,
+ punto_venta.direccion,
+ empresa.obligado_contabilidad 
+ from punto_venta inner join empresa 
+ on punto_venta.empresa = empresa.codigo 
+ where punto_venta.codigo = $P{empresa}]]>
+	</queryString>
+	<field name="logo_imagen" class="byte[]">
+		<property name="com.jaspersoft.studio.field.name" value="logo_imagen"/>
+		<property name="com.jaspersoft.studio.field.label" value="logo_imagen"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="empresa"/>
+		<fieldDescription><![CDATA[Logo de la empresa, poner preferible en formato jpg para que no sea muy pesado el archivo]]></fieldDescription>
+	</field>
+	<field name="nombre_abreviado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_abreviado"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_abreviado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+	</field>
+	<field name="razon_social" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="razon_social"/>
+		<property name="com.jaspersoft.studio.field.label" value="razon_social"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+	</field>
+	<field name="nombre_empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.label" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+	</field>
+	<field name="email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+		<fieldDescription><![CDATA[Email de la empresa]]></fieldDescription>
+	</field>
+	<field name="telefono" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.label" value="telefono"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="punto_venta"/>
+		<fieldDescription><![CDATA[Direccion completa de la empresa]]></fieldDescription>
+	</field>
+	<field name="obligado_contabilidad" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.name" value="obligado_contabilidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="obligado_contabilidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="empresa"/>
+	</field>
+	<columnHeader>
+		<band height="200">
+			<image>
+				<reportElement x="0" y="0" width="230" height="100" uuid="bc4eb22d-0ae5-4f12-b9a3-3885c91f40a8"/>
+				<imageExpression><![CDATA[$F{logo_imagen}]]></imageExpression>
+			</image>
+			<frame>
+				<reportElement x="0" y="100" width="230" height="100" uuid="2d7e8bb3-911e-4d6d-87de-de8df913d3ff"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textField isBlankWhenNull="true">
+					<reportElement x="9" y="0" width="221" height="27" isPrintWhenDetailOverflows="true" forecolor="#003366" uuid="8a7aa337-8ceb-4310-9f23-0fa199041950">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="18" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombre_abreviado}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="9" y="70" width="45" height="10" uuid="df84d6b0-373b-44ee-812e-958f6b6183ee">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TELEFONO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="9" y="80" width="45" height="10" uuid="375587d8-ec10-4195-bb7d-2931ac669264">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DIRECCION:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="54" y="70" width="176" height="10" uuid="b05a91a8-840a-45a6-b729-14b5142a3f93"/>
+					<textElement>
+						<font fontName="Arial" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="54" y="80" width="176" height="10" uuid="7cf1c09e-4b87-41c5-bdd6-f792003866bc"/>
+					<textElement>
+						<font fontName="Arial" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="9" y="60" width="45" height="10" uuid="62557639-a384-4e1c-b529-5e3cb5f2912c">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CORREO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="54" y="60" width="176" height="10" uuid="90244fb7-f833-4ea3-aa13-be3712fc8cdc"/>
+					<textElement>
+						<font fontName="Arial" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="9" y="40" width="221" height="20" uuid="2bdddbae-5d3e-4af2-a2c0-9c9f53c33f98"/>
+					<textElement>
+						<font fontName="Arial" size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="60" y="27" width="170" height="13" uuid="f55a04df-02f6-4f3f-b9ac-241704fd881c">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razon_social}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="9" y="90" width="140" height="10" uuid="b03339bd-a6a4-411b-8bd8-8766ae3b95c6"/>
+					<textElement>
+						<font fontName="Arial" size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OBLIGADO A LLEVAR CONTABILIDAD:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="149" y="90" width="41" height="10" uuid="f24809b5-cf2b-4193-919b-f1fd2e168e09">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font fontName="Arial" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{obligado_contabilidad} ? "SI" : "NO"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="9" y="27" width="51" height="13" uuid="46e3d27d-6fe9-47be-8aac-d1e59c5d2402"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EMISOR:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</columnHeader>
+</jasperReport>

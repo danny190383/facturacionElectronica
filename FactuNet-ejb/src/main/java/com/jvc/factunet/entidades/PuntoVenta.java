@@ -91,7 +91,18 @@ public class PuntoVenta implements Serializable {
     @Size(min = 1, max = 200)
     @Column(name = "direccion")
     private String direccion;
-
+    // nuevos  campos para tiket por punto de venta
+    @Column(name = "nombre_abreviado ")
+    private String nombreAbreviado;
+    @Size(max = 50)
+    @Column(name = "email")
+    private String email;
+    @Size(max = 15)
+    @Column(name = "telefono")
+    private String telefono;
+    @Column(name = "descripcion")
+    private String descripcion;
+    
     public PuntoVenta() {
     }
 
@@ -295,6 +306,38 @@ public class PuntoVenta implements Serializable {
 
     public void setContribuyenteRimpe(String contribuyenteRimpe) {
         this.contribuyenteRimpe = contribuyenteRimpe;
+    }
+
+    public String getNombreAbreviado() {
+        return nombreAbreviado;
+    }
+
+    public void setNombreAbreviado(String nombreAbreviado) {
+        this.nombreAbreviado = nombreAbreviado;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
     
     @Override

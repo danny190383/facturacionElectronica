@@ -17,30 +17,102 @@
 	<parameter name="nombreReporte" class="java.lang.String"/>
 	<parameter name="ruc" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT factura.codigo, factura.empresa, factura.cliente, factura.proveedor,
-factura_detalle.bodega, factura_detalle.cantidad, producto.nombre, 
-factura_detalle.precio_venta_unitario, factura_detalle.valor_descuento, factura_detalle.valor_comision,
-factura_detalle.precio_venta_unitario_descuento, factura_detalle.subtotal_con_descuento, factura_detalle.subtotal_sin_descuento,
-factura.id_factura
+		<![CDATA[SELECT 
+factura.codigo,
+ factura.empresa, 
+ factura.cliente, 
+ factura.proveedor,
+factura_detalle.bodega, 
+factura_detalle.cantidad,
+ producto.nombre, 
+factura_detalle.precio_venta_unitario
+, factura_detalle.valor_descuento, 
+factura_detalle.valor_comision,
+factura_detalle.precio_venta_unitario_descuento, 
+factura_detalle.subtotal_con_descuento,
+ factura_detalle.subtotal_sin_descuento,
+factura.id_factura,
+factura.punto_venta
  from factura_detalle  inner join factura on 
 factura_detalle.factura = factura.codigo inner join producto on
 factura_detalle.producto_servicio = producto.codigo
 where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 	</queryString>
-	<field name="codigo" class="java.lang.Integer"/>
-	<field name="empresa" class="java.lang.Integer"/>
-	<field name="cliente" class="java.lang.Integer"/>
-	<field name="proveedor" class="java.lang.Integer"/>
-	<field name="bodega" class="java.lang.Integer"/>
-	<field name="cantidad" class="java.math.BigDecimal"/>
-	<field name="nombre" class="java.lang.String"/>
-	<field name="precio_venta_unitario" class="java.math.BigDecimal"/>
-	<field name="valor_descuento" class="java.math.BigDecimal"/>
-	<field name="valor_comision" class="java.math.BigDecimal"/>
-	<field name="precio_venta_unitario_descuento" class="java.math.BigDecimal"/>
-	<field name="subtotal_con_descuento" class="java.math.BigDecimal"/>
-	<field name="subtotal_sin_descuento" class="java.math.BigDecimal"/>
-	<field name="id_factura" class="java.lang.Integer"/>
+	<field name="codigo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="empresa" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="cliente" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="cliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="cliente"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="proveedor" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="proveedor"/>
+		<property name="com.jaspersoft.studio.field.label" value="proveedor"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="bodega" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="bodega"/>
+		<property name="com.jaspersoft.studio.field.label" value="bodega"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="cantidad" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cantidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="cantidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
+	</field>
+	<field name="precio_venta_unitario" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="precio_venta_unitario"/>
+		<property name="com.jaspersoft.studio.field.label" value="precio_venta_unitario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="valor_descuento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="valor_descuento"/>
+		<property name="com.jaspersoft.studio.field.label" value="valor_descuento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="valor_comision" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="valor_comision"/>
+		<property name="com.jaspersoft.studio.field.label" value="valor_comision"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="precio_venta_unitario_descuento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="precio_venta_unitario_descuento"/>
+		<property name="com.jaspersoft.studio.field.label" value="precio_venta_unitario_descuento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="subtotal_con_descuento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="subtotal_con_descuento"/>
+		<property name="com.jaspersoft.studio.field.label" value="subtotal_con_descuento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="subtotal_sin_descuento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="subtotal_sin_descuento"/>
+		<property name="com.jaspersoft.studio.field.label" value="subtotal_sin_descuento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
+	</field>
+	<field name="id_factura" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="id_factura"/>
+		<property name="com.jaspersoft.studio.field.label" value="id_factura"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="punto_venta" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="punto_venta"/>
+		<property name="com.jaspersoft.studio.field.label" value="punto_venta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
 	<variable name="contador" class="java.lang.Integer" calculation="DistinctCount">
 		<variableExpression><![CDATA[$F{codigo}]]></variableExpression>
 	</variable>
@@ -100,6 +172,21 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{punto_venta} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="empresa">
+					<subreportParameterExpression><![CDATA[$F{punto_venta}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cabeceraFacturaPunto.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="230" height="200" isRemoveLineWhenBlank="true" uuid="4001ec72-676c-4bdf-afa5-72615e7ecf12">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{punto_venta} == null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="empresa">
 					<subreportParameterExpression><![CDATA[$F{empresa}]]></subreportParameterExpression>
