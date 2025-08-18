@@ -177,17 +177,17 @@ public class Ticket {
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         byte[] bytes;
-      switch (rise) {
-          case "2":
-              bytes = this.contentTicket.getBytes();
-              break;
-          case "1":
-              bytes = this.contentTicketRise.getBytes();
-              break;
-          default:
-              bytes = this.contentTicketComprobante.getBytes();
-              break;
-      }
+        switch (rise) {
+            case "2":
+                bytes = this.contentTicket.getBytes();
+                break;
+            case "1":
+                bytes = this.contentTicketRise.getBytes();
+                break;
+            default:
+                bytes = this.contentTicketComprobante.getBytes();
+                break;
+        }
         Doc doc = new SimpleDoc(bytes,flavor,null);
         DocPrintJob job = null;
         DocPrintJob jobCorte = null;

@@ -2,6 +2,7 @@ package com.jvc.factunet.entidades;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +21,8 @@ public class PedidoVenta extends Factura implements Serializable{
     @JoinColumn(name = "mascota", referencedColumnName = "codigo")
     @ManyToOne
     private Mascota mascota;
+    @Column(name = "pago")
+    private Integer pago;
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY)
     private List<MascotaNotaMedica> listaMascotaNotasMedicas;
     
@@ -28,6 +31,7 @@ public class PedidoVenta extends Factura implements Serializable{
     
     public PedidoVenta() {
         this.facturar = Boolean.FALSE;
+        this.pago = 1;
         //estado
         //1 por facturar
         //2 facturado
@@ -64,5 +68,13 @@ public class PedidoVenta extends Factura implements Serializable{
 
     public void setFacturar(Boolean facturar) {
         this.facturar = facturar;
+    }
+
+    public Integer getPago() {
+        return pago;
+    }
+
+    public void setPago(Integer pago) {
+        this.pago = pago;
     }
 }

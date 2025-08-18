@@ -1,12 +1,20 @@
 package com.jvc.factunet.bean;
 
+import com.jvc.factunet.entidades.Bodega;
+import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.Empresa;
+import com.jvc.factunet.entidades.Factura;
 import com.jvc.factunet.entidades.FacturaDetalle;
+import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.Mesa;
+import com.jvc.factunet.entidades.PaqueteVenta;
 import com.jvc.factunet.entidades.PedidoVenta;
 import com.jvc.factunet.entidades.Persona;
 import com.jvc.factunet.entidades.Producto;
+import com.jvc.factunet.entidades.ProductoBodega;
+import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
+import com.jvc.factunet.entidades.ProductoPaquete;
 import com.jvc.factunet.entidades.PuntoRestriccion;
 import com.jvc.factunet.entidades.PuntoVenta;
 import com.jvc.factunet.entidades.Seccion;
@@ -33,13 +41,14 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
-@ManagedBean
+@ManagedBean(name="pedidoVentaBean")
 @ViewScoped
 public class PedidoVentaBean extends ImprimirReportesBean implements Serializable{
     
@@ -51,6 +60,12 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
     private EmpresaServicio empresaServicio;
     @EJB
     public ClienteServicio clienteServicio;
+    @ManagedProperty(value = "#{pedidoCompraBean}")
+    private PedidoCompraBean pedidoCompraBean;
+    
+    public void setPedidoCompraBean(PedidoCompraBean pedidoCompraBean) {
+        this.pedidoCompraBean = pedidoCompraBean;
+    }
 
     private Empresa empresa = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getEmpresa();
     private List<PedidoVenta> listaPedidos;
@@ -159,15 +174,78 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
                 detalle.setCantidad(producto.getCantidad());
                 detalle.setDescripcion(producto.getObservacion()); 
                 detalle.setCantidadPorFacturar(detalle.getCantidad());
-                detalle.setSubtotalSinDescuento(BigDecimal.ONE);
-                detalle.setPvp(producto.getPvp());
-                detalle.setFecha(new Date());
-                detalle.setEmpleado(((Login)FacesUtils.getManagedBean("login")).getEmpleado());
                 detalle.setFactura(this.pedidoVentaSelc);
-                this.documentosServicios.insertarDetalle(detalle);
-                this.pedidoVentaSelc.getFacturaDetalleList().add(detalle);
+                this.pedidoVentaSelc.getFacturaDetalleList().add(crearDetalle(detalle));
+            }
+            this.pedidoVentaSelc = (PedidoVenta)this.pedidoCompraBean.calcularTotalPago((Factura)this.pedidoVentaSelc);
+            this.guardar(this.pedidoVentaSelc);
+        }
+    }
+    
+    public void onCellEdit(FacturaDetalle event) {
+        try {
+            event.setCantidadPorFacturar(event.getCantidad());
+            event.setSubtotalSinDescuento((event.getPrecioVentaUnitario().multiply(event.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
+            event.setSubtotalConDescuento((event.getPrecioVentaUnitarioDescuento().multiply(event.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
+            event.setValorDescuento((event.getSubtotalSinDescuento().multiply(event.getDescuento().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));  
+            event.setValorComision((event.getSubtotalConDescuento().multiply(event.getComision().divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));  
+            this.pedidoVentaSelc = (PedidoVenta)this.pedidoCompraBean.calcularTotalPago(event.getFactura());
+            this.guardar(this.pedidoVentaSelc);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "No se puede guardar.", ex);
+            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registroNoGuardado"));
+        }
+    }
+    
+    public FacturaDetalle crearDetalle(FacturaDetalle detalle)
+    {
+        detalle.setFecha(new Date());
+        detalle.setEmpleado(((Login)FacesUtils.getManagedBean("login")).getEmpleado());
+        detalle.setDescuento(detalle.getProductoServicio().getDescuentoVenta());
+        detalle.setComision(BigDecimal.ZERO);
+        detalle.setPrecioVentaUnitario(BigDecimal.ZERO);
+        detalle.setStock(BigDecimal.ZERO);
+        if(detalle.getProductoServicio() instanceof ProductoBodega)
+        {
+            ProductoBodega productoBodega = (ProductoBodega) detalle.getProductoServicio();
+            detalle.setCostoFecha(productoBodega.getPrecioUltimaCompra());
+            detalle.setPvp(productoBodega.getPvp());
+            detalle.setPrecioVentaUnitario(productoBodega.getPvp().add((productoBodega.getPvp().multiply(detalle.getComision())).divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP)));  
+            detalle.setPrecioVentaUnitarioDescuento(detalle.getPrecioVentaUnitario().subtract((detalle.getPrecioVentaUnitario().multiply(detalle.getDescuento())).divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP)));  
+        }
+        else
+        {
+            if(detalle.getProductoServicio() instanceof ProductoPaquete)
+            {
+                detalle.setIsPaquete(Boolean.TRUE);
+                for(PaqueteVenta proPa : ((ProductoPaquete)detalle.getProductoServicio()).getPaqueteVentaList())
+                {
+                    if(proPa.getProducto() instanceof ProductoBodega)
+                    {
+                        proPa.setIsBodega(Boolean.TRUE);
+                        proPa.setBodegaSlc(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getBodega().getCodigo());
+                        proPa.setBodega(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getBodega());
+                        proPa.setStock(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getStock());
+                    }
+                }
+            }
+            detalle.setCostoFecha(detalle.getProductoServicio().getPrecioUltimaCompra());
+            detalle.setPvp(detalle.getProductoServicio().getPvp());
+            detalle.setPrecioVentaUnitario(detalle.getProductoServicio().getPvp().add((detalle.getProductoServicio().getPvp().multiply(detalle.getComision())).divide(new BigDecimal(100))).setScale(2, BigDecimal.ROUND_HALF_UP));  
+            detalle.setPrecioVentaUnitarioDescuento(detalle.getPrecioVentaUnitario().subtract((detalle.getPrecioVentaUnitario().multiply(detalle.getDescuento())).divide(new BigDecimal(100))).setScale(2, BigDecimal.ROUND_HALF_UP));  
+        }
+        detalle.setPrecioUnitarioTmp(detalle.getPrecioVentaUnitario());
+        detalle.setSubtotalSinDescuento((detalle.getPrecioVentaUnitario().multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
+        detalle.setValorDescuento((((detalle.getPrecioVentaUnitarioDescuento().multiply(detalle.getDescuento())).divide(new BigDecimal(100))).multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));  
+        detalle.setSubtotalConDescuento(detalle.getPrecioVentaUnitarioDescuento().multiply(detalle.getCantidad()));
+        detalle.setValorComision((((detalle.getPvp().multiply(detalle.getComision())).divide(new BigDecimal(100))).multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));  
+        for(ProductoImpuestoTarifa tarifaImpuesto : detalle.getProductoServicio().getProductoImpuestoTarifaList()){
+            if(tarifaImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
+                detalle.setImpuestoTarifa(tarifaImpuesto.getImpuestoTarifa());
+                break;
             }
         }
+        return detalle;
     }
     
     public void verNotaMedica(PedidoVenta pedido) {
@@ -195,8 +273,10 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
      
      public void eliminarDetalle(FacturaDetalle detalle, PedidoVenta pedido) {
         try {
-            this.documentosServicios.eliminar(detalle);
+//            this.documentosServicios.eliminar(detalle);
             pedido.getFacturaDetalleList().remove(detalle);
+            this.pedidoVentaSelc = (PedidoVenta)this.pedidoCompraBean.calcularTotalPago(pedido);
+            this.guardar(this.pedidoVentaSelc);
             FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroEliminado"));
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "No se puede eliminar.", e);
@@ -281,17 +361,6 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         }
         for(PedidoVenta pedicoTmp : lista){
             mesa.getListaPedidosVenta().remove(pedicoTmp);
-        }
-    }
-    
-    public void onCellEdit(FacturaDetalle event) {
-        try {
-            event.setCantidadPorFacturar(event.getCantidad());
-            this.documentosServicios.actualizar(event);
-            FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroGrabado"));
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "No se puede guardar.", ex);
-            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registroNoGuardado"));
         }
     }
     

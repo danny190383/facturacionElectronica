@@ -40,3 +40,34 @@ body {
     vertical-align: top;
 }
 
+.flex-container {
+    display: flex; /* Activa el modo Flexbox */
+    justify-content: space-between; /* ¡Esta es la magia! Empuja los hijos a los extremos opuestos */
+    align-items: center; /* Alinea verticalmente los elementos al centro */
+    width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+}
+
+.flex-left-items {
+    display: flex; /* Hacemos que los elementos de la izquierda también sean flexibles */
+    align-items: center; /* Para que se alineen bien entre ellos */
+}
+
+/* ========================================================== */
+/*    FIX PARA DIÁLOGOS GLOBALES - VERSIÓN PRIMEFACES MOBILE  */
+/* ========================================================== */
+
+/* 1. La capa de fondo (overlay) en PFM. */
+/* Esta es la clase correcta para la capa grisácea de fondo. */
+.ui-popup-screen {
+    background: rgba(0, 0, 0, 0.5) !important; /* Fondo negro con 50% de opacidad */
+    z-index: 1040 !important;
+}
+
+/* 2. El contenedor del diálogo en PFM. */
+/* Usamos las clases que identificaste para forzar un fondo sólido. */
+/* PFM a veces hace el contenedor transparente y le da color a los hijos. */
+.ui-popup-container {
+    background-color: #ffffff !important; /* Fondo blanco sólido para el diálogo */
+    z-index: 1050 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5); /* Sombra para que destaque y parezca "flotar" */
+}

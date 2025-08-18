@@ -2,7 +2,6 @@ package com.jvc.factunet.bean;
 
 import com.jvc.factunet.entidades.Bodega;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
-import com.jvc.factunet.entidades.CatalogoInfoAdicional;
 import com.jvc.factunet.entidades.DocumentoRetencion;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.Factura;
@@ -33,7 +32,6 @@ import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.ImprimirReportesBean;
 import com.jvc.factunet.icefacesUtil.JasperReportUtil;
 import com.jvc.factunet.servicios.BodegaServicio;
-import com.jvc.factunet.servicios.CatalogoInfoAdicionalServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.FormaPagoServicio;
 import com.jvc.factunet.servicios.ProductoBodegaServicio;
@@ -61,7 +59,7 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
-@ManagedBean
+@ManagedBean(name="pedidoCompraBean") 
 @ViewScoped
 public class PedidoCompraBean extends ImprimirReportesBean implements Serializable{
     

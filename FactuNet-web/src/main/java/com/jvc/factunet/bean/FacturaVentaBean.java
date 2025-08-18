@@ -339,6 +339,22 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 }
             }
         }
+        this.efectivo = Boolean.FALSE;
+        this.transferencia = Boolean.FALSE;
+        this.debito = Boolean.FALSE;
+        this.tarjeta = Boolean.FALSE;
+        if(pedido.getPago() == 1){
+            this.efectivo = Boolean.TRUE;
+        }
+        if(pedido.getPago() == 2){
+            this.transferencia = Boolean.TRUE;
+        }
+        if(pedido.getPago() == 3){
+            this.debito = Boolean.TRUE;
+        }     
+        if(pedido.getPago() == 4){
+            this.tarjeta = Boolean.TRUE;
+        }     
         if(pedido.getCliente().getPersona().getCedula() != null){
             this.facturaVenta.setCliente(pedido.getCliente());
             this.cliente = pedido.getCliente();
@@ -987,6 +1003,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 if(!(((PedidoVenta) event.getObject()).getFacturaDetalleList().isEmpty())){
                     if(this.verificarPedidoLista(((PedidoVenta) event.getObject()).getCodigo())){
                         this.cargarPedidoVenta((PedidoVenta) event.getObject());
+                        this.cambiarFormaPago();
                         this.calcularTotales();
                     }
                 }

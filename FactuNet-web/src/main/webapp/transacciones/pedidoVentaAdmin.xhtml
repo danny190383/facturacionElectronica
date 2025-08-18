@@ -174,16 +174,29 @@
                                                              value="#{items.facturaDetalleList}"
                                                              emptyMessage="#{msg.tablaVacia}"
                                                              style="width: 100%">
+                                                    
+                                                    <f:facet name="header">
+                                                        <p:panelGrid columns="2">
+                                                            <h:outputLabel value="#{msg.iva}: #{items.iva}"/>
+                                                            <h:outputLabel value="#{msg.totalM}: #{items.totalPagar}"/>
+                                                        </p:panelGrid>
+                                                    </f:facet>
 
-                                                   <p:column headerText="#{msg.hora}"
-                                                             style="text-align: left"
-                                                             width="30">
-                                                         <h:outputLabel value="#{itemsD.fecha}"
-                                                                        style="font-size: 10px">
-                                                             <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
-                                                                                pattern="#{parametrosApplication.formatoHoraSMS}"/>
-                                                         </h:outputLabel>
-                                                   </p:column>
+                                                    <p:column headerText="#{msg.hora}"
+                                                              style="text-align: left"
+                                                              width="5%">
+                                                          <h:outputLabel value="#{itemsD.fecha}"
+                                                                         style="font-size: 10px">
+                                                              <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                                                 pattern="#{parametrosApplication.formatoHoraSMS}"/>
+                                                          </h:outputLabel>
+                                                    </p:column>
+                                                    
+                                                    <p:column headerText="#{msg.iva}"
+                                                              width="5%"
+                                                              style="text-align:center">
+                                                        <h:outputLabel value="#{itemsD.impuestoTarifa.descripcion}"/>
+                                                    </p:column>
 
                                                    <p:column headerText="#{msg.productos}"
                                                              style="text-align: left">
@@ -204,7 +217,7 @@
                                                    </p:column>
 
                                                    <p:column headerText="Cant."
-                                                             width="30"
+                                                             width="5%"
                                                              style="text-align:right">
                                                        <p:inputNumber value="#{itemsD.cantidad}" 
                                                                         decimalPlaces="2"
@@ -215,13 +228,35 @@
                                                        </p:inputNumber> 
                                                    </p:column>
                                                     
+                                                    <p:column headerText="#{msg.unitario}"
+                                                              width="5%"
+                                                              style="text-align:right">
+                                                        <h:outputLabel value="#{itemsD.precioVentaUnitarioDescuento}">
+                                                            <f:convertNumber type="number" 
+                                                                             groupingUsed="true" 
+                                                                             minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                                             pattern="#0.00"/>
+                                                        </h:outputLabel>
+                                                    </p:column>
+ 
+                                                    <p:column headerText="#{msg.total}"
+                                                              width="5%"
+                                                              style="text-align:right">
+                                                        <h:outputLabel value="#{itemsD.subtotalConDescuento}">
+                                                            <f:convertNumber type="number" 
+                                                                             groupingUsed="true" 
+                                                                             minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                                             pattern="#0.00"/>
+                                                        </h:outputLabel>
+                                                    </p:column>
+                                                    
                                                     <p:column headerText="Fact."
-                                                             width="30"
+                                                             width="5%"
                                                              style="text-align:right">
                                                         <h:outputLabel value="#{itemsD.cantidadPorFacturar}" />
                                                    </p:column>
 
-                                                    <p:column width="20">      
+                                                    <p:column width="5%">      
                                                         <p:commandButton icon="ui-icon-close" 
                                                                          update=":frmCabecera:grMensajes, tablaFacturaVentaDetalle" 
                                                                          actionListener="#{pedidoVentaBean.eliminarDetalle(itemsD,items)}"

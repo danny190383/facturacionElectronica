@@ -98,8 +98,17 @@
                                                                      title="#{msg.nuevo}"
                                                                      value="#{msg.nuevo}"
                                                                      style="font-size: 12px"
+                                                                     rendered="false"
                                                                      update=":nuevoCliente:frmCabecera3"
                                                                      onclick="document.getElementById('pedido:btnNuevoCliente').click();"/>
+                                                    
+                                                    <p:commandButton actionListener="#{pedidoVentaMovilBean.seleccionarClienteDatos(null)}"
+                                                                    style="font-size: 12px"
+                                                                    icon="ui-icon-comment"
+                                                                    title="#{msg.nuevo}"
+                                                                    value="#{msg.nuevo}"
+                                                                    process="@this"
+                                                                    update=":globalClientDialogForm:dlgDatosCliente"/> 
 
                                                     <p:commandButton actionListener="#{pedidoVentaMovilBean.consumidorFinal(mesa)}"
                                                                      icon="ui-icon-check"
@@ -122,7 +131,7 @@
                                                          style="border: black solid 2px;background-color: aquamarine">
                                                 
                                                 <h:panelGrid columns="1">
-                                                    <h:panelGrid columns="7">
+                                                    <h:panelGrid columns="13">
                                                         
                                                         <p:commandButton icon="ui-icon-delete" 
                                                                          title="#{msg.eliminar} #{msg.pedido}"
@@ -130,13 +139,24 @@
                                                                          actionListener="#{pedidoVentaMovilBean.eliminarPedidoMesaSet(mesa,items)}"
                                                                          onclick="PF('dlgEliminarPedido').show();"/>
                                                         <p:spacer width="5px"/>
+                                                        
                                                         <p:commandButton actionListener="#{pedidoVentaMovilBean.verEditarCliente(items.cliente)}"  
                                                                          icon="ui-icon-edit"
                                                                          title="#{msg.editar}"
                                                                          style="background-color: tan"
+                                                                         rendered="false"
                                                                          update=":nuevoCliente:frmCabecera3"
                                                                          disabled="#{items.cliente.persona.nombres eq 'CONSUMIDOR FINAL'}"
                                                                          onclick="document.getElementById('pedido:btnNuevoCliente').click();"/>
+                                                        
+                                                        <p:commandButton actionListener="#{pedidoVentaMovilBean.seleccionarClienteDatos(items.cliente)}"
+                                                                         style="background-color: tan"
+                                                                         icon="ui-icon-edit"
+                                                                         title="#{msg.editar}"
+                                                                         process="@this"
+                                                                         disabled="#{items.cliente.persona.nombres eq 'CONSUMIDOR FINAL'}"
+                                                                         update=":globalClientDialogForm:dlgDatosCliente"/> 
+                                                        
                                                         <p:spacer width="5px"/>
                                                         <p:commandButton actionListener="#{pedidoVentaMovilBean.cambiarCliente(items)}"
                                                                          icon="ui-icon-search"
@@ -144,27 +164,53 @@
                                                                          update=":busquedaClientes:frmCabecera2"
                                                                          style="background-color: tan"
                                                                          onclick="document.getElementById('pedido:btnBuscarClientes').click();"/>
+                                                        
                                                         <p:spacer width="5px"/>
                                                         <p:commandButton icon="ui-icon-refresh"
                                                                          title="#{msg.cambiar}"
                                                                          style="background-color: tan"
                                                                          actionListener="#{pedidoVentaMovilBean.cambiarMesa(mesa,items)}"
                                                                          onclick="document.getElementById('pedido:btnCambiarMesa').click();"/>
-                                                    </h:panelGrid>
-                                                    <h:panelGrid columns="3">
-                                                        <h:outputLabel value="#{items.fecha}" 
-                                                                       style="font-size: 15px;font-style: normal;">
-                                                            <f:convertDateTime timeZone="#{parametrosApplicationMovil.timeZone}" 
-                                                                               pattern="#{parametrosApplicationMovil.formatoHoraSMS}"/>
-                                                        </h:outputLabel>
+                                                        
                                                         <p:spacer width="5px"/>
-                                                        <p:commandButton icon="ui-icon-comment"
-                                                                 value="#{items.cliente.persona.nombreApellido}"
-                                                                 style="font-size: 12px"
-                                                                 update="buscarProducto:frmCabecera4"
-                                                                 actionListener="#{pedidoVentaMovilBean.verBusquedaProductosStock(items)}"
-                                                                 onclick="document.getElementById('pedido:btnBuscarProductos').click();"/>
+                                                        <p:commandButton icon="ui-icon-check" 
+                                                                         style="background-color: tan" 
+                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 1)}"/> 
+                                                        <p:spacer width="5px"/>
+                                                        <p:commandButton icon="ui-icon-check" 
+                                                                         style="background-color: tan" 
+                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 2)}"/> 
+                                                        
+                                                        <p:spacer width="5px"/>
+                                                        <p:selectOneMenu value="#{items.pago}">
+                                                            <f:selectItem itemLabel="#{msg.efectivo}" itemValue="1"/>
+                                                            <f:selectItem itemLabel="#{msg.transferencia}" itemValue="2"/>
+                                                            <f:selectItem itemLabel="#{msg.tarjetaDebito}" itemValue="3"/>
+                                                            <f:selectItem itemLabel="#{msg.tarjetaCredito}" itemValue="4"/>
+                                                            <p:ajax listener="#{pedidoVentaMovilBean.guardar(items)}"/>
+                                                        </p:selectOneMenu>
                                                     </h:panelGrid>
+                                                    <h:panelGroup layout="block" styleClass="flex-container">
+                                                        <h:panelGroup layout="block" styleClass="flex-left-items">
+                                                            <h:outputLabel value="#{items.fecha}" style="font-size: 15px; font-style: normal;">
+                                                                <f:convertDateTime timeZone="#{parametrosApplicationMovil.timeZone}" 
+                                                                                   pattern="#{parametrosApplicationMovil.formatoHoraSMS}"/>
+                                                            </h:outputLabel>
+
+                                                            <p:spacer width="5px"/>
+
+                                                            <p:commandButton icon="ui-icon-comment"
+                                                                             value="#{items.cliente.persona.nombreApellido}"
+                                                                             style="font-size: 12px"
+                                                                             update="buscarProducto:frmCabecera4"
+                                                                             actionListener="#{pedidoVentaMovilBean.verBusquedaProductosStock(items)}"
+                                                                             onclick="document.getElementById('pedido:btnBuscarProductos').click();"/>
+                                                        </h:panelGroup>
+                                                        <p:spacer width="5px"/>
+                                                        <h:outputLabel value="#{msg.totalM}: #{items.total}"
+                                                                       style="font-size: 15px; font-style: normal;"/>
+
+                                                    </h:panelGroup>
                                                 </h:panelGrid> 
                                             </h:panelGrid>
                                             <br/>
@@ -186,6 +232,14 @@
                                   icon="ui-icon-arrow-l"
                                   style="background-color: cadetblue"/>
                         
+                        <p:commandButton style="background-color: cadetblue;font-size: 15px"
+                                         icon="ui-icon-comment"
+                                         title="#{msg.nuevo}"
+                                         value="#{msg.nuevo}"
+                                         process="@this"
+                                         actionListener="#{pedidoVentaMovilBean.seleccionarClienteDatos(null)}"
+                                         update="globalClientDialogForm:dlgDatosCliente"/> 
+                        
                         <p:commandButton actionListener="#{pedidoVentaMovilBean.verNuevoCliente(pedidoVentaMovilBean.mesaSelec)}" 
                                          icon="ui-icon-comment"
                                          title="#{msg.nuevo}"
@@ -193,95 +247,9 @@
                                          style="background-color: cadetblue"
                                          update=":nuevoCliente:frmCabecera3"
                                          process="@this"
+                                         rendered="false"
                                          onclick="document.getElementById('busquedaClientes:frmCabecera2:btnNuevoClienteBuscar').click();"/>
                     </h:panelGrid>
-                    
-                    <p:dialog header="#{msg.datosGenerales}"
-                              widgetVar="dlgDatosCliente" 
-                              showEffect="pop"
-                              modal="true"
-                              id="dlgDatosCliente"
-                              style="z-index: 3000">
-                    
-                        <pm:field>
-                            <h:outputLabel value="#{msg.tipoIdentificacion}" 
-                                           style="font-size: 15px"/>
-                            <p:selectOneMenu value="#{pedidoVentaMovilBean.cliente.persona.tipoIdentificacion.codigo}">
-                                <f:selectItems value="#{pedidoVentaMovilBean.listaTipoIdentificacion}" 
-                                               var="tipoId"
-                                               itemLabel="#{tipoId.nombre}"
-                                               itemValue="#{tipoId.codigo}"/>
-                            </p:selectOneMenu>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.numero}" 
-                                           style="font-size: 15px"/>
-                            <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.cedula}"
-                                         maxlength="13"
-                                         required="true"
-                                         style="background-color: khaki;font-size: 12px"
-                                         validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil"/>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.nombres}"
-                                           style="font-size: 15px"/>
-                            <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.nombres}"
-                                         maxlength="50"
-                                         required="true"
-                                         style="background-color: khaki;font-size: 12px"/>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.apellidos}"
-                                           style="font-size: 15px"/>
-                            <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.apellidos}"
-                                         maxlength="50"
-                                         style="font-size: 12px"/>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.correo}"
-                                           style="font-size: 15px"/>
-                            <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.email}"
-                                         size="35"
-                                         maxlength="50"
-                                         style="font-size: 12px"
-                                         validatorMessage="#{msg.emailInvalido}">
-                                 <f:validator validatorId="com.jvc.factunet.movil.validador.ValidarEmailMovil" />
-                            </p:inputText>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.telefono}"
-                                           style="font-size: 15px"/>
-                            <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.telefono}"
-                                         maxlength="13"
-                                         style="font-size: 12px">
-                                <p:keyFilter regEx="/[\d]/"/>
-                            </p:inputText>
-                        </pm:field>
-
-                        <pm:field>
-                            <h:outputLabel value="#{msg.direccion}" 
-                                           style="font-size: 15px"/>
-                            <p:inputTextarea rows="2" cols="30" 
-                                             autoResize="false" 
-                                             style="font-size: 12px"
-                                             value="#{pedidoVentaMovilBean.cliente.persona.direccion}"/>
-                        </pm:field>
-                        
-                        <pm:field>
-                            <p:commandButton value="#{msg.guardar}"
-                                     icon="ui-icon-check" 
-                                     style="background-color: darkslategrey;color: whitesmoke"
-                                     actionListener="#{pedidoVentaMovilBean.guardarCliente}"
-                                     update="pedido:frmCabecera"
-                                     onclick="document.getElementById('nuevoCliente:frmCabecera3:btnPrintNuevo').click();"/>
-                        </pm:field>
-                        
-                    </p:dialog>
                     
                     <p:inputText type="search"
                                  style="font-size: 12px"
@@ -326,7 +294,7 @@
                                                  icon="ui-icon-comment"
                                                  process="tablaClientes"
                                                  actionListener="#{pedidoVentaMovilBean.seleccionarClienteDatos(clie)}"
-                                                 update="busquedaClientes:frmCabecera2:dlgDatosCliente"/> 
+                                                 update="globalClientDialogForm:dlgDatosCliente"/> 
                             </p:column>
                              
                             <p:column headerText="#{msg.nombres}"
@@ -381,7 +349,9 @@
                                      maxlength="13"
                                      required="true"
                                      style="background-color: khaki;font-size: 12px"
-                                     validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil"/>
+                                     validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil">
+                            <p:keyFilter regEx="/[\d]/"/>
+                        </p:inputText> 
                     </pm:field>
 
                     <pm:field>
@@ -474,7 +444,14 @@
                             <p:commandButton icon="ui-icon-check" 
                                              style="background-color: darkslategrey;color: whitesmoke"
                                              value="#{msg.imprimir}" 
-                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte}"
+                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 1)}" 
+                                             update="pedido:frmCabecera"
+                                             onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
+                            
+                            <p:commandButton icon="ui-icon-check" 
+                                             style="background-color: darkslategrey;color: whitesmoke"
+                                             value="#{msg.imprimir}" 
+                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 2)}" 
                                              update="pedido:frmCabecera"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
                             
@@ -488,6 +465,7 @@
                                              value="#{msg.inicio}" 
                                              icon="ui-icon-arrow-l"
                                              update="pedido:frmCabecera"
+                                             actionListener="#{pedidoVentaMovilBean.init}"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>   
                         </p:panelGrid>
                     </p:dialog>
@@ -659,9 +637,9 @@
                                          value="#{pedidoVentaMovilBean.pedidoVentaSelc.facturaDetalleList}" 
                                          emptyMessage="#{msg.tablaVacia}">
 
-                                <p:column headerText="#{msg.producto}">
+                                <p:column headerText="#{msg.totalM}: #{pedidoVentaMovilBean.pedidoVentaSelc.total}">
                                     
-                                    <h:panelGrid columns="2"
+                                    <h:panelGrid columns="3"
                                                  width="100%">
                                         
                                         <h:panelGrid columns="1">
@@ -681,12 +659,12 @@
                                             <h:panelGrid columns="2">
                                                 <p:commandButton icon="ui-icon-arrow-l"
                                                              actionListener="#{pedidoVentaMovilBean.restar(productoSl)}"
-                                                             update="txtCantidad"
+                                                             update="tablaProductosSelc"
                                                              style="background-color: tan;"/>
 
                                                 <p:commandButton icon="ui-icon-arrow-r"
                                                              actionListener="#{pedidoVentaMovilBean.sumar(productoSl)}"
-                                                             update="txtCantidad"
+                                                             update="tablaProductosSelc"
                                                              style="background-color: tan"/>
                                             </h:panelGrid>
                                         </h:panelGrid>
@@ -702,6 +680,20 @@
                                                              value="#{productoSl.descripcion}">
                                                 <p:ajax listener="#{pedidoVentaMovilBean.onCellEdit(productoSl)}"/>
                                             </p:inputTextarea> 
+                                        </h:panelGrid>
+                                        
+                                        <h:panelGrid columns="1">
+                                            <h:outputLabel value="#{msg.pvp}" 
+                                                           style="font-size: 12px"/>
+                                        
+                                            <h:outputLabel value="#{productoSl.precioVentaUnitarioDescuento}" 
+                                                           style="font-size: 12px"/>
+                                            
+                                            <h:outputLabel value="#{msg.subtotal}" 
+                                                           style="font-size: 12px"/>
+                                        
+                                            <h:outputLabel value="#{productoSl.subtotalConDescuento}" 
+                                                           style="font-size: 12px"/>
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </p:column>
@@ -760,5 +752,98 @@
                 </h:form>
             </pm:content>
         </pm:page>
+        
+        <h:form id="globalClientDialogForm">
+            <p:dialog header="#{msg.datosGenerales}"
+                      widgetVar="dlgDatosCliente" 
+                      showEffect="pop"
+                      modal="true"
+                      appendTo="@(body)" 
+                      fitViewport="true"   
+                      responsive="true"
+                      id="dlgDatosCliente">
+                    
+                <pm:field>
+                    <h:outputLabel value="#{msg.tipoIdentificacion}" 
+                                   style="font-size: 15px"/>
+                    <p:selectOneMenu value="#{pedidoVentaMovilBean.cliente.persona.tipoIdentificacion.codigo}">
+                        <f:selectItems value="#{pedidoVentaMovilBean.listaTipoIdentificacion}" 
+                                       var="tipoId"
+                                       itemLabel="#{tipoId.nombre}"
+                                       itemValue="#{tipoId.codigo}"/>
+                    </p:selectOneMenu>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.numero}" 
+                                   style="font-size: 15px"/>
+                    <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.cedula}"
+                                 maxlength="13"
+                                 required="true"
+                                 style="background-color: khaki;font-size: 12px"
+                                 validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil">
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.nombres}"
+                                   style="font-size: 15px"/>
+                    <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.nombres}"
+                                 maxlength="50"
+                                 required="true"
+                                 style="background-color: khaki;font-size: 12px"/>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.apellidos}"
+                                   style="font-size: 15px"/>
+                    <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.apellidos}"
+                                 maxlength="50"
+                                 style="font-size: 12px"/>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.correo}"
+                                   style="font-size: 15px"/>
+                    <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.email}"
+                                 size="35"
+                                 maxlength="50"
+                                 style="font-size: 12px"
+                                 validatorMessage="#{msg.emailInvalido}">
+                         <f:validator validatorId="com.jvc.factunet.movil.validador.ValidarEmailMovil" />
+                    </p:inputText>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.telefono}"
+                                   style="font-size: 15px"/>
+                    <p:inputText value="#{pedidoVentaMovilBean.cliente.persona.telefono}"
+                                 maxlength="13"
+                                 style="font-size: 12px">
+                        <p:keyFilter regEx="/[\d]/"/>
+                    </p:inputText>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputLabel value="#{msg.direccion}" 
+                                   style="font-size: 15px"/>
+                    <p:inputTextarea rows="2" cols="30" 
+                                     autoResize="false" 
+                                     style="font-size: 12px"
+                                     value="#{pedidoVentaMovilBean.cliente.persona.direccion}"/>
+                </pm:field>
+
+                <pm:field>
+                    <p:commandButton value="#{msg.guardar}"
+                             icon="ui-icon-check" 
+                             style="background-color: darkslategrey;color: whitesmoke"
+                             actionListener="#{pedidoVentaMovilBean.guardarCliente}"
+                             update="pedido:frmCabecera"
+                             onclick="document.getElementById('nuevoCliente:frmCabecera3:btnPrintNuevo').click();"/>
+                </pm:field>
+
+            </p:dialog>
+        </h:form>
     </h:body>
 </html>
