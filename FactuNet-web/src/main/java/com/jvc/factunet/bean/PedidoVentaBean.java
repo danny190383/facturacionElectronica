@@ -30,7 +30,10 @@ import com.jvc.factunet.utilitarios.Fecha;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -510,7 +513,7 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         return listaReturn;
     }
     
-    public void generarReporteBean(PedidoVenta pedido) throws ClassNotFoundException{
+    public void generarReporteBean(PedidoVenta pedido, String tipo) throws ClassNotFoundException{
         if(pedido.getFacturaDetalleList() != null)
         {
             List<PuntoVenta> listaPuntos = new ArrayList<>();
@@ -531,7 +534,7 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
                     }
                     else
                     {
-                        this.imprimirTiket(listaPrint,pedido,punto);
+                        this.imprimirTiket(listaPrint,punto,pedido, tipo);
                     }
                 }
             }
@@ -560,20 +563,94 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         return listaDetallesReturn;
     }
     
-    public Boolean imprimirTiket(List<FacturaDetalle> listaPint, PedidoVenta pedido,PuntoVenta punto){
-        String items = StringUtils.EMPTY;
-        for(FacturaDetalle detalleTiket : listaPint){
-            items = items + detalleTiket.getCantidad() + " " + detalleTiket.getProductoServicio().getNombre() + "\n" + (detalleTiket.getDescripcion() == null ? " " : detalleTiket.getDescripcion()) + "\n";
+    char[] temp=new char[]{ ' ' };
+    public String generaItemComprobante(String cantidad, String nombre, String total){
+        for(int i = cantidad.length() ; i<=4 ; i++){
+            cantidad = cantidad +temp[0];
         }
-        TicketPedido ticket = new TicketPedido(this.empresa.getNombre(), 
-                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(pedido.getFecha()),
+        if(nombre.length()<21){
+            for(int i = nombre.length() ; i<=20 ; i++){
+                nombre = nombre +temp[0];
+            }
+        }
+        else
+        {
+            nombre = nombre.substring(0, 20)+temp[0];
+        }
+        return cantidad+nombre+total;
+    }
+    
+    public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
+        String items = StringUtils.EMPTY;
+        List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
+        for(FacturaDetalle detalleTiket : listaOrdenada){
+            items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+        }
+        TicketPedido ticket;
+        if(tipoReporte.equals("1")){
+            ticket = new TicketPedido(pedido.getCodigo().toString(), 
+                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),
                                                pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
                                                items);
-        if(ticket.print(punto.getImpresora())){
+        }else{
+            ticket = new TicketPedido(pedido.getCodigo().toString(), 
+                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
+                                               pedido.getMesa().getNombre(),
+                                               pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
+                                               items,
+                                               pedido.getIva().toString(),
+                                               pedido.getTotal().toString());
+        }
+        if(ticket.print(punto.getImpresora(),tipoReporte)){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+    
+     public List<FacturaDetalle> ordenarPorGrupoPadre(List<FacturaDetalle> lista) {
+        if (lista == null || lista.isEmpty()) {
+            return lista;
+        }
+        Collections.sort(lista, new Comparator<FacturaDetalle>() {
+            @Override
+            public int compare(FacturaDetalle d1, FacturaDetalle d2) {
+                String nombrePadre1 = getNombreGrupoPadreSeguro(d1);
+                String nombrePadre2 = getNombreGrupoPadreSeguro(d2);
+                int comparacionPadre = nombrePadre1.compareTo(nombrePadre2);
+                if (comparacionPadre != 0) {
+                    return comparacionPadre;
+                } else {
+                    String nombreProducto1 = getNombreProductoSeguro(d1);
+                    String nombreProducto2 = getNombreProductoSeguro(d2);
+                    return nombreProducto1.compareTo(nombreProducto2);
+                }
+            }
+        });
+
+        return lista;
+    }
+     
+      private String getNombreGrupoPadreSeguro(FacturaDetalle detalle) {
+        if (detalle != null &&
+            detalle.getProductoServicio() != null &&
+            detalle.getProductoServicio().getGrupo() != null &&
+            detalle.getProductoServicio().getGrupo().getPadre() != null &&
+            detalle.getProductoServicio().getGrupo().getPadre().getNombre() != null) {
+
+            return detalle.getProductoServicio().getGrupo().getPadre().getNombre();
+        }
+        return ""; 
+    }
+    
+    private String getNombreProductoSeguro(FacturaDetalle detalle) {
+        if (detalle != null &&
+            detalle.getProductoServicio() != null &&
+            detalle.getProductoServicio().getNombre() != null) {
+
+            return detalle.getProductoServicio().getNombre();
+        }
+        return "";
     }
 
     public Empresa getEmpresa() {

@@ -134,7 +134,11 @@
                                                             
                                                             <p:commandButton icon="ui-icon-print"
                                                                              title="#{msg.imprimir}"
-                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items)}"/>
+                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"/>
+                                                            
+                                                            <p:commandButton icon="ui-icon-print"
+                                                                             title="#{msg.imprimir}"
+                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"/>
 
                                                             <p:commandButton icon="ui-icon-search"
                                                                              title="#{msg.productos}"

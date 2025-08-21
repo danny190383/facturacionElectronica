@@ -173,11 +173,11 @@
                                                                          onclick="document.getElementById('pedido:btnCambiarMesa').click();"/>
                                                         
                                                         <p:spacer width="5px"/>
-                                                        <p:commandButton icon="ui-icon-check" 
+                                                        <p:commandButton icon="ui-icon-minus" 
                                                                          style="background-color: tan" 
                                                                          actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 1)}"/> 
                                                         <p:spacer width="5px"/>
-                                                        <p:commandButton icon="ui-icon-check" 
+                                                        <p:commandButton icon="ui-icon-plus" 
                                                                          style="background-color: tan" 
                                                                          actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 2)}"/> 
                                                         
@@ -438,27 +438,27 @@
                     <p:dialog header="#{msg.pedido}"
                               widgetVar="dlg1" 
                               showEffect="pop"
+                              appendTo="@(body)" 
                               style="z-index: 3000"
                               modal="true">
                         <p:panelGrid columns="1">
-                            <p:commandButton icon="ui-icon-check" 
+                            <p:button outcome="pm:pedido" 
+                                      id="btnPrintProducto"
+                                      style="visibility: hidden"/>
+                            
+                            <p:commandButton icon="ui-icon-minus" 
                                              style="background-color: darkslategrey;color: whitesmoke"
                                              value="#{msg.imprimir}" 
                                              actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 1)}" 
                                              update="pedido:frmCabecera"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
                             
-                            <p:commandButton icon="ui-icon-check" 
+                            <p:commandButton icon="ui-icon-plus" 
                                              style="background-color: darkslategrey;color: whitesmoke"
                                              value="#{msg.imprimir}" 
                                              actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 2)}" 
                                              update="pedido:frmCabecera"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
-                            
-                            <p:button outcome="pm:pedido" 
-                                      id="btnPrintProducto"
-                                      style="visibility: hidden"/>
-                            
                             
 
                             <p:commandButton style="background-color: cadetblue"
