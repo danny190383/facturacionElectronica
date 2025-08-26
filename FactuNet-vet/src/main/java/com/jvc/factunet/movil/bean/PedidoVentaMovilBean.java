@@ -473,7 +473,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     
     public void onRowSelect(Producto producto) {
         Boolean ban = Boolean.TRUE;
-        for(FacturaDetalle productoTmp : this.pedidoVentaSelc.getFacturaDetalleList()){
+        for(FacturaDetalle productoTmp : this.listaProductosTodosSelc){
             if(Objects.equals(producto.getCodigo(), productoTmp.getProductoServicio().getCodigo())){
                 ban = Boolean.FALSE;
                 break;
@@ -482,9 +482,9 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         if(ban){
             FacturaDetalle detalle = this.crearDetalleProducto(producto);
             this.pedidoVentaSelc.getFacturaDetalleList().add(detalle);
-            this.listaProductosTodosSelc.add(detalle);
             this.pedidoVentaSelc = this.calcularTotalPago(this.pedidoVentaSelc);
             this.guardar(this.pedidoVentaSelc);
+            this.listaProductosTodosSelc.add(detalle);
         }
         else
         {
@@ -808,6 +808,13 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
             }
             this.pedidoVentaSelc = this.calcularTotalPago((PedidoVenta)event.getFactura());
             this.guardar(this.pedidoVentaSelc);
+            
+            for (int i = 0; i < listaProductosTodosSelc.size(); i++) {
+                if (listaProductosTodosSelc.get(i).getProductoServicio().getCodigo().equals(event.getProductoServicio().getCodigo())) {
+                    listaProductosTodosSelc.set(i, event);
+                    break;
+                }
+            }
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "No se puede guardar.", ex);
             FacesUtilsMovil.addErrorMessage(FacesUtilsMovil.getResourceBundle().getString("registroNoGuardado"));
@@ -986,7 +993,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     }
     
     char[] temp=new char[]{ ' ' };
-    public String generaItemComprobante(String cantidad, String nombre, String total){
+    public String generaItemComprobante(String cantidad, String nombre, String total, String descripcion){
         for(int i = cantidad.length() ; i<=4 ; i++){
             cantidad = cantidad +temp[0];
         }
@@ -999,14 +1006,14 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         {
             nombre = nombre.substring(0, 20)+temp[0];
         }
-        return cantidad+nombre+total;
+        return cantidad+nombre+total + "\n" + descripcion;
     }
     
     public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
         String items = StringUtils.EMPTY;
         List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
         for(FacturaDetalle detalleTiket : listaOrdenada){
-            items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString(), detalleTiket.getDescripcion()) + "\n";
         }
         TicketPedido ticket;
         if(tipoReporte.equals("1")){

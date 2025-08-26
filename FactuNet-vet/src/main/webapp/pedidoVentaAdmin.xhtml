@@ -639,7 +639,7 @@
 
                                 <p:column headerText="#{msg.totalM}: #{pedidoVentaMovilBean.pedidoVentaSelc.total}">
                                     
-                                    <h:panelGrid columns="3"
+                                    <h:panelGrid columns="2"
                                                  width="100%">
                                         
                                         <h:panelGrid columns="1">
@@ -682,7 +682,7 @@
                                             </p:inputTextarea> 
                                         </h:panelGrid>
                                         
-                                        <h:panelGrid columns="1">
+                                        <h:panelGrid columns="1" rendered="false">
                                             <h:outputLabel value="#{msg.pvp}" 
                                                            style="font-size: 12px"/>
                                         
@@ -782,7 +782,8 @@
                                  required="true"
                                  style="background-color: khaki;font-size: 12px"
                                  validator="com.jvc.factunet.movil.validador.ValidarCedulaRucNuloMovil">
-                        <p:keyFilter regEx="/[\d]/"/>
+                        <p:keyFilter regEx="/[\d]/"
+                                     preventPaste="false"/>
                     </p:inputText>
                 </pm:field>
 
