@@ -1,12 +1,9 @@
 package com.jvc.factunet.bean;
 
-import com.jvc.factunet.entidades.Bodega;
-import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.Factura;
 import com.jvc.factunet.entidades.FacturaDetalle;
-import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.Mesa;
 import com.jvc.factunet.entidades.PaqueteVenta;
 import com.jvc.factunet.entidades.PedidoVenta;
@@ -564,9 +561,21 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
     }
     
     char[] temp=new char[]{ ' ' };
-    public String generaItemComprobante(String cantidad, String nombre, String total){
-        for(int i = cantidad.length() ; i<=4 ; i++){
-            cantidad = cantidad +temp[0];
+    public String generaItemComprobante(Integer cantidad, String nombre, String descripcion){
+        String cantString = cantidad.toString();
+        for(int i = cantString.length() ; i<=4 ; i++){
+            cantString = cantString +temp[0];
+        }
+        if(nombre.length()>30){
+            nombre = nombre.substring(0, 30);
+        }
+        return cantString+nombre+ "\n" +temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+descripcion;
+    }
+    
+    public String generaItemComprobanteValores(Integer cantidad, String nombre, String total){
+        String cantString = cantidad.toString();
+        for(int i = cantString.length() ; i<=4 ; i++){
+            cantString = cantString +temp[0];
         }
         if(nombre.length()<21){
             for(int i = nombre.length() ; i<=20 ; i++){
@@ -577,23 +586,26 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         {
             nombre = nombre.substring(0, 20)+temp[0];
         }
-        return cantidad+nombre+total;
+        return cantString+nombre+total;
     }
     
     public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
         String items = StringUtils.EMPTY;
         List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
-        for(FacturaDetalle detalleTiket : listaOrdenada){
-            items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
-        }
         TicketPedido ticket;
         if(tipoReporte.equals("1")){
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
+            }
             ticket = new TicketPedido(pedido.getCodigo().toString(), 
                                                this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),
                                                pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
                                                items);
         }else{
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobanteValores(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            }
             ticket = new TicketPedido(pedido.getCodigo().toString(), 
                                                this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),

@@ -16,10 +16,12 @@
                         <f:facet name="left">
                             <p:commandButton value="#{msg.pedidoVenta}"  
                                              icon="ui-icon-search"
+                                             process="@this"
                                              actionListener="#{pedidoVentaBean.verBusquedaPedidos}" />
                             
                             <p:commandButton value="#{msg.notaMedica}"  
                                              icon="ui-icon-search"
+                                             process="@this"
                                              actionListener="#{pedidoVentaBean.verBusquedaNotaMedica}"
                                              rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}"/>
                             
@@ -77,6 +79,7 @@
                                                     <p:commandButton icon="ui-icon-disk"
                                                                      value="#{msg.registrar}"
                                                                      title="#{msg.registrar}"
+                                                                     rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}"
                                                                      update=":frmCabecera:grMensajes, tablaFacturaVenta, scrollID"
                                                                      actionListener="#{pedidoVentaBean.registrarPedidos(mesa)}">
                                                         <p:confirm header="#{msg.confirmacion}" 
@@ -132,11 +135,11 @@
 
                                                         <p:fragment autoUpdate="true">
                                                             
-                                                            <p:commandButton icon="ui-icon-print"
+                                                            <p:commandButton icon="ui-icon-minus"
                                                                              title="#{msg.imprimir}"
                                                                              actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"/>
                                                             
-                                                            <p:commandButton icon="ui-icon-print"
+                                                            <p:commandButton icon="ui-icon-plus"
                                                                              title="#{msg.imprimir}"
                                                                              actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"/>
 

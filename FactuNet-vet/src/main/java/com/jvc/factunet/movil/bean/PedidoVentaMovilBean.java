@@ -3,7 +3,6 @@ package com.jvc.factunet.movil.bean;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.Empresa;
-import com.jvc.factunet.entidades.Factura;
 import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.GrupoProducto;
 import com.jvc.factunet.entidades.ImpuestoTarifa;
@@ -106,6 +105,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     private Boolean editando;
     private Boolean agregar;
     private List<ImpuestoTarifa> listaTarifas;
+    private String aumento;
     
     public PedidoVentaMovilBean() {
         this.listaPedidos = new ArrayList<>();
@@ -131,6 +131,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.listaPedidos.addAll(this.documentosServicios.listarPedidosVenta(this.empresa.getCodigo(), "1"));
         this.ordenarSeccion();
         this.ordenarMesas();
+        this.aumento = StringUtils.EMPTY;
         for(Seccion seccion : this.empresa.getSeccionList())
         {
             for(Mesa mesaTmp : seccion.getMesaList())
@@ -194,11 +195,9 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                     this.cliente.getPersona().setEmail(this.cliente.getPersona().getEmail().trim().toLowerCase());
                 }
                 this.cliente = this.clienteServicio.actualizar(this.cliente);
-                
-                if(this.mesaSelec == null){
+                if(this.mesaSelec == null && this.pedidoVentaSelc != null){
                     this.pedidoVentaSelc.setCliente(cliente);
                     this.guardar(this.pedidoVentaSelc); 
-                    this.init();
                 }
                 else if(this.agregar){
                     this.guardarClienteDatos();
@@ -215,7 +214,6 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                             this.guardarClienteDatos();
                             this.pedidoVentaSelc.setCliente(cliente);
                             this.guardar(this.pedidoVentaSelc); 
-                            this.init();
                         }
                         else
                         { 
@@ -230,6 +228,9 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                     }
                 }
             }
+            RequestContext context = RequestContext.getCurrentInstance();
+            context.execute("PF('dlgDatosCliente').hide();");
+            this.init();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al guardar los Cliente.", ex);
         }
@@ -717,6 +718,11 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.listaProductosStockSelc.clear();
         this.nombreProducto = StringUtils.EMPTY;
         this.listaProductosTodosSelc.clear();
+        if(this.pedidoVentaSelc.getFacturaDetalleList() == null || this.pedidoVentaSelc.getFacturaDetalleList().isEmpty()){
+            this.aumento = StringUtils.EMPTY;
+        }else{
+            this.aumento = "AUMENTO";
+        }
         this.onNodeSelect(this.grupoProductoSelc);
     }
     
@@ -727,6 +733,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     public void eliminarPedidoMesaSet(Mesa mesa, PedidoVenta pedido) {
         this.mesaSelec = mesa;
         this.pedidoVentaSelc = pedido;
+        this.eliminarPedidoMesa();
     }
     
     public void eliminarPedidoMesa() {
@@ -741,11 +748,16 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     
     public void eliminarProductoSelc(FacturaDetalle detalle) {
         try {
-//            this.documentosServicios.eliminar(detalle);
-            this.listaProductosTodosSelc.remove(detalle);
             this.pedidoVentaSelc.getFacturaDetalleList().remove(detalle);
             this.pedidoVentaSelc = (PedidoVenta)this.calcularTotalPago(this.pedidoVentaSelc);
             this.guardar(this.pedidoVentaSelc);
+            //eliminar de 
+            for (int i = 0; i < listaProductosTodosSelc.size(); i++) {
+                if (listaProductosTodosSelc.get(i).getProductoServicio().getCodigo().equals(detalle.getProductoServicio().getCodigo())) {
+                    listaProductosTodosSelc.remove(i);
+                    break;
+                }
+            }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "No se puede eliminar.", e);
             FacesUtilsMovil.addErrorMessage(FacesUtilsMovil.getResourceBundle().getString("registronoEliminado"));
@@ -993,9 +1005,21 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     }
     
     char[] temp=new char[]{ ' ' };
-    public String generaItemComprobante(String cantidad, String nombre, String total, String descripcion){
-        for(int i = cantidad.length() ; i<=4 ; i++){
-            cantidad = cantidad +temp[0];
+    public String generaItemComprobante(Integer cantidad, String nombre, String descripcion){
+        String cantString = cantidad.toString();
+        for(int i = cantString.length() ; i<=4 ; i++){
+            cantString = cantString +temp[0];
+        }
+        if(nombre.length()>30){
+            nombre = nombre.substring(0, 30);
+        }
+        return cantString+nombre+ "\n" +temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+descripcion;
+    }
+    
+    public String generaItemComprobanteValores(Integer cantidad, String nombre, String total){
+        String cantString = cantidad.toString();
+        for(int i = cantString.length() ; i<=4 ; i++){
+            cantString = cantString +temp[0];
         }
         if(nombre.length()<21){
             for(int i = nombre.length() ; i<=20 ; i++){
@@ -1006,30 +1030,35 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         {
             nombre = nombre.substring(0, 20)+temp[0];
         }
-        return cantidad+nombre+total + "\n" + descripcion;
+        return cantString+nombre+total;
     }
     
     public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
         String items = StringUtils.EMPTY;
         List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
-        for(FacturaDetalle detalleTiket : listaOrdenada){
-            items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString(), detalleTiket.getDescripcion()) + "\n";
-        }
         TicketPedido ticket;
         if(tipoReporte.equals("1")){
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
+            }
             ticket = new TicketPedido(pedido.getCodigo().toString(), 
                                                this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),
                                                pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
-                                               items);
+                                               items,
+                                               this.aumento);
         }else{
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobanteValores(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            }
             ticket = new TicketPedido(pedido.getCodigo().toString(), 
                                                this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),
                                                pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
                                                items,
                                                pedido.getIva().toString(),
-                                               pedido.getTotal().toString());
+                                               pedido.getTotal().toString(),
+                                               this.aumento);
         }
         if(ticket.print(punto.getImpresora(),tipoReporte)){
             return Boolean.TRUE;
@@ -1103,16 +1132,15 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         return listaDetallesReturn;
     }
     
-    public void seleccionarClienteDatos(Cliente cliente){
+    public void seleccionarClienteDatos(Cliente cliente, Boolean agregar){
         if(cliente == null){
             this.editando = Boolean.FALSE;
-            this.agregar = Boolean.TRUE;
             this.initCliente();
         }else{
             this.editando = Boolean.TRUE;
-            this.agregar = Boolean.TRUE;
             this.cliente = cliente;
         }
+        this.agregar = agregar;
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute("PF('dlgDatosCliente').show();");
     }

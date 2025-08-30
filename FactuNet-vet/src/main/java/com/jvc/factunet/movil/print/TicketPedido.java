@@ -15,6 +15,7 @@ import javax.print.SimpleDoc;
 public class TicketPedido {
      private String contentTicket = 
                                  "\n"+
+                                 "------------{{aumento}}------------\n"+
                                  "PEDIDO:  {{empresa}}\n"+
                                  "MESA:    {{mesa}}\n"+
                                  "FECHA:   {{ciudadFecha}}\n"+
@@ -33,6 +34,7 @@ public class TicketPedido {
      
       private String contentTicketValores = 
                                  "\n"+
+                                 "------------{{aumento}}------------\n"+
                                  "PEDIDO:  {{empresa}}\n"+
                                  "MESA:    {{mesa}}\n"+
                                  "FECHA:   {{ciudadFecha}}\n"+
@@ -51,15 +53,16 @@ public class TicketPedido {
                                  "\n"+
                                  "\n";
    
-    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items) {
+    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String aumento) {
         this.contentTicket = this.contentTicket.replace("{{empresa}}", empresa);
         this.contentTicket = this.contentTicket.replace("{{ciudadFecha}}", ciudadFecha);
         this.contentTicket = this.contentTicket.replace("{{mesa}}", mesa);
         this.contentTicket = this.contentTicket.replace("{{cliente}}", cliente);
         this.contentTicket = this.contentTicket.replace("{{items}}", items);
+        this.contentTicket = this.contentTicket.replace("{{aumento}}", aumento);
     }
       
-    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total) {
+    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total, String aumento) {
         this.contentTicketValores = this.contentTicketValores.replace("{{empresa}}", empresa);
         this.contentTicketValores = this.contentTicketValores.replace("{{ciudadFecha}}", ciudadFecha);
         this.contentTicketValores = this.contentTicketValores.replace("{{mesa}}", mesa);
@@ -67,6 +70,7 @@ public class TicketPedido {
         this.contentTicketValores = this.contentTicketValores.replace("{{items}}", items);
         this.contentTicketValores = this.contentTicketValores.replace("{{iva}}", iva);
         this.contentTicketValores = this.contentTicketValores.replace("{{total}}", total);
+        this.contentTicketValores = this.contentTicketValores.replace("{{aumento}}", aumento);
     }
     
     public Boolean print(String impresora, String tipoTiket) {
