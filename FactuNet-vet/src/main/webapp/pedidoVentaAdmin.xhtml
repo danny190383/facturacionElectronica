@@ -477,7 +477,7 @@
                                          value="#{pedidoVentaMovilBean.pedidoVentaSelc.facturaDetalleList}" 
                                          emptyMessage="#{msg.tablaVacia}">
 
-                                <p:column headerText="#{msg.totalM}: #{pedidoVentaMovilBean.pedidoVentaSelc.total}">
+                                <p:column headerText="#{msg.iva}: #{pedidoVentaMovilBean.pedidoVentaSelc.iva} ----- #{msg.totalM}: #{pedidoVentaMovilBean.pedidoVentaSelc.total}">
                                     
                                     <h:panelGrid columns="2"
                                                  width="100%">
@@ -512,6 +512,17 @@
                                         <h:panelGrid columns="1">
                                             <h:outputLabel value="#{productoSl.productoServicio.nombre}" 
                                                            style="font-size: 12px"/>
+                                            <h:panelGrid columns="2">
+                                                <h:outputLabel value="#{productoSl.precioVentaUnitarioDescuento}" 
+                                                               style="font-size: 12px; font-weight: bold;">
+                                                    <f:convertNumber pattern="#0.00" />
+                                                </h:outputLabel>
+                                                <h:outputLabel value="= #{productoSl.subtotalConDescuento}" 
+                                                               style="font-size: 12px; font-weight: bold;">
+                                                    <f:convertNumber pattern="#0.00" />
+                                                </h:outputLabel>
+                                            </h:panelGrid>
+                                            
                                         
                                             <p:inputTextarea rows="1" 
                                                              autoResize="true" 
