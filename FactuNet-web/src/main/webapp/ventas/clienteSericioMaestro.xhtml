@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
+
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             oncomplete="PF('dialogoCobro').show()"
+                                             actionListener="#{clienteServicioMaestroBean.nuevo}" 
+                                             process="@this"
+                                             update=":frmCabecera:dlgCobro"
+                                             icon="ui-icon-comment" />
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </ui:define>
+            
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.cobro} por #{msg.servicio}"
+                         id="pnlCliente">
+                    <p:dataTable var="servicio" 
+                                 id="tablaClientes"
+                                 value="#{clienteServicioMaestroBean.lazyModel}" 
+                                 paginator="true" 
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 rows="10" 
+                                 lazy="true">
+                        
+                        <p:column headerText="#{msg.servicio} #{msg.codigo}" sortBy="#{servicio.servicio.codigoBarras}" filterBy="#{servicio.servicio.codigoBarras}"
+                                  width="10%">
+                            <h:outputLabel value="#{servicio.servicio.codigoBarras}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.servicio}" sortBy="#{servicio.servicio.nombre}" filterBy="#{servicio.servicio.nombre}">
+                            <h:outputLabel value="#{servicio.servicio.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.observacion}">
+                            <h:outputLabel value="#{servicio.observacion}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.cedula}" sortBy="#{servicio.persona.cedula}" filterBy="#{servicio.persona.cedula}"
+                                  width="8%">
+                            <h:outputLabel value="#{servicio.persona.cedula}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.nombres}" sortBy="#{servicio.persona.nombres}" filterBy="#{servicio.persona.nombres}">
+                            <h:outputLabel value="#{servicio.persona.nombres} #{servicio.persona.apellidos}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.contactar}"
+                                  width="5%"
+                                  style="text-align: center">
+                            <h:outputText value="#{servicio.persona.telefono}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.lectura}"
+                                  width="3%">
+                            <h:outputText value="#{servicio.requiereLectura ? msg.si : msg.no}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.automatico}"
+                                  width="3%">
+                            <h:outputText value="#{servicio.cobroAutomatico ? msg.si : msg.no}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}"
+                                  width="3%">
+                            <h:outputLabel value="#{servicio.estado ? msg.activo : msg.inactivo}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column style="text-align: center"
+                                  width="5%">
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             icon="ui-icon-document"
+                                             process="@this"
+                                             actionListener="#{clienteServicioMaestroBean.verCobros(servicio.codigo)}"/>  
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+                <p:dialog header="#{msg.cobro}" 
+                          widgetVar="dialogoCobro" 
+                          resizable="false"
+                          modal="true"
+                          id="dlgCobro">
+
+                    <h:form id="frmCobro">
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="#{msg.fecha}" />
+                            <h:outputLabel value="#{clienteServicioMaestroBean.cobrosServicio.fechaRegistro}">
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFechaHoraSMS}"/>
+                            </h:outputLabel>
+                            
+                            <h:outputText value="#{msg.anio} :" />
+                            <p:selectOneMenu style="width:120px"
+                                             required="true"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             value="#{clienteServicioMaestroBean.cobrosServicio.anio}">
+                                <f:selectItems value="#{clienteServicioMaestroBean.listaAnio}" 
+                                               var="anio"
+                                               itemLabel="#{anio.nombre}"
+                                               itemValue="#{anio}"/>
+                            </p:selectOneMenu>
+                            
+                            <h:outputText value="#{msg.mes} :" />
+                            <p:selectOneMenu style="width:120px"
+                                             required="true"
+                                             value="#{clienteServicioMaestroBean.cobrosServicio.mes}">
+                                <f:selectItems value="#{clienteServicioMaestroBean.mesesAnio}" 
+                                               var="mes"
+                                               itemLabel="#{mes.label}"
+                                               itemValue="#{mes.value}"/>
+                            </p:selectOneMenu>
+                            
+                            
+                            <h:outputLabel value="#{msg.observacion}" />
+                            <p:inputTextarea rows="2" cols="40" 
+                                             style="height: 50px;width: 200px"
+                                             autoResize="false" 
+                                             maxlength="800"
+                                             value="#{clienteServicioMaestroBean.cobrosServicio.observacion}"/>
+                            
+                            
+                            <p:commandButton value="#{msg.guardar}"  
+                                             actionListener="#{clienteServicioMaestroBean.guardarAutomaticos()}"
+                                             icon="ui-icon-check" 
+                                             process="@form"
+                                             update=":frmCabecera:grMensajes, :frmCabecera:tablaClientes" />
+
+                            <p:commandButton value="#{msg.cancelar}" 
+                                             update="@form"
+                                             process="@this"
+                                             icon="ui-icon-cancel" 
+                                             oncomplete="PF('dialogoCobro').hide()"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

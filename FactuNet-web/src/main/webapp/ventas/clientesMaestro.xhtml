@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
+
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        <f:facet name="left">
+                            <p:commandButton value="#{msg.nuevo}"  
+                                             actionListener="#{buscarClientesBean.verNuevoCliente(null)}" 
+                                             icon="ui-icon-comment"
+                                             update=":frmCabecera:grMensajes">
+                                    <p:ajax event="dialogReturn" 
+                                            listener="#{buscarClientesBean.onClienteSelect}"
+                                            update="tablaClientes"/>
+                            </p:commandButton>
+                        </f:facet>
+                    </p:toolbar>
+                </div>
+            </ui:define>
+            
+            <ui:define name="content">
+                <p:panel header="#{msg.administracion} #{msg.servicios} por #{msg.cliente}"
+                         id="pnlCliente">
+                    <p:dataTable var="clie" 
+                                 id="tablaClientes"
+                                 value="#{buscarClientesBean.lazyModel}" 
+                                 paginator="true" 
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 rows="10" 
+                                 lazy="true">
+
+                        <p:column headerText="#{msg.cedula}" sortBy="#{clie.persona.cedula}" filterBy="#{clie.persona.cedula}"
+                                  width="8%">
+                            <h:outputLabel value="#{clie.persona.cedula}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.nombres}" 
+                                  sortBy="#{clie.persona.nombres}" 
+                                  filterBy="#{clie.persona.nombres}"
+                                  width="20%">
+                            <h:outputLabel value="#{clie.persona.nombres} #{clie.persona.apellidos}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.direccion}"
+                                  width="10%">
+                            <h:outputLabel value="#{clie.persona.direccion}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.contactar}"
+                                  width="10%"
+                                  style="text-align: center">
+                            <h:outputText value="#{clie.persona.telefono}"
+                                          style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                            <p:dataScroller value="#{clie.contactarPersonaList}" 
+                                            var="contactar"
+                                            rendered="#{clie.contactarPersonaList.size()>0}">
+                                <h:outputText value="#{contactar.valor}"/>
+                            </p:dataScroller>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.servicios}">
+                            <p:dataTable value="#{clie.persona.servicioPersonaList}"
+                                         var="servicio"
+                                         rowIndexVar="indexServicio"
+                                         emptyMessage="#{msg.tablaVacia}">
+                                
+                                <p:column headerText="#{msg.servicio}">
+                                    <h:outputText value="#{servicio.servicio.nombre}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.lectura}"
+                                          width="10%">
+                                    <h:outputText value="#{servicio.requiereLectura ? msg.si : msg.no}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.automatico}"
+                                          width="10%">
+                                    <h:outputText value="#{servicio.cobroAutomatico ? msg.si : msg.no}"/>
+                                </p:column>
+                                
+                                <p:column headerText="#{msg.estado}"
+                                          width="10%">
+                                    <h:outputText value="#{servicio.estado ? msg.activo : msg.inactivo}"/>
+                                </p:column>
+                                
+                                <p:column width="10%"
+                                          style="text-align: center"
+                                          headerText="#{msg.opcion}">
+                                    
+                                    <p:commandButton  icon="ui-icon-close" 
+                                                      update=":frmCabecera:tablaClientes, :frmCabecera:grMensajes" 
+                                                      actionListener="#{buscarClientesBean.eliminarServicio(clie, indexServicio)}"
+                                                      title="#{msg.eliminar}">
+                                        <p:confirm header="#{msg.confirmacion}" 
+                                                   message="#{msg.eliminar}" 
+                                                   icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                    
+                                    <p:commandButton icon="ui-icon-pencil"
+                                                     actionListener="#{buscarClientesBean.verNuevoServicioPersona(servicio)}"> 
+                                        <p:ajax event="dialogReturn" 
+                                                update=":frmCabecera:tablaClientes, :frmCabecera:grMensajes"
+                                                listener="#{buscarClientesBean.onServicioPersonaSelect}"  />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:column>
+
+                        <p:column style="text-align: center"
+                                  width="5%"
+                                  headerText="#{msg.opcion}">
+                            <p:commandButton actionListener="#{buscarClientesBean.verNuevoCliente(clie)}" 
+                                             icon="ui-icon-comment"
+                                             process="@this, tablaClientes">
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{buscarClientesBean.onClienteSelect}"
+                                        update="tablaClientes"/>
+                            </p:commandButton>
+                            
+                            <p:commandButton icon="ui-icon-search"
+                                             process="@this"
+                                             actionListener="#{buscarClientesBean.verBusquedaProductosStock(clie)}"> 
+                               <p:ajax event="dialogReturn" 
+                                       update="tablaClientes, :frmCabecera:grMensajes"
+                                       listener="#{buscarClientesBean.onProductoSelect}" />
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

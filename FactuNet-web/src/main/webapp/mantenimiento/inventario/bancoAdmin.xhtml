@@ -72,12 +72,12 @@
                                      icon="ui-icon-alert" />
                     </p:commandButton>
 
-                     <p:commandButton icon="ui-icon-pencil" 
-                                      title="#{msg.editar}"
-                                      process="tablaBanco"
-                                      update=":frmCabecera:tabMasterInventario:dlgBanco"
-                                      oncomplete="PF('dialog006').show()"
-                                      action="#{bancoBean.seleccionar(banco)}"/>
+                    <p:commandButton icon="ui-icon-pencil" 
+                                     title="#{msg.editar}"
+                                     process="tablaBanco"
+                                     update=":frmCabecera:tabMasterInventario:dlgBanco"
+                                     oncomplete="PF('dialog006').show()"
+                                     action="#{bancoBean.seleccionar(banco)}"/>
                   </p:column>
              </p:dataTable>  
         </p:panel>     

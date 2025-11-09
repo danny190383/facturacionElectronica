@@ -4,9 +4,9 @@ import com.jvc.factunet.bean.externos.CuentaCobroBean;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.CatalogoInfoAdicional;
 import com.jvc.factunet.entidades.Cliente;
+import com.jvc.factunet.entidades.CobrosServicio;
 import com.jvc.factunet.entidades.ComisionTarjeta;
 import com.jvc.factunet.entidades.DetalleFacturaImpuestoTarifa;
-import com.jvc.factunet.entidades.DocumentoRetencion;
 import com.jvc.factunet.entidades.FacturaDetalle;
 import com.jvc.factunet.entidades.FacturaDetalleSeries;
 import com.jvc.factunet.entidades.FacturaInfoAdicional;
@@ -37,6 +37,7 @@ import com.jvc.factunet.servicios.ClienteServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.ProductoBodegaServicio;
 import com.jvc.factunet.servicios.PuntoVentaServicio;
+import com.jvc.factunet.servicios.ServicioCobrosMaestroServicio;
 import com.jvc.factunet.servicios.TarjetaEmpresaServicio;
 import com.jvc.factunet.session.Login;
 import com.jvc.factunet.utilitarios.Fecha;
@@ -79,6 +80,8 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
     private ProductoBodegaServicio productoBodegaServicio;
     @EJB
     private CatalogoInfoAdicionalServicio catalogoInfoAdicionalServicio;
+    @EJB
+    private ServicioCobrosMaestroServicio servicioCobrosMaestroServicio;
     
     private FacturaVenta facturaVenta;
     private Cliente cliente;
@@ -300,7 +303,6 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                         ProductoBodega productoBodega = (ProductoBodega) detalle.getProductoServicio();
                         detalle.setBodega(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta().getBodega());
                         detalle.setStock(this.setStockBodega(productoBodega, detalle.getBodega().getCodigo()));
-//                        detalle.setCostoFecha(productoBodega.getPrecioUltimaCompra());
                         detalle.setUtilidad(productoBodega.getUtilidad());
                     }
                     if(detalle.getProductoServicio() instanceof ProductoPaquete)
@@ -414,6 +416,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 super.setDescuento(this.cliente.getTipoCliente().getDescuento());
                 this.generalDescuento();
                 this.consumidor = Boolean.FALSE;
+                this.cargarCobrosPendientes();
                 FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("clienteEncontrado"));
             }
         } catch (Exception e) {
@@ -1122,6 +1125,7 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                     super.setDescuento(this.cliente.getTipoCliente().getDescuento());
                     this.generalDescuento();
                     this.consumidor = Boolean.FALSE;
+                    this.cargarCobrosPendientes();
                 }
                 else
                 {
@@ -1132,6 +1136,64 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
             {
                 FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("cedulaObligatoria"));
             }
+        }
+    }
+    
+    public void cargarCobrosPendientes(){
+        List<CobrosServicio> listaCobrosPendientes = servicioCobrosMaestroServicio.listarPendintes(this.facturaVenta.getCliente().getPersona().getCodigo());
+        if(listaCobrosPendientes != null && !listaCobrosPendientes.isEmpty()){
+            for(CobrosServicio cobrosServicio : listaCobrosPendientes){
+                FacturaDetalle detalle = new FacturaDetalle();
+                detalle.setCobrosServicio(cobrosServicio); 
+                detalle.setCodigo(null);
+                detalle.setProductoServicio(cobrosServicio.getServicio()); 
+                detalle.setCantidad(BigDecimal.ONE); 
+                detalle.setDescripcion(" => MES : " + cobrosServicio.getMes().getEtiqueta().toUpperCase() + " - " + cobrosServicio.getAnio().getNombre() + " - " + cobrosServicio.getObservacion()); 
+                detalle.setFactura(this.facturaVenta);
+                detalle.setFecha(new Date());
+                detalle.setEmpleado(((Login)FacesUtils.getManagedBean("login")).getEmpleado());
+                if(detalle.getProductoServicio() instanceof ProductoBodega)
+                {
+                    ProductoBodega productoBodega = (ProductoBodega) detalle.getProductoServicio();
+                    detalle.setBodega(((Login)FacesUtils.getManagedBean("login")).getEmpleado().getPuntoVenta().getBodega());
+                    detalle.setStock(this.setStockBodega(productoBodega, detalle.getBodega().getCodigo()));
+                    detalle.setUtilidad(productoBodega.getUtilidad());
+                }
+                if(detalle.getProductoServicio() instanceof ProductoPaquete)
+                {
+                    detalle.setIsPaquete(Boolean.TRUE);
+                    for(PaqueteVenta proPa : ((ProductoPaquete)detalle.getProductoServicio()).getPaqueteVentaList())
+                    {
+                        if(proPa.getProducto() instanceof ProductoBodega)
+                        {
+                            proPa.setIsBodega(Boolean.TRUE);
+                            proPa.setBodegaSlc(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getBodega().getCodigo());
+                            proPa.setBodega(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getBodega());
+                            proPa.setStock(((ProductoBodega)proPa.getProducto()).getProductoStockList().get(0).getStock());
+                        }
+                    }
+                }
+                detalle.setCostoFecha(detalle.getProductoServicio().getPrecioUltimaCompra());
+                detalle.setPvp(cobrosServicio.getValor());
+                detalle.setPrecioVentaUnitario(detalle.getPvp());
+                detalle.setPrecioVentaUnitarioDescuento(detalle.getPrecioVentaUnitario());
+                detalle.setPrecioUnitarioTmp(detalle.getPrecioVentaUnitario());
+                detalle.setPvpIva(detalle.getPvp().add(detalle.getPvp().multiply(ivaProducto(detalle.getProductoServicio()).divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP));
+                detalle.setSubtotalSinDescuento((detalle.getPvp().multiply(detalle.getCantidad())).setScale(2, BigDecimal.ROUND_HALF_UP));
+                detalle.setSubtotalConDescuento(detalle.getSubtotalSinDescuento());
+                detalle.setValorComision(BigDecimal.ZERO);
+                detalle.setValorDescuento(BigDecimal.ZERO);
+                detalle.setComision(BigDecimal.ZERO);
+                detalle.setDescuento(BigDecimal.ZERO);
+                for(ProductoImpuestoTarifa tarifaImpuesto : detalle.getProductoServicio().getProductoImpuestoTarifaList()){
+                    if(tarifaImpuesto.getImpuestoTarifa().getImpuesto().getId() == 1){
+                        detalle.setImpuestoTarifa(tarifaImpuesto.getImpuestoTarifa());
+                        break;
+                    }
+                }
+                this.facturaVenta.getFacturaDetalleList().add(detalle);
+            }
+            this.calcularTotales();
         }
     }
     

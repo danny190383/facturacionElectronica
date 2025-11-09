@@ -130,6 +130,8 @@ public class FacturaDetalle implements Serializable {
     private Boolean estado;
     @Transient
     private BigDecimal subtotalPedido;
+    @Transient
+    private CobrosServicio cobrosServicio;
 
     public FacturaDetalle() {
         this.isPaquete = Boolean.FALSE;
@@ -471,6 +473,14 @@ public class FacturaDetalle implements Serializable {
 
     public void setDescuentoVentas(BigDecimal descuentoVentas) {
         this.descuentoVentas = descuentoVentas;
+    }
+
+    public CobrosServicio getCobrosServicio() {
+        return cobrosServicio;
+    }
+
+    public void setCobrosServicio(CobrosServicio cobrosServicio) {
+        this.cobrosServicio = cobrosServicio;
     }
     
     public Boolean getIvaB() {

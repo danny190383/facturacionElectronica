@@ -98,6 +98,7 @@ public class CrearSesion implements Serializable{
             this.login.cargarLogo();
             this.login.cargarFotoLogin();
             this.login.verPath();
+            this.login.verBaseAgua();
             ThemeSwitcherBean theme = (ThemeSwitcherBean) FacesUtils.getManagedBean("themeSwitcherBean");
             theme.setTheme(this.login.getEmpleado().getEmpresa().getTema());
             return "usuario";

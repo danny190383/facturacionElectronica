@@ -249,20 +249,20 @@
                                                      rendered="#{facturaVentaBean.facturaVenta.estado eq 1}">
                                             <p:fragment autoUpdate="true">
                                                 <h:panelGrid columns="3">
-                                                <p:inputText value="#{facturaVentaBean.cliente.persona.cedula}"
-                                                             maxlength="13"
-                                                             placeholder="#{msg.cedula} #{msg.ruc} #{msg.pasaporte}"
-                                                             size="20"/>
-                                                <p:commandButton actionListener="#{facturaVentaBean.buscarCliente}"
-                                                                 icon="ui-icon-search"
-                                                                 title="#{msg.buscar}" 
-                                                                 update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
-                                                
-                                                <p:selectBooleanCheckbox value="#{facturaVentaBean.consumidor}"
-                                                                         title="#{msg.consumidorFinal}">
-                                                   <p:ajax update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
-                                                           listener="#{facturaVentaBean.consumidorFinal}"/>
-                                                </p:selectBooleanCheckbox>
+                                                    <p:inputText value="#{facturaVentaBean.cliente.persona.cedula}"
+                                                                 maxlength="13"
+                                                                 placeholder="#{msg.cedula} #{msg.ruc} #{msg.pasaporte}"
+                                                                 size="20"/>
+                                                    <p:commandButton actionListener="#{facturaVentaBean.buscarCliente}"
+                                                                     icon="ui-icon-search"
+                                                                     title="#{msg.buscar}" 
+                                                                     update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"/>
+
+                                                    <p:selectBooleanCheckbox value="#{facturaVentaBean.consumidor}"
+                                                                             title="#{msg.consumidorFinal}">
+                                                       <p:ajax update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin"
+                                                               listener="#{facturaVentaBean.consumidorFinal}"/>
+                                                    </p:selectBooleanCheckbox>
                                                 </h:panelGrid>
                                             </p:fragment>
                                         </h:panelGrid>
@@ -334,9 +334,9 @@
                                             <p:commandButton value="#{msg.buscar}"  
                                                             icon="ui-icon-search"
                                                             actionListener="#{facturaVentaBean.verBusquedaClientes}">
-                                             <p:ajax event="dialogReturn" 
-                                                     listener="#{facturaVentaBean.onClienteSelect}" 
-                                                     update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin" />
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{facturaVentaBean.onClienteSelect}" 
+                                                        update="pnlCliente, :frmCabecera:grMensajes, :frmCabecera:tablaFacturaVenta, :frmCabecera:tabPrincipalDatos:txtTotalFactura, :frmCabecera:tabPrincipalDatos:txtTotalFacturaSin" />
                                             </p:commandButton>
 
                                             <p:commandButton value="#{msg.nuevo}"  
@@ -1074,7 +1074,7 @@
 
                         <p:column headerText="#{msg.productos}"
                                   width="30%">
-                            <h:outputLabel value="#{items.productoServicio.nombre}" 
+                            <h:outputLabel value="#{items.productoServicio.nombre} #{items.descripcion}" 
                                            style="font-size: 13px;font-style: normal;font-weight: bold"/>
                         </p:column>
                         

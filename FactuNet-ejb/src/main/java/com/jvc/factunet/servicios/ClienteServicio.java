@@ -4,6 +4,7 @@ import com.jvc.factunet.daos.ClienteDAO;
 import com.jvc.factunet.entidades.Cliente;
 import com.jvc.factunet.entidades.Mascota;
 import com.jvc.factunet.entidades.Persona;
+import com.jvc.factunet.entidades.ServicioPersona;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -106,6 +107,10 @@ public class ClienteServicio {
 
     public Cliente actualizar(Cliente parametro) throws Exception {
         return (Cliente) this.clienteDAO.actualizar(parametro);
+    }
+    
+    public ServicioPersona actualizar(ServicioPersona parametro) throws Exception {
+        return (ServicioPersona) this.clienteDAO.actualizar(parametro);
     }
     
     public String maxNumeroCliente(Integer empresa) throws Exception {

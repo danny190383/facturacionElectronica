@@ -87,6 +87,8 @@ public class Persona implements Serializable {
     private List<RetencionPersona> retencionPersonaList;
     @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mascota> mascotaPersonaList;
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServicioPersona> servicioPersonaList;
     @JoinColumns({
         @JoinColumn(name = "id_provincia", referencedColumnName = "id_provincia")
         ,
@@ -283,6 +285,14 @@ public class Persona implements Serializable {
 
     public void setObligadoContabilidad(Boolean obligadoContabilidad) {
         this.obligadoContabilidad = obligadoContabilidad;
+    }
+
+    public List<ServicioPersona> getServicioPersonaList() {
+        return servicioPersonaList;
+    }
+
+    public void setServicioPersonaList(List<ServicioPersona> servicioPersonaList) {
+        this.servicioPersonaList = servicioPersonaList;
     }
     
     public String getNombreApellido(){

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{msg.servicios}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%"
+                id="frmNuevaMascota">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoServicioPersonaBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoServicioPersonaBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 90%">
+                    
+                    <h:outputLabel value="#{msg.servicio}" 
+                                   styleClass="texto_etiquetas"/>
+                    <h:outputLabel value="#{nuevoServicioPersonaBean.servicioPersona.servicio.nombre}" 
+                                   styleClass="texto_etiquetas"/> 
+                    
+                    <h:outputLabel value="#{msg.servicio} #{msg.codigo}" 
+                                   styleClass="texto_etiquetas"/>
+                    <h:outputLabel value="#{nuevoServicioPersonaBean.servicioPersona.servicio.codigoBarras}" 
+                                   styleClass="texto_etiquetas"/>  
+                    
+                    <h:outputLabel value="#{msg.servicio} #{msg.descripcion}" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="40"  
+                                     autoResize="false" 
+                                     maxlength="800"
+                                     readonly="true"
+                                     value="#{nuevoServicioPersonaBean.servicioPersona.servicio.descripcion}"/>
+                    
+                    <h:outputLabel value="#{msg.observacion}" 
+                                   styleClass="texto_etiquetas"/>
+                    <p:inputTextarea rows="2" cols="40"  
+                                     autoResize="false" 
+                                     maxlength="800"
+                                     value="#{nuevoServicioPersonaBean.servicioPersona.observacion}"/>
+                    
+                    <h:outputLabel value="#{msg.lectura}" 
+                                   styleClass="texto_etiquetas"/>
+                        
+                    <p:selectBooleanButton onLabel="#{msg.si}" 
+                                           offLabel="#{msg.no}" 
+                                           onIcon="ui-icon-check" offIcon="ui-icon-close"
+                                           value="#{nuevoServicioPersonaBean.servicioPersona.requiereLectura}"/> 
+                    
+                    <h:outputLabel value="#{msg.cobro} #{msg.automatico}" 
+                                   styleClass="texto_etiquetas"/>
+                        
+                    <p:selectBooleanButton onLabel="#{msg.si}" 
+                                           offLabel="#{msg.no}" 
+                                           onIcon="ui-icon-check" offIcon="ui-icon-close"
+                                           value="#{nuevoServicioPersonaBean.servicioPersona.cobroAutomatico}"/> 
+                    
+                    <h:outputLabel value="#{msg.estado}" 
+                                   styleClass="texto_etiquetas"/>
+                        
+                    <p:selectBooleanButton onLabel="#{msg.activo}" 
+                                           offLabel="#{msg.inactivo}" 
+                                           onIcon="ui-icon-check" offIcon="ui-icon-close"
+                                           value="#{nuevoServicioPersonaBean.servicioPersona.estado}"/>    
+                </h:panelGrid>
+            </p:fieldset> 
+        </h:form>
+    </h:body>
+</html>

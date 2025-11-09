@@ -41,6 +41,7 @@ public class Login implements Serializable{
     private String urlLogo;
     private String urlFotoLogin;
     private String pathEmpresa;
+    private Controles baseAgua;
     
     public Login() {
     }
@@ -52,6 +53,18 @@ public class Login implements Serializable{
             if("PATH".equals(obj.getNombre()))
             {
                 this.pathEmpresa =  obj.getDetalle();
+                break;
+            }
+        }
+    }
+    
+    public void verBaseAgua()
+    {
+        for(Controles obj : empleado.getEmpresa().getControlesList())
+        {
+            if("BASE_AGUA".equals(obj.getNombre()))
+            {
+                this.baseAgua =  obj;
                 break;
             }
         }
@@ -278,5 +291,13 @@ public class Login implements Serializable{
 
     public void setMenuModelBoton(MenuModel menuModelBoton) {
         this.menuModelBoton = menuModelBoton;
+    }
+
+    public Controles getBaseAgua() {
+        return baseAgua;
+    }
+
+    public void setBaseAgua(Controles baseAgua) {
+        this.baseAgua = baseAgua;
     }
 }

@@ -726,7 +726,7 @@ public class ClienteBean extends CatalogosPersonaBean implements Serializable{
         }
         return new ArrayList<>();
     }  
-
+    
     public Cliente getCliente() {
         return cliente;
     }

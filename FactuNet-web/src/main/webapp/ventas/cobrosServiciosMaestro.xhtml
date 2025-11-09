@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../plantilla/main-templateMenu.xhtml">
+
+            <ui:define name="botones"> 
+                <div class="caja-botones-arriba">
+                    <p:toolbar id="pnlBotones">
+                        
+                    </p:toolbar>
+                </div>
+            </ui:define>
+            
+            <ui:define name="content">
+                <p:panel header="#{msg.maestro} #{msg.cobros} por #{msg.servicios}"
+                         id="pnlCliente">
+                    <p:dataTable var="cobro" 
+                                 id="tablaClientes"
+                                 widgetVar="tablaClientesWV"
+                                 value="#{cobrosServiciosMaestroBean.lazyModel}" 
+                                 paginator="true" 
+                                 emptyMessage="#{msg.tablaVacia}"
+                                 rows="10" 
+                                 lazy="true">
+                        
+                        <p:column headerText="#{msg.anio}"
+                                  width="5%">
+                            <h:outputLabel value="#{cobro.anio.nombre}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.mes}"
+                                  width="5%"
+                                  sortBy="#{cobro.mes}" 
+                                  filterBy="#{cobro.mes}">
+                            <f:facet name="filter">
+                                <p:selectOneMenu onchange="PF('tablaClientesWV').filter()" 
+                                                 style="width:80%">
+                                    <f:selectItem itemLabel="" 
+                                                  itemValue="#{null}"
+                                                  noSelectionOption="true" />
+                                    <f:selectItems value="#{cobrosServiciosMaestroBean.mesesAnio}" 
+                                                   var="mes"
+                                                   itemLabel="#{mes.label}"
+                                                   itemValue="#{mes.value}" />
+                                </p:selectOneMenu>
+                            </f:facet>
+                            <h:outputLabel value="#{cobro.mes.etiqueta}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.registrado}" 
+                                  width="5%">
+                            <h:outputLabel value="#{cobro.fechaRegistro}">
+                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
+                                                   pattern="#{parametrosApplication.formatoFecha}"/>
+                            </h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.responsable}"
+                                  width="10%">
+                            <h:outputLabel value="#{cobro.persona.nombreApellido}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.servicio} #{msg.codigo}" 
+                                  sortBy="#{cobro.servicioPersona.servicio.codigoBarras}" 
+                                  filterBy="#{cobro.servicioPersona.servicio.codigoBarras}"
+                                  width="10%">
+                            <h:outputLabel value="#{cobro.servicioPersona.servicio.codigoBarras}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.servicio}" 
+                                  sortBy="#{cobro.servicioPersona.servicio.nombre}" 
+                                  filterBy="#{cobro.servicioPersona.servicio.nombre}">
+                            <h:outputLabel value="#{cobro.servicioPersona.servicio.nombre}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.cedula}" 
+                                  sortBy="#{cobro.servicioPersona.persona.cedula}" 
+                                  filterBy="#{cobro.servicioPersona.persona.cedula}"
+                                  width="8%">
+                            <h:outputLabel value="#{cobro.servicioPersona.persona.cedula}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+
+                        <p:column headerText="#{msg.nombres}"
+                                  sortBy="#{cobro.servicioPersona.persona.nombres}" 
+                                  filterBy="#{cobro.servicioPersona.persona.nombres}">
+                            <h:outputLabel value="#{cobro.servicioPersona.persona.nombres} #{cobro.servicioPersona.persona.apellidos}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.lectura}"
+                                  width="5%"
+                                  style="text-align: right">
+                            <h:outputText value="#{cobro.lectura}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.valor}"
+                                  width="5%"
+                                  style="text-align: right">
+                            <h:outputText value="#{cobro.valor}"/>
+                        </p:column>
+                        
+                        <p:column headerText="#{msg.estado}"
+                                  width="5%"
+                                  style="text-align: center"
+                                  sortBy="#{cobro.estado}" 
+                                  filterBy="#{cobro.estado}">
+                            <f:facet name="filter">
+                                <p:selectOneMenu onchange="PF('tablaClientesWV').filter()" 
+                                                 style="width:80%">
+                                    <f:selectItem itemLabel="" 
+                                                  itemValue="#{null}"
+                                                  noSelectionOption="true" />
+                                    <f:selectItem itemLabel="#{msg.porCobrar}" itemValue="1"/>
+                                    <f:selectItem itemLabel="#{msg.cobrado}" itemValue="2"/>
+                                    <f:selectItem itemLabel="#{msg.anulada}" itemValue="3"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                            <h:outputLabel value="#{cobro.estado eq '1' ? msg.porCobrar : cobro.estado eq '2' ? msg.cobrado : msg.anulada}" 
+                                           style="font-size: 13px;font-style: normal;font-weight: bold"
+                                           title="#{cobro.observacion}"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

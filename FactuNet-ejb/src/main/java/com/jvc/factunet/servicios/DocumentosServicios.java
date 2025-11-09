@@ -54,6 +54,8 @@ public class DocumentosServicios {
     private PuntoVentaServicio puntoVentaServicio;
     @EJB
     private ProductoBodegaServicio productoBodegaServicio;
+    @EJB
+    private ServicioCobrosMaestroServicio servicioCobrosMaestroServicio;
     
     public List<DocumentoRetencion> listarFacturasRetencionCliente(Integer cliente){
         return this.documentosDAO.listarFacturasRetencionCliente(cliente);
@@ -404,6 +406,10 @@ public class DocumentosServicios {
             venta.setObservacion(venta.getPuntoVenta().getCodigoSriEmpresa() + "-" + venta.getPuntoVenta().getCodigoSri()); 
             for(FacturaDetalle detalle : parametro.getFacturaDetalleList())
             {
+                if(detalle.getCobrosServicio() != null){
+                   detalle.getCobrosServicio().setEstado("2");
+                   servicioCobrosMaestroServicio.actualizar(detalle.getCobrosServicio());
+                }
                 detalle.setFecha(new Date()); 
                 if(detalle.getProductoServicio() instanceof ProductoBodega)
                 {
