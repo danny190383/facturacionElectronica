@@ -18,6 +18,7 @@ import com.jvc.factunet.entidades.ProductoServicio;
 import com.jvc.factunet.entidades.ProductoStock;
 import com.jvc.factunet.entidades.PuntoRestriccion;
 import com.jvc.factunet.entidades.PuntoVenta;
+import com.jvc.factunet.entidades.ReporteImpresora;
 import com.jvc.factunet.entidades.Seccion;
 import com.jvc.factunet.entidades.TipoIdentificacion;
 import com.jvc.factunet.movil.icefacesUtil.CatalogosPersonaMovilBean;
@@ -33,6 +34,7 @@ import com.jvc.factunet.servicios.PersonaServicio;
 import com.jvc.factunet.servicios.ProductoPaqueteServicio;
 import com.jvc.factunet.servicios.ProductoServiciosServicio;
 import com.jvc.factunet.servicios.ProductoStockServicio;
+import com.jvc.factunet.servicios.ReporteImpresoraServicio;
 import com.jvc.factunet.servicios.TipoTarifaImpuestoServicio;
 import com.jvc.factunet.utilitarios.Fecha;
 import java.io.File;
@@ -87,6 +89,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
     private ProductoPaqueteServicio productoPaqueteServicio;
     @EJB
     private TipoTarifaImpuestoServicio tipoTarifaImpuestoServicio;
+    @EJB
+    private ReporteImpresoraServicio reporteImpresoraServicio;
     
     private Empresa empresa;
     private List<PedidoVenta> listaPedidos;
@@ -638,7 +642,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         return factura; 
     }
     
-    public void imprimirReporte(Integer tipo, PedidoVenta pedido, String tipoReporte) throws IOException {
+    public void imprimirReporte(Integer tipo, PedidoVenta pedido, Integer tipoReporte) throws IOException {
         if(tipo == 1){
             if(!this.listaProductosTodosSelc.isEmpty()){
                 if(this.generarReportePrint(this.listaProductosTodosSelc, this.pedidoVentaSelc, tipoReporte)){
@@ -965,44 +969,65 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         return listaReturn;
     }
     
-    public Boolean generarReportePrint(List<FacturaDetalle> listaPrintTotal, PedidoVenta pedido, String tipoReporte) throws IOException {
+    
+    public Boolean generarReportePrint(List<FacturaDetalle> listaPrintTotal, PedidoVenta pedido, Integer tipoReporte) throws IOException {
         Boolean print = Boolean.FALSE;
         if(pedido.getCodigo() != null)
         {
-            List<PuntoVenta> listaPuntos = new ArrayList<>();
-            listaPuntos.addAll(this.verPuntoMovil());
-            for(PuntoVenta punto : listaPuntos){
-                List<FacturaDetalle> listaPrint = verificarRestriccion(listaPrintTotal,punto);
-                if(!listaPrint.isEmpty()){
-                    if(punto.getTipoImpresora().equals("1")){
-                        try {
-                            super.parametros.put("empresa", pedido.getEmpresa().getNombre());
-                            super.parametros.put("mesa", pedido.getMesa().getNombre());
-                            super.parametros.put("fecha", pedido.getFecha());
-                            JasperReportUtilMovil jasperBean = (JasperReportUtilMovil) FacesUtilsMovil.getManagedBean(JasperReportUtilMovil.NOMBRE_BEAN);
-                            if(jasperBean.jasperReportPrintBean(JasperReportUtilMovil.PATH_REPORTE_PEDIDO_BEAN,super.parametros,listaPrint,punto.getImpresora())){
-                                print = Boolean.TRUE;
-                            }
-                            else{
-                                print = Boolean.FALSE;
-                            }
-                        } catch (ClassNotFoundException ex) {
-                            LOG.log(Level.SEVERE, "NO se puede crear el reporte.", ex);
-                            print = Boolean.FALSE;
-                        }
+            List<ReporteImpresora> listaReporteImpresa = new ArrayList<>();
+            listaReporteImpresa.addAll(reporteImpresoraServicio.listar(this.empresa.getCodigo(), tipoReporte));
+            if(listaReporteImpresa != null && !listaPrintTotal.isEmpty()){
+                for(ReporteImpresora controlReporte : listaReporteImpresa){
+                    if(controlReporte.getRestriccion()){
+                        print = imprimirConRestriccion(listaPrintTotal, pedido, tipoReporte,controlReporte.getImpresora().getImpresora());
+                    }else{
+                        print = imprimirTiket(listaPrintTotal, null, pedido, tipoReporte, controlReporte.getImpresora().getImpresora());
                     }
-                    else
-                    {
-                        if(this.imprimirTiket(listaPrint, punto, pedido, tipoReporte)){
-                            print = Boolean.TRUE;
-                        }
-                    }
+                        
                 }
+            }else{
+                return imprimirConRestriccion(listaPrintTotal, pedido, tipoReporte, null);
             }
-            return print;
         }
         return print;
     }
+    
+    public Boolean imprimirConRestriccion (List<FacturaDetalle> listaPrintTotal, PedidoVenta pedido, Integer tipoReporte, String impresora) throws IOException {
+        Boolean print = Boolean.FALSE;
+        List<PuntoVenta> listaPuntos = new ArrayList<>();
+        listaPuntos.addAll(this.verPuntoMovil());
+        for(PuntoVenta punto : listaPuntos){
+            List<FacturaDetalle> listaPrint = verificarRestriccion(listaPrintTotal,punto);
+            if(!listaPrint.isEmpty()){
+                if(punto.getTipoImpresora().equals("1")){
+                    try {
+                        super.parametros.put("empresa", pedido.getEmpresa().getNombre());
+                        super.parametros.put("mesa", pedido.getMesa().getNombre());
+                        super.parametros.put("fecha", pedido.getFecha());
+                        JasperReportUtilMovil jasperBean = (JasperReportUtilMovil) FacesUtilsMovil.getManagedBean(JasperReportUtilMovil.NOMBRE_BEAN);
+                        if(jasperBean.jasperReportPrintBean(JasperReportUtilMovil.PATH_REPORTE_PEDIDO_BEAN,super.parametros,listaPrint,punto.getImpresora())){
+                            print = Boolean.TRUE;
+                        }
+                        else{
+                            print = Boolean.FALSE;
+                        }
+                    } catch (ClassNotFoundException ex) {
+                        LOG.log(Level.SEVERE, "NO se puede crear el reporte.", ex);
+                        print = Boolean.FALSE;
+                    }
+                }
+                else
+                {
+                    String nombreImpresora = impresora == null ? punto.getImpresora() : impresora;
+                    if(this.imprimirTiket(listaPrint, punto, pedido, tipoReporte, nombreImpresora)){
+                        print = Boolean.TRUE;
+                    }
+                }
+            }
+        }
+        return print;
+    }
+            
     
     char[] temp=new char[]{ ' ' };
     public String generaItemComprobante(Integer cantidad, String nombre, String descripcion){
@@ -1033,7 +1058,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         return cantString+nombre+total;
     }
     
-    public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
+    public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, Integer tipoReporte, String impresora){
         String items = StringUtils.EMPTY;
         List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
         TicketPedido ticket;
@@ -1060,7 +1085,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                                                pedido.getTotal().toString(),
                                                this.aumento);
         }
-        if(ticket.print(punto.getImpresora(),tipoReporte)){
+        String nombreImpresora = impresora == null ? punto.getImpresora() : impresora;
+        if(ticket.print(nombreImpresora,tipoReporte)){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;

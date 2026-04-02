@@ -73,15 +73,15 @@ public class TicketPedido {
         this.contentTicketValores = this.contentTicketValores.replace("{{aumento}}", aumento);
     }
     
-    public Boolean print(String impresora, String tipoTiket) {
+    public Boolean print(String impresora, Integer tipoTiket) {
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         byte[] bytes = null;
         switch (tipoTiket) {
-            case "1":
+            case 1:
                 bytes = this.contentTicket.getBytes();
                 break;
-            case "2":
+            case 2:
                 bytes = this.contentTicketValores.getBytes();
                 break;
             default:
