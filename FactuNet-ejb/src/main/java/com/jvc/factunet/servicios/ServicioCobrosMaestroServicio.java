@@ -2,6 +2,7 @@ package com.jvc.factunet.servicios;
 
 import com.jvc.factunet.daos.ServicioCobrosMaestroDAO;
 import com.jvc.factunet.entidades.CobrosServicio;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -54,6 +55,10 @@ public class ServicioCobrosMaestroServicio {
     
     public void eliminar(CobrosServicio parametro) throws Exception {
         this.servicioCobrosMaestroDAO.eliminar(parametro);
+    }
+    
+    public BigDecimal obtenerUltimaLectura(Integer servicioPersonaCodigo) {
+        return this.servicioCobrosMaestroDAO.obtenerUltimaLectura(servicioPersonaCodigo);
     }
     
 }

@@ -2,16 +2,19 @@ package com.jvc.factunet.daos;
 
 import com.jvc.factunet.dao.GenericDAO;
 import com.jvc.factunet.entidades.CobrosServicio;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 @Stateless
 public class ServicioCobrosMaestroDAO extends GenericDAO{
     
     public List<CobrosServicio> listar(Integer servicio, int maxResults, int firstResult) {
-        Query q = em.createQuery("select o from CobrosServicio o where o.servicioPersona.codigo = ?1");
+        Query q = em.createQuery("select o from CobrosServicio o where o.servicioPersona.codigo = ?1 ORDER BY o.anio.id DESC, o.mesNumero DESC");
         q.setParameter(1, servicio);
         q.setMaxResults(maxResults);
         q.setFirstResult(firstResult);
@@ -35,7 +38,7 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
     }
     
     public List<CobrosServicio> listar(int maxResults, int firstResult) {
-        Query q = em.createQuery("select o from CobrosServicio o ");
+        Query q = em.createQuery("select o from CobrosServicio o ORDER BY o.anio.id DESC, o.mesNumero DESC");
         q.setMaxResults(maxResults);
         q.setFirstResult(firstResult);
         return q.getResultList();
@@ -50,7 +53,7 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
         }
     }
     
-    public List<CobrosServicio> listarBuscar(String nombres, String cedula,String servicio,String servicioCodigo, String mes, String estado, int maxResults, int firstResult) {
+    public List<CobrosServicio> listarBuscar(String nombres, String cedula, String servicio, String servicioCodigo, String mes, String estado, int maxResults, int firstResult) {
         try {
             String sql = " ";
             if((cedula != null) && (!cedula.isEmpty()))
@@ -59,7 +62,7 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
             }
             if((nombres != null) && (!nombres.isEmpty()))
             {
-                sql = sql + "GROUP BY o.servicioPersona.persona, o HAVING CONCAT(o.servicioPersona.persona.nombres,' ',o.servicioPersona.persona.apellidos) like :apellido ";
+                sql = sql + "GROUP BY o.servicioPersona.persona, o.anio, o HAVING CONCAT(o.servicioPersona.persona.nombres,' ',o.servicioPersona.persona.apellidos) like :apellido ";
             }
             if((servicio != null) && (!servicio.isEmpty()))
             {
@@ -79,7 +82,8 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
             }
             Query q = em.createQuery("select o from CobrosServicio o Where 1=1 "
                     + sql
-                    + "order by o.servicioPersona.persona.nombres");
+                    + "ORDER BY o.anio.id DESC, o.mesNumero DESC");
+
             if((nombres != null) && (!nombres.isEmpty())){
                 nombres = nombres.trim();
                 StringTokenizer st = new StringTokenizer(nombres);
@@ -89,9 +93,8 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
                         texto+="%";
                     }
                     texto += st.nextToken();
-
                }
-               nombres = "%" +texto.toUpperCase().trim() + "%";
+               nombres = "%" + texto.toUpperCase().trim() + "%";
                q.setParameter("apellido", nombres);
             }
             if((cedula != null) && (!cedula.isEmpty())){
@@ -175,6 +178,24 @@ public class ServicioCobrosMaestroDAO extends GenericDAO{
 
         } catch (Exception e) {
             return Long.MIN_VALUE;
+        }
+    }
+    
+    public BigDecimal obtenerUltimaLectura(Integer servicioPersonaCodigo) {
+        try {
+            TypedQuery<BigDecimal> q = em.createQuery(
+                "SELECT o.lecturaActual " +
+                "FROM CobrosServicio o " +
+                "WHERE o.servicio.codigo = :servicio " +
+                "ORDER BY o.anio.id DESC, o.mesNumero DESC", 
+                BigDecimal.class);
+
+            q.setParameter("servicio", servicioPersonaCodigo);
+            q.setMaxResults(1);
+
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

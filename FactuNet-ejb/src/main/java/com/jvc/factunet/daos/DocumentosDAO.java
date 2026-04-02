@@ -259,6 +259,62 @@ public class DocumentosDAO extends GenericDAO{
         }
     }
     
+    public List<FacturaVenta> listarFacturasVentaElectronica(Integer empresa,Integer numero, Date fecha, String proveedor, String estado, String cedula) {
+        try {
+            String sql = "o.empresa.codigo = :empresa and o.estado like :estado and o.numero != -1 and o.puntoVenta.facturacionElectronica = true  ";
+            if(numero != null)
+            {
+                sql = sql + " and o.numero = :numero";
+            }
+            if(fecha != null)
+            {
+                sql = sql + " and (o.fecha BETWEEN :fechaInicio and :fechaFin)";
+            }
+            if((cedula != null) && (!cedula.isEmpty()))
+            {
+                sql = sql + " and o.cliente.persona.cedula = :cedula";
+            }
+            if((proveedor != null) && (!proveedor.isEmpty()))
+            {
+                sql = sql + " GROUP BY o,o.cliente.persona HAVING CONCAT(o.cliente.persona.nombres,' ',o.cliente.persona.apellidos) like :proveedor ";
+            }
+            Query q = em.createQuery("select o from FacturaVenta o where "+ sql +" order by o.fecha desc").setMaxResults(100);
+            q.setParameter("empresa", empresa);
+            q.setParameter("estado", estado.equals("0") ? "%%" : estado);
+            if(numero != null)
+            {
+                q.setParameter("numero", numero);
+            }
+            if(fecha != null)
+            {
+                q.setParameter("fechaInicio", Fecha.fechaInicio(fecha));
+                q.setParameter("fechaFin", Fecha.fechaFin(fecha));
+            }
+            if((proveedor != null) && (!proveedor.isEmpty()))
+            {
+                proveedor = proveedor.trim();
+                StringTokenizer st = new StringTokenizer(proveedor);
+                String texto="";
+                while (st.hasMoreTokens()) {
+                    if(!texto.equals("")){
+                        texto+="%";
+                    }
+                    texto += st.nextToken();
+
+               }
+               proveedor = "%" +texto.toUpperCase().trim() + "%";
+               q.setParameter("proveedor",proveedor);
+            }
+            if((cedula != null) && (!cedula.isEmpty()))
+            {
+                q.setParameter("cedula", cedula);
+            }
+            return q.getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     public List<GuiaRemision> listarGuiasRemision(Integer empresa, String estado) {
         try {
             Query q = em.createQuery("select o from GuiaRemision o where o.factura.empresa.codigo = ?1 and o.estado like ?2 order by o.factura.fecha desc").setMaxResults(100);

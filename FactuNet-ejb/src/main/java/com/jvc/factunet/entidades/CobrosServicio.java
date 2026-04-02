@@ -38,13 +38,19 @@ public class CobrosServicio implements Serializable{
     @Enumerated(EnumType.STRING)
     @Column(name = "mes")
     private EnumMesAnio mes;
+    @Column(name = "mes_numero")
+    private Integer mesNumero;
+    @Column(name = "lectura_anterior")
+    private BigDecimal lecturaAnterior ;
+     @Column(name = "lectura_actual")
+    private BigDecimal lecturaActual;
     @Column(name = "lectura ")
     private BigDecimal lectura ;
     @Column(name = "valor ")
     private BigDecimal valor;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "fecha_registro ")
+    @Column(name = "fecha_registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
     @JoinColumn(name = "anio", referencedColumnName = "id")
@@ -141,14 +147,39 @@ public class CobrosServicio implements Serializable{
 
     public void setMes(EnumMesAnio mes) {
         this.mes = mes;
+        this.mesNumero = (mes != null) ? mes.getNumero() : null;
     }
 
     public Anio getAnio() {
         return anio;
     }
 
+    public BigDecimal getLecturaAnterior() {
+        return lecturaAnterior;
+    }
+
+    public void setLecturaAnterior(BigDecimal lecturaAnterior) {
+        this.lecturaAnterior = lecturaAnterior;
+    }
+
     public void setAnio(Anio anio) {
         this.anio = anio;
+    }
+
+    public BigDecimal getLecturaActual() {
+        return lecturaActual;
+    }
+
+    public void setLecturaActual(BigDecimal lecturaActual) {
+        this.lecturaActual = lecturaActual;
+    }
+
+    public Integer getMesNumero() {
+        return mesNumero;
+    }
+
+    public void setMesNumero(Integer mesNumero) {
+        this.mesNumero = mesNumero;
     }
     
     @Override

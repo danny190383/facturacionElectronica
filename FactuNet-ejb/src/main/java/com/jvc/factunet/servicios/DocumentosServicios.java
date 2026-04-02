@@ -129,6 +129,10 @@ public class DocumentosServicios {
         return this.documentosDAO.listarFacturasVentaFiltro(empresa, numero, fecha, proveedor, estado, cedula);
     }
     
+    public List<FacturaVenta> listarFacturasVentaElectronica(Integer empresa,Integer numero, Date fecha, String proveedor, String estado, String cedula){
+        return this.documentosDAO.listarFacturasVentaElectronica(empresa, numero, fecha, proveedor, estado, cedula);
+    }
+    
     public List<GuiaRemision> listarGuiaRemisionFiltro(Integer empresa,Integer numero, Date fecha, String proveedor, String estado, String cedula){
         return this.documentosDAO.listarGuiaRemisionFiltro(empresa, numero, fecha, proveedor, estado, cedula);
     }

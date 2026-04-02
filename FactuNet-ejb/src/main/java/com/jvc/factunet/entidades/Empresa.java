@@ -131,6 +131,10 @@ public class Empresa implements Serializable {
     private List<Bodega> bodegaList;
     @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmpresaCatalogoParametro> empresaCatalogoParametroList;
+    @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Impresora> impresoraEmpresaList;
+    @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReporteImpresora> reporteImpresoraEmpresaList;
     @Column(name = "obligado_contabilidad ")
     private Boolean obligadoContabilidad ;
     @Column(name = "usa_tablet")
@@ -453,6 +457,23 @@ public class Empresa implements Serializable {
     public void setEmpresaCatalogoParametroList(List<EmpresaCatalogoParametro> empresaCatalogoParametroList) {
         this.empresaCatalogoParametroList = empresaCatalogoParametroList;
     }
+
+    public List<Impresora> getImpresoraEmpresaList() {
+        return impresoraEmpresaList;
+    }
+
+    public void setImpresoraEmpresaList(List<Impresora> impresoraEmpresaList) {
+        this.impresoraEmpresaList = impresoraEmpresaList;
+    }
+
+    public List<ReporteImpresora> getReporteImpresoraEmpresaList() {
+        return reporteImpresoraEmpresaList;
+    }
+
+    public void setReporteImpresoraEmpresaList(List<ReporteImpresora> reporteImpresoraEmpresaList) {
+        this.reporteImpresoraEmpresaList = reporteImpresoraEmpresaList;
+    }
+    
     
     @Override
     public int hashCode() {
