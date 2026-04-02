@@ -83,9 +83,11 @@
                         </p:column>
 
                         <p:column headerText="#{msg.lectura}"
-                                  width="5%"
+                                  width="8%"
                                   style="text-align: right">
-                            <h:outputText value="#{cobro.lectura}"/>
+                            <h:outputText value="Anterior: #{cobro.lecturaAnterior}"/><br/>
+                            <h:outputText value="Actual: #{cobro.lecturaActual}"/><br/>
+                            <h:outputText value="Lectura: #{cobro.lectura}"/>
                         </p:column>
                         
                         <p:column headerText="#{msg.valor}"
@@ -147,6 +149,7 @@
                                                var="anio"
                                                itemLabel="#{anio.nombre}"
                                                itemValue="#{anio}"/>
+                                <p:ajax/>
                             </p:selectOneMenu>
                             
                             <h:outputText value="#{msg.mes} :" />
@@ -157,6 +160,7 @@
                                                var="mes"
                                                itemLabel="#{mes.label}"
                                                itemValue="#{mes.value}"/>
+                                <p:ajax/>
                             </p:selectOneMenu>
                             
                             <h:outputLabel value="#{msg.servicio}" />
@@ -179,6 +183,30 @@
                                              maxlength="800"
                                              value="#{servicioCobrosMaestroBean.cobrosServicio.observacion}"/>
                             
+                            <h:outputLabel value="#{msg.lectura} Anterior" 
+                                           rendered="#{servicioCobrosMaestroBean.servicioPersona.requiereLectura}"/>
+                            <p:inputNumber value="#{servicioCobrosMaestroBean.cobrosServicio.lecturaAnterior}" 
+                                           decimalPlaces="2" 
+                                           symbolPosition="s"
+                                           emptyValue="zero"
+                                           minValue="0" 
+                                           required="true"
+                                           rendered="#{servicioCobrosMaestroBean.servicioPersona.requiereLectura}">
+                                <p:ajax event="change"/>
+                            </p:inputNumber>
+                             
+                            <h:outputLabel value="#{msg.lectura} Actual" 
+                                           rendered="#{servicioCobrosMaestroBean.servicioPersona.requiereLectura}"/>
+                            <p:inputNumber value="#{servicioCobrosMaestroBean.cobrosServicio.lecturaActual}" 
+                                           decimalPlaces="2" 
+                                           symbolPosition="s"
+                                           emptyValue="zero"
+                                           minValue="0" 
+                                           required="true"
+                                           rendered="#{servicioCobrosMaestroBean.servicioPersona.requiereLectura}">
+                                <p:ajax event="change" update="@form" listener="#{servicioCobrosMaestroBean.calcularLectura()}"/>
+                            </p:inputNumber>
+                              
                             <h:outputLabel value="#{msg.lectura}" 
                                            rendered="#{servicioCobrosMaestroBean.servicioPersona.requiereLectura}"/>
                             <h:panelGrid columns="2"

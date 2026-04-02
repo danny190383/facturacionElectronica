@@ -2,6 +2,7 @@ package com.jvc.factunet.bean;
 
 import com.jvc.factunet.consumo.ConsumoSRI;
 import com.jvc.factunet.entidades.CabeceraFacturaImpuestoTarifa;
+import com.jvc.factunet.entidades.Contactar;
 import com.jvc.factunet.entidades.DetalleFacturaImpuestoTarifa;
 import com.jvc.factunet.entidades.DocumentoRetencion;
 import com.jvc.factunet.entidades.Empresa;
@@ -541,6 +542,15 @@ public class FacturacionElectronicaBean implements Serializable{
         {
             envioFacturaEmail(factura.getPathXmlFirmado(), factura.getEmpresa().getEmail(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
         }
+        if(factura.getCliente().getContactarPersonaList()!= null){
+            for(Contactar contactar : factura.getCliente().getContactarPersonaList()){
+                if(contactar.getTipoContacto().getCodigo() == 35){
+                    if(contactar.getValor() != null){
+                         envioFacturaEmail(factura.getPathXmlFirmado(), contactar.getValor(), factura.getCodigo(), nombreDocumento, 1, factura.getPuntoVenta().getRuc());
+                    }
+                }
+            }
+        } 
     }
     
     public void envioFacturaEmail(String xml, String destinatarioFactura, Integer factura, String nombreDocumento, Integer tipo, String ruc) {
@@ -810,7 +820,7 @@ public class FacturacionElectronicaBean implements Serializable{
                 codigoAuxiliar.appendChild(codigoAuxiliarValue);
                 
                 Element descripcion = document.createElement("descripcion"); 
-                Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre());
+                Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre() + (detalleFactura.getDescripcion() != null ? " " + detalleFactura.getDescripcion() : ""));
                 descripcion.appendChild(descripcionValue);
                 
                 Element cantidad = document.createElement("cantidad"); 

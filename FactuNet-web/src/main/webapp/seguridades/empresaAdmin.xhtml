@@ -462,6 +462,112 @@
                                         </p:column>
                                     </p:dataTable>
                                 </p:tab>
+                                <p:tab title="#{msg.impresora}">
+                                    <p:dataTable var="impresora" 
+                                                 value="#{empresaBean.empresa.impresoraEmpresaList}" 
+                                                 id="tablaImpresora"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                           <p:commandButton value="#{msg.nuevo}"  
+                                                            actionListener="#{empresaBean.verImpresora(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onImpresoraSelect}"
+                                                        update="tablaImpresora"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.nombre}"
+                                                  width="150">
+                                            <h:outputLabel value="#{impresora.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.impresora}"
+                                                  width="50">
+                                            <h:outputLabel value="#{impresora.impresora}" />
+                                        </p:column>
+
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaImpresora" 
+                                                              actionListener="#{empresaBean.eliminarImpresora(impresora)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verImpresora(impresora)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaImpresora"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab title="#{msg.reporte}">
+                                    <p:dataTable var="reporte" 
+                                                 value="#{empresaBean.empresa.reporteImpresoraEmpresaList}" 
+                                                 id="tablaReportes"
+                                                 emptyMessage="#{msg.tablaVacia}">
+
+                                        <f:facet name="header">
+                                           <p:commandButton value="#{msg.nuevo}"  
+                                                            actionListener="#{empresaBean.verReportes(null)}" 
+                                                             update=":frmCabecera:grMensajes"
+                                                             icon="ui-icon-comment">
+                                                <p:ajax event="dialogReturn" 
+                                                        listener="#{empresaBean.onReportesSelect}"
+                                                        update="tablaReportes"/>
+                                            </p:commandButton>
+                                        </f:facet>
+
+                                        <p:column headerText="#{msg.impresora}"
+                                                  width="150">
+                                            <h:outputLabel value="#{reporte.impresora.nombre}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.reporte}"
+                                                  width="50">
+                                            <h:outputLabel value="#{reporte.reporte.nombre}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="#{msg.restriccion}"
+                                                  width="50">
+                                            <h:outputLabel value="#{reporte.restriccion ? msg.si : msg.no}" />
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.opcion}" 
+                                                  width="70"
+                                                  style="text-align: center">
+
+                                            <p:commandButton  icon="ui-icon-close" 
+                                                              update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaReportes" 
+                                                              actionListener="#{empresaBean.eliminarReporte(reporte)}"
+                                                              immediate="true"
+                                                              title="#{msg.eliminar}">
+                                                <p:confirm header="#{msg.confirmacion}" 
+                                                           message="#{msg.eliminar}" 
+                                                           icon="ui-icon-alert" />
+                                            </p:commandButton>
+
+                                            <p:commandButton icon="ui-icon-pencil" 
+                                                             title="#{msg.editar}"
+                                                             action="#{empresaBean.verReportes(reporte)}">
+                                                <p:ajax event="dialogReturn" 
+                                                        update=":frmCabecera:grMensajes, :frmCabecera:tabPrincipal:tabDatos:tablaReportes"/>
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
                             </p:tabView>
                         </p:tab>
                         <p:tab title="Datos Ubicacion">

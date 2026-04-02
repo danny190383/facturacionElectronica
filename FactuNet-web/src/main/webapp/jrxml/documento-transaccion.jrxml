@@ -32,6 +32,7 @@ factura_detalle.precio_venta_unitario_descuento,
 factura_detalle.subtotal_con_descuento,
  factura_detalle.subtotal_sin_descuento,
 factura.id_factura,
+factura_detalle.descripcion,
 factura.punto_venta
  from factura_detalle  inner join factura on 
 factura_detalle.factura = factura.codigo inner join producto on
@@ -107,6 +108,11 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 		<property name="com.jaspersoft.studio.field.name" value="id_factura"/>
 		<property name="com.jaspersoft.studio.field.label" value="id_factura"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="factura"/>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.label" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="factura_detalle"/>
 	</field>
 	<field name="punto_venta" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="punto_venta"/>
@@ -236,7 +242,9 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 	<columnHeader>
 		<band height="14">
 			<staticText>
-				<reportElement mode="Opaque" x="220" y="0" width="55" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c"/>
+				<reportElement mode="Opaque" x="245" y="0" width="50" height="14" backcolor="#999999" uuid="2195ff09-649b-4718-8834-c5e92fee9a5c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -245,12 +253,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[CANTIDAD]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="220" height="14" backcolor="#999999" uuid="62a957fa-e3a0-46da-8c94-7a3fdaf8fdbb"/>
+				<reportElement mode="Opaque" x="0" y="0" width="245" height="14" backcolor="#999999" uuid="62a957fa-e3a0-46da-8c94-7a3fdaf8fdbb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -259,12 +269,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DESCRIPCION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="275" y="0" width="55" height="14" backcolor="#999999" uuid="6d4c7482-b7b8-4cce-bb08-da5e19fbdb66"/>
+				<reportElement mode="Opaque" x="295" y="0" width="50" height="14" backcolor="#999999" uuid="6d4c7482-b7b8-4cce-bb08-da5e19fbdb66">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -273,12 +285,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[P.V.P]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="385" y="0" width="55" height="14" backcolor="#999999" uuid="8edb5246-2c84-411a-a853-14712d9e2145"/>
+				<reportElement mode="Opaque" x="395" y="0" width="50" height="14" backcolor="#999999" uuid="8edb5246-2c84-411a-a853-14712d9e2145">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -287,12 +301,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[P.V.P]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="440" y="0" width="55" height="14" backcolor="#999999" uuid="e4dc6699-a9c1-427c-acb8-539e6179c0c8"/>
+				<reportElement mode="Opaque" x="445" y="0" width="50" height="14" backcolor="#999999" uuid="e4dc6699-a9c1-427c-acb8-539e6179c0c8">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -301,7 +317,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL ]]></text>
 			</staticText>
@@ -315,12 +331,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="330" y="0" width="55" height="14" backcolor="#999999" uuid="caf1223d-0315-467d-9444-d01e6bd8c60c"/>
+				<reportElement mode="Opaque" x="345" y="0" width="50" height="14" backcolor="#999999" uuid="caf1223d-0315-467d-9444-d01e6bd8c60c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -329,7 +347,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8" isBold="true"/>
+					<font fontName="Arial" size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DESCUENTO]]></text>
 			</staticText>
@@ -340,7 +358,9 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 			<frame>
 				<reportElement style="Detail" stretchType="ElementGroupHeight" mode="Opaque" x="0" y="0" width="555" height="13" uuid="4741af49-e55f-471e-a312-05929c02dd8f"/>
 				<textField pattern="###0" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="220" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4"/>
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="245" height="13" forecolor="#000000" backcolor="#FFFFFF" uuid="3c11b1b1-8eb7-4a1f-a1f0-51f3ce74d1f4">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -351,10 +371,12 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
 						<font fontName="Arial" size="6" isBold="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{nombre} + ($F{descripcion} != null ? " - " + $F{descripcion} : "")]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="275" y="0" width="55" height="13" uuid="321799b2-003c-42cf-8863-27d8c08c3fa2"/>
+					<reportElement x="295" y="0" width="50" height="13" uuid="321799b2-003c-42cf-8863-27d8c08c3fa2">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -363,12 +385,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{precio_venta_unitario}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="385" y="0" width="55" height="13" uuid="c9cd7fd1-fa97-4776-8a6a-606eddc63fda"/>
+					<reportElement x="395" y="0" width="50" height="13" uuid="c9cd7fd1-fa97-4776-8a6a-606eddc63fda">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -377,12 +401,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{precio_venta_unitario_descuento}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="440" y="0" width="55" height="13" uuid="6abd2fa4-554c-4f14-a807-8ed1038fe459"/>
+					<reportElement x="445" y="0" width="50" height="13" uuid="6abd2fa4-554c-4f14-a807-8ed1038fe459">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -391,7 +417,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{subtotal_con_descuento}]]></textFieldExpression>
 				</textField>
@@ -405,12 +431,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{subtotal_sin_descuento}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="220" y="0" width="55" height="13" uuid="93e862b0-263c-489e-81fa-a920685545f5"/>
+					<reportElement x="245" y="0" width="50" height="13" uuid="93e862b0-263c-489e-81fa-a920685545f5">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -419,12 +447,14 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="330" y="0" width="55" height="13" uuid="3837c0ca-6d29-4a26-b39d-03316837ce67"/>
+					<reportElement x="345" y="0" width="50" height="13" uuid="3837c0ca-6d29-4a26-b39d-03316837ce67">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.5"/>
 						<topPen lineWidth="0.5"/>
@@ -433,7 +463,7 @@ where factura.codigo = $P{factura} order by factura_detalle.codigo]]>
 						<rightPen lineWidth="0.5"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Arial" size="9"/>
+						<font fontName="Arial" size="7"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{valor_descuento}]]></textFieldExpression>
 				</textField>

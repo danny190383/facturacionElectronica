@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <body>
+
+         <ui:composition template="./../../plantilla/main-templateMenu.xhtml">
+
+            <ui:define name="content">
+                <p:fieldset legend="#{msg.criterioBusqueda}">
+                    <h:panelGrid columns="2"
+                                 id="pnlFiltros">
+                        <h:outputLabel value="#{msg.reporte}: "/>
+                        <p:selectOneMenu value="#{reportesJuntaAguaBean.reporteSeleccionado}" 
+                                         style="width: 250px">
+                            <f:selectItems value="#{reportesJuntaAguaBean.listaReportes}"
+                                           var="repo"
+                                           itemLabel="#{repo.descripcion}"
+                                           itemValue="#{repo.codigo}"/>
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectOneMenu>
+                        
+                        
+                        <h:outputText value="#{msg.producto}: "
+                                      rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1'}"/>
+                        <h:panelGrid columns="3" 
+                                     id="pnlDatosProducto"
+                                     rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1'}"> 
+                            <p:commandButton icon="ui-icon-search"
+                                             actionListener="#{reportesJuntaAguaBean.verBusquedaProductosStock}" >
+                                <p:ajax event="dialogReturn" 
+                                        listener="#{reportesJuntaAguaBean.onProductoSelect}" 
+                                        update="pnlDatosProducto" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-refresh"
+                                             update="pnlDatosProducto"
+                                             actionListener="#{reportesJuntaAguaBean.iniciarProducto}" />
+                            <h:outputText value="#{reportesJuntaAguaBean.producto.nombre}"
+                                          rendered="#{reportesJuntaAguaBean.producto.codigo ne null}"/>
+                        </h:panelGrid>
+                        
+                        <h:outputText value="#{msg.todos} los Grupos:" 
+                                      rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1'}"/>
+                        <p:selectBooleanCheckbox value="#{reportesJuntaAguaBean.todosGrupos}" 
+                                                 rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1'}">
+                            <p:ajax update="pnlFiltros"/>
+                        </p:selectBooleanCheckbox>
+                        <h:outputLabel value="#{msg.grupo}: "
+                                       rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1' and
+                                                   reportesJuntaAguaBean.todosGrupos eq false}"/>
+                        <p:scrollPanel style="width:300px;height:100px"
+                                       rendered="#{reportesJuntaAguaBean.reporteSeleccionado eq '6.1' and
+                                                   reportesJuntaAguaBean.todosGrupos eq false}">
+                            <p:tree value="#{reportesJuntaAguaBean.root}" 
+                                    var="node" id="grupoTree"  
+                                    dynamic="true" 
+                                    selection="#{reportesJuntaAguaBean.selectedNode}"
+                                    selectionMode="single"
+                                    style="width: 100%">  
+                                <p:treeNode expandedIcon="ui-icon-folder-open" 
+                                            collapsedIcon="ui-icon-folder-collapsed">  
+                                    <h:outputLabel value="#{node.codigo} #{node.nombre}" />  
+                                </p:treeNode>  
+                            </p:tree> 
+                        </p:scrollPanel>
+                        
+                      
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" cellspacing="5" >
+                        <h:commandLink target="_blank" actionListener="#{reportesJuntaAguaBean.generarReportePDF()}">
+                            <p:graphicImage url="/resources/imagenes/pdf.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesJuntaAguaBean.generarReporteXlS()}">
+                            <p:graphicImage url="/resources/imagenes/excel.png"
+                                            width="27"/>
+                        </h:commandLink>
+                        <h:commandLink target="_blank" actionListener="#{reportesJuntaAguaBean.generarReporteHTML()}">
+                            <p:graphicImage url="/resources/imagenes/html.png"
+                                            width="27"/>
+                        </h:commandLink>
+                    </h:panelGrid>
+                </p:fieldset>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+

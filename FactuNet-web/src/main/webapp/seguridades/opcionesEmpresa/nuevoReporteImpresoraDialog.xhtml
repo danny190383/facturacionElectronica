@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>#{msg.impresora}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoReporteImpresoraBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoReporteImpresoraBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                             style="width: 100%">
+
+                    <h:outputLabel value="#{msg.impresora}: "/>
+                    <p:selectOneMenu value="#{nuevoReporteImpresoraBean.reporteImpresora.impresora}" 
+                                      panelStyle="width:150px"
+                                      style="width:150px" 
+                                      converter="omnifaces.SelectItemsConverter">
+                        <f:selectItems value="#{nuevoReporteImpresoraBean.impresoraList}" 
+                                          var="imp" 
+                                          itemLabel="#{imp.nombre}" 
+                                          itemValue="#{imp}" />
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.reporte}" />
+                    <p:selectOneMenu value="#{nuevoReporteImpresoraBean.reporteImpresora.reporte}" 
+                                      panelStyle="width:150px"
+                                      style="width:150px" 
+                                      converter="omnifaces.SelectItemsConverter">
+                        <f:selectItems value="#{nuevoReporteImpresoraBean.reporteTabletList}" 
+                                          var="rep" 
+                                          itemLabel="#{rep.nombre}" 
+                                          itemValue="#{rep}" />
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="#{msg.restriccion}" />
+                    <p:selectOneRadio value="#{nuevoReporteImpresoraBean.reporteImpresora.restriccion}"
+                                      required="true">
+                        <f:selectItem itemLabel="#{msg.si}" itemValue="true" />
+                        <f:selectItem itemLabel="#{msg.no}" itemValue="false" />
+                    </p:selectOneRadio>
+                </h:panelGrid>
+            </p:fieldset>
+        </h:form>
+    </h:body>
+</html>

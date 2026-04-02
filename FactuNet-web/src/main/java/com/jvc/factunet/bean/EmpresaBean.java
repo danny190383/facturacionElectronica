@@ -8,6 +8,7 @@ import com.jvc.factunet.entidades.Ciudad;
 import com.jvc.factunet.entidades.Controles;
 import com.jvc.factunet.entidades.Empresa;
 import com.jvc.factunet.entidades.EmpresaCatalogoParametro;
+import com.jvc.factunet.entidades.Impresora;
 import com.jvc.factunet.entidades.ImpuestoTarifa;
 import com.jvc.factunet.entidades.MascotaNotaMedica;
 import com.jvc.factunet.entidades.Parroquia;
@@ -15,6 +16,7 @@ import com.jvc.factunet.entidades.Producto;
 import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import com.jvc.factunet.entidades.Provincia;
 import com.jvc.factunet.entidades.PuntoVenta;
+import com.jvc.factunet.entidades.ReporteImpresora;
 import com.jvc.factunet.entidades.Seccion;
 import com.jvc.factunet.entidades.TarjetaEmpresa;
 import com.jvc.factunet.entidades.TipoEmpresa;
@@ -334,6 +336,26 @@ public class EmpresaBean implements Serializable{
         }
     }
     
+    public void eliminarImpresora(Impresora parametro) {
+        try {
+            this.empresa.getImpresoraEmpresaList().remove(parametro);
+            FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroEliminado"));
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "No se puede eliminar.", e);
+            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registronoEliminado"));
+        }
+    }
+    
+     public void eliminarReporte(ReporteImpresora parametro) {
+        try {
+            this.empresa.getReporteImpresoraEmpresaList().remove(parametro);
+            FacesUtils.addInfoMessage(FacesUtils.getResourceBundle().getString("registroEliminado"));
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "No se puede eliminar.", e);
+            FacesUtils.addErrorMessage(FacesUtils.getResourceBundle().getString("registronoEliminado"));
+        }
+    }
+    
     public void verControles(Controles control) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("control", control);
         Map<String, Object> options = new HashMap<>();
@@ -408,6 +430,7 @@ public class EmpresaBean implements Serializable{
         PrimeFaces.current().dialog().openDynamic("/seguridades/opcionesEmpresa/nuevoSeccionDialog", options, null);
     }
     
+    
     public void onSeccionSelect(SelectEvent event) {
         if(event.getObject() != null)
         {
@@ -420,6 +443,68 @@ public class EmpresaBean implements Serializable{
             {
                 seccion.setEmpresa(this.empresa);
                 this.empresa.getSeccionList().add(seccion);
+            }
+        }
+    }
+    
+    public void verImpresora(Impresora impresora) {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("impresora", impresora);
+        Map<String, Object> options = new HashMap<>();
+        options.put("resizable", true);
+        options.put("draggable", true);
+        options.put("modal", true);
+        options.put("height", 450);
+        options.put("width", 900);
+        options.put("contentHeight", 450);
+        options.put("contentWidth", 900);
+        options.put("includeViewParams", true);
+        PrimeFaces.current().dialog().openDynamic("/seguridades/opcionesEmpresa/nuevoImpresoraDialog", options, null);
+    }
+    
+    
+    public void onImpresoraSelect(SelectEvent event) {
+        if(event.getObject() != null)
+        {
+            Impresora seccion= (Impresora) event.getObject();
+            if(this.empresa.getImpresoraEmpresaList() == null)
+            {
+                this.empresa.setImpresoraEmpresaList(new ArrayList<Impresora>());
+            }
+            if((!this.empresa.getImpresoraEmpresaList().contains(seccion)) && (seccion != null))
+            {
+                seccion.setEmpresa(this.empresa);
+                this.empresa.getImpresoraEmpresaList().add(seccion);
+            }
+        }
+    }
+    
+    public void verReportes(ReporteImpresora reporteImpresora) {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("reporteImpresora", reporteImpresora);
+        Map<String, Object> options = new HashMap<>();
+        options.put("resizable", true);
+        options.put("draggable", true);
+        options.put("modal", true);
+        options.put("height", 450);
+        options.put("width", 900);
+        options.put("contentHeight", 450);
+        options.put("contentWidth", 900);
+        options.put("includeViewParams", true);
+        PrimeFaces.current().dialog().openDynamic("/seguridades/opcionesEmpresa/nuevoReporteImpresoraDialog", options, null);
+    }
+    
+    
+    public void onReportesSelect(SelectEvent event) {
+        if(event.getObject() != null)
+        {
+            ReporteImpresora seccion= (ReporteImpresora) event.getObject();
+            if(this.empresa.getReporteImpresoraEmpresaList() == null)
+            {
+                this.empresa.setReporteImpresoraEmpresaList(new ArrayList<>());
+            }
+            if((!this.empresa.getReporteImpresoraEmpresaList().contains(seccion)) && (seccion != null))
+            {
+                seccion.setEmpresa(this.empresa);
+                this.empresa.getReporteImpresoraEmpresaList().add(seccion);
             }
         }
     }

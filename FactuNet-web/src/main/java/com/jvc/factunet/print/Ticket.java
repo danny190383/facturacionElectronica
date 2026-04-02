@@ -155,7 +155,7 @@ public class Ticket {
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudad_empresa}}", empresa.getCiudad().getNombre());
       
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{numero}}", numero);
-      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{clave_acceso}}", clave);
+      this.contentTicketComprobante = this.contentTicketComprobante.replace("{{clave_acceso}}", clave != null ? clave : "");
       
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{ciudadFecha}}", ciudadFecha);
       this.contentTicketComprobante = this.contentTicketComprobante.replace("{{cliente}}", cliente);

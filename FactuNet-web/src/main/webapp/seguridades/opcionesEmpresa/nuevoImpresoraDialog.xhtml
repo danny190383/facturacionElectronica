@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>#{msg.impresora}</title>
+        <h:outputStylesheet name="css/default.css"/>
+    </h:head>
+
+    <h:body>
+        <h:form style="width: 100%">
+            
+            <p:growl id="grMensajes" 
+                     showDetail="false" 
+                     showSummary="true"/>
+            
+            <div class="caja-botones">
+                <p:panel header="#{msg.opciones}" 
+                         toggleable="true" 
+                         toggleOrientation="horizontal">
+                    <p:menu> 
+                        <p:menuitem  value="#{msg.agregar}" 
+                                     actionListener="#{nuevoImpresoraBean.agregar()}"
+                                     icon="ui-icon-check" 
+                                     update="grMensajes, @form"/>  
+
+                        <p:menuitem  value="#{msg.cancelar}" 
+                                     icon="ui-icon-cancel"
+                                     actionListener="#{nuevoImpresoraBean.cerrar()}"
+                                     immediate="true"/>  
+                    </p:menu>
+                </p:panel>
+            </div> 
+            
+            <p:fieldset>
+                <h:panelGrid columns="2" 
+                        style="width: 100%">
+
+                <h:outputLabel value="#{msg.nombre}: "/>
+                <p:inputText value="#{nuevoImpresoraBean.impresora.nombre}"
+                             required="true"
+                             style="background-color: khaki"/>
+               
+                <h:outputLabel value="#{msg.impresora}" />
+                <p:selectOneMenu value="#{nuevoImpresoraBean.impresora.impresora}" 
+                                  panelStyle="width:150px"
+                                  style="width:150px" >
+                        <f:selectItems value="#{nuevoImpresoraBean.services}" 
+                                      var="imp" 
+                                      itemLabel="#{imp.name}" 
+                                      itemValue="#{imp.name}" />
+                </p:selectOneMenu>
+           </h:panelGrid>
+            </p:fieldset>
+            
+        </h:form>
+    </h:body>
+</html>

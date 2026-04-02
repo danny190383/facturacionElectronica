@@ -91,12 +91,14 @@ public class BuscarFacturasVenta extends ImprimirReportesBean implements Seriali
     public List<FacturaVenta> getListaFacturas() {
         if(this.tipoDocumento == 21 && this.tipoSeleccion == 1){
             this.listaFacturas.clear();
-            this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(this.empresa, this.estado));
+            this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(empresa, numero, fecha, nombre, estado, ruc));
+            //this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(this.empresa, this.estado));
             return listaFacturas.stream().filter(p -> (((Objects.equals(p.getTipoDocumento(), this.tipoDocumento)) || (Objects.equals(p.getTipoDocumento(), 23))))).collect(Collectors.toList());
         }
         if(this.tipoDocumento == 21){
             this.listaFacturas.clear();
-            this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(this.empresa, this.estado));
+            //this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(this.empresa, this.estado));
+            this.listaFacturas.addAll(this.documentosServicios.listarFacturasVentaElectronica(empresa, numero, fecha, nombre, estado, ruc));
             return listaFacturas.stream().filter(p -> (((Objects.equals(p.getTipoDocumento(), this.tipoDocumento)) || (Objects.equals(p.getTipoDocumento(), 23))) && !(Objects.equals(p.getEstadoAutorizacionSri(), "AUTORIZADO") && (Objects.equals(p.getPuntoVenta().getFacturacionElectronica(),true))))).collect(Collectors.toList());
         }
         return listaFacturas;

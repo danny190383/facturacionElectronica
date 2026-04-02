@@ -42,8 +42,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-//import net.sf.jasperreports.engine.export.JRHtmlExporter;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
 import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
@@ -129,6 +127,8 @@ public class JasperReportUtil extends FacesUtils {
     
     public final static String PATH_REPORTE_PEDIDO_BEAN;
     
+    public final static String PATH_REPORTE_JUNTA_AGUA_CLIENTES;
+    
     @Resource(name = "factunetDS")
     private DataSource factunetDS;
     
@@ -201,6 +201,9 @@ public class JasperReportUtil extends FacesUtils {
         PATH_REPORTE_CLIENTES_CUMPLEAÑOS = PATH + "ventas-clientes-nacimiento.jasper";
         
         PATH_REPORTE_PEDIDO_BEAN = PATH + "pedidoTablet.jasper";
+        
+        
+        PATH_REPORTE_JUNTA_AGUA_CLIENTES = PATH + "clientes-junta-agua.jasper";
     }
     
     public void jasperReport(final String urlReporte, String tipo, final String nombrePersona, Map<String, Object> params) throws ClassNotFoundException {

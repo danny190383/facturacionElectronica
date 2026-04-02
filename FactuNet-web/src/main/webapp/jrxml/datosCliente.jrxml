@@ -20,16 +20,22 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT 
-persona.nombres, 
-persona.apellidos, 
-persona.cedula, 
-persona.direccion, 
-persona.email,
-persona.telefono
-from cliente inner join tipo_persona on
-tipo_persona.codigo = cliente.codigo inner join persona on
-tipo_persona.persona = persona.codigo where 
-cliente.codigo = $P{codigo}]]>
+    persona.nombres, 
+    persona.apellidos, 
+    persona.cedula, 
+    persona.direccion, 
+    persona.email,
+    persona.telefono,
+    (SELECT STRING_AGG(contactar.valor, ', ') 
+     FROM public.contactar 
+     WHERE contactar.persona = tipo_persona.codigo 
+     AND contactar.tipo_contacto = 35) AS correos_adicionales
+FROM 
+    cliente 
+INNER JOIN tipo_persona ON tipo_persona.codigo = cliente.codigo 
+INNER JOIN persona ON tipo_persona.persona = persona.codigo 
+WHERE 
+    cliente.codigo = $P{codigo}]]>
 	</queryString>
 	<field name="nombres" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="nombres"/>
@@ -62,6 +68,10 @@ cliente.codigo = $P{codigo}]]>
 		<property name="com.jaspersoft.studio.field.name" value="telefono"/>
 		<property name="com.jaspersoft.studio.field.label" value="telefono"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="persona"/>
+	</field>
+	<field name="correos_adicionales" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="correos_adicionales"/>
+		<property name="com.jaspersoft.studio.field.label" value="correos_adicionales"/>
 	</field>
 	<columnHeader>
 		<band height="41">
@@ -137,6 +147,13 @@ cliente.codigo = $P{codigo}]]>
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[":" + $F{telefono}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="24" width="220" height="11" uuid="6ce7c16d-8f55-4bc8-86b4-437036360814"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[":" + $F{correos_adicionales}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>

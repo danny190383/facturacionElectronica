@@ -115,7 +115,29 @@ public class ServicioCobrosMaestroBean implements Serializable{
         if(servicioPersona.getCobroAutomatico()){
             cobrosServicio.setValor(servicioPersona.getServicio().getPvp()); 
             cobrosServicio.setLectura(BigDecimal.ZERO); 
-        }     
+        }else{
+            BigDecimal lecturaA = this.servicioCobrosMaestroServicio.obtenerUltimaLectura(servicioPersona.getServicio().getCodigo());
+            if(lecturaA != null){
+                cobrosServicio.setLecturaAnterior(lecturaA); 
+            }else{
+                cobrosServicio.setLecturaAnterior(BigDecimal.ZERO); 
+            }
+        } 
+    }
+    
+    public void calcularLectura(){
+        if (cobrosServicio.getLecturaAnterior() != null 
+                && cobrosServicio.getLecturaActual() != null
+                && cobrosServicio.getLecturaAnterior().compareTo(BigDecimal.ZERO) > 0
+                && cobrosServicio.getLecturaActual().compareTo(BigDecimal.ZERO) > 0
+                && cobrosServicio.getLecturaActual().compareTo(cobrosServicio.getLecturaAnterior()) > 0) {
+
+            cobrosServicio.setLectura(
+                cobrosServicio.getLecturaActual().subtract(cobrosServicio.getLecturaAnterior())
+            );
+        }else {
+            cobrosServicio.setLectura(BigDecimal.ZERO);
+        }
     }
     
     public void seleccionar(CobrosServicio parametro) {

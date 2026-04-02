@@ -1148,7 +1148,11 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
                 detalle.setCodigo(null);
                 detalle.setProductoServicio(cobrosServicio.getServicio()); 
                 detalle.setCantidad(BigDecimal.ONE); 
-                detalle.setDescripcion(" => MES : " + cobrosServicio.getMes().getEtiqueta().toUpperCase() + " - " + cobrosServicio.getAnio().getNombre() + " - " + cobrosServicio.getObservacion()); 
+                String lecturas = null;
+                if (cobrosServicio.getLectura() != null && cobrosServicio.getLectura().compareTo(BigDecimal.ZERO) > 0) {
+                    lecturas = " Lec. Ant: " + cobrosServicio.getLecturaAnterior() + " Lec. Act: " + cobrosServicio.getLecturaActual() + " Consumo. : " + cobrosServicio.getLectura() ;
+                }
+                detalle.setDescripcion(" => MES : " + cobrosServicio.getMes().getEtiqueta().toUpperCase() + " - " + cobrosServicio.getAnio().getNombre() + (lecturas == null ? "" : " - "  + lecturas) + ((cobrosServicio.getObservacion() == null || cobrosServicio.getObservacion().isEmpty()) ? "" : " - "  + cobrosServicio.getObservacion())); 
                 detalle.setFactura(this.facturaVenta);
                 detalle.setFecha(new Date());
                 detalle.setEmpleado(((Login)FacesUtils.getManagedBean("login")).getEmpleado());
@@ -1912,6 +1916,14 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         return cantidad+nombre+total;
     }
     
+    public String generaItemComprobanteAgua(String cantidad, String nombre, String descripcion, String total){
+        for(int i = cantidad.length() ; i<=4 ; i++){
+            cantidad = cantidad +temp[0];
+        }
+        nombre = nombre + " " + descripcion  +temp[0];
+        return cantidad+nombre+total;
+    }
+    
     public String generaPagosComprobante(String nombre, String total){
         if(nombre.length()<21){
             for(int i = nombre.length() ; i<=20 ; i++){
@@ -1929,9 +1941,16 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         String items = StringUtils.EMPTY;
         String pagos = StringUtils.EMPTY;
         if(factura.getPuntoVenta().getRise().equals("3")){
-            for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
-                items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            if(this.facturaVenta.getEmpresa().getTipoEmpresaWeb().getNombre().equals("AGUA")){
+                for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
+                    items = items + this.generaItemComprobanteAgua(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getCodigoBarras(), detalleTiket.getDescripcion(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+                }
+            } else{
+                for(FacturaDetalle detalleTiket : factura.getFacturaDetalleList()){
+                    items = items + this.generaItemComprobante(detalleTiket.getCantidad().toString(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalSinDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+                }
             }
+           
         }
         else
         {
