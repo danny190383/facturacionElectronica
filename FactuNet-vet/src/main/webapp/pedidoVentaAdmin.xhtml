@@ -134,7 +134,7 @@
                                                         <p:spacer width="5px"/>
                                                         <p:commandButton icon="ui-icon-minus" 
                                                                          style="background-color: tan" 
-                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 1)}">
+                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 2)}">
                                                             <p:confirm header="#{msg.confirmacion}" 
                                                                        message="#{msg.imprimir}" 
                                                                        icon="ui-icon-alert" />
@@ -143,7 +143,7 @@
                                                         <p:spacer width="5px"/>
                                                         <p:commandButton icon="ui-icon-plus" 
                                                                          style="background-color: tan" 
-                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 2)}">
+                                                                         actionListener="#{pedidoVentaMovilBean.imprimirReporte(2, items, 1)}">
                                                             <p:confirm header="#{msg.confirmacion}" 
                                                                        message="#{msg.imprimir}" 
                                                                        icon="ui-icon-alert" />
@@ -285,7 +285,7 @@
                             <p:commandButton icon="ui-icon-minus" 
                                              style="background-color: darkslategrey;color: whitesmoke"
                                              value="#{msg.imprimir}" 
-                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 1)}" 
+                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 2)}" 
                                              update="pedido:frmCabecera"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
                             
@@ -293,7 +293,7 @@
                                              style="background-color: darkslategrey;color: whitesmoke"
                                              value="#{msg.imprimir}" 
                                              rendered="false"
-                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 2)}" 
+                                             actionListener="#{pedidoVentaMovilBean.imprimirReporte(1, null, 1)}" 
                                              update="pedido:frmCabecera"
                                              onclick="document.getElementById('buscarProducto:frmCabecera4:btnPrintProducto').click();"/>
                             

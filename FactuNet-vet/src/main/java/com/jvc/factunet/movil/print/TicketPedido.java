@@ -79,10 +79,10 @@ public class TicketPedido {
         byte[] bytes = null;
         switch (tipoTiket) {
             case 1:
-                bytes = this.contentTicket.getBytes();
+                bytes = this.contentTicketValores.getBytes();
                 break;
             case 2:
-                bytes = this.contentTicketValores.getBytes();
+                bytes = this.contentTicket.getBytes();
                 break;
             default:
                 break;

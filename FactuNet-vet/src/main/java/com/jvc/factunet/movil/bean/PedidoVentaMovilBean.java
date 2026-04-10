@@ -1062,7 +1062,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         String items = StringUtils.EMPTY;
         List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
         TicketPedido ticket;
-        if(tipoReporte.equals("1")){
+        if(tipoReporte == 2){
             for(FacturaDetalle detalleTiket : listaOrdenada){
                 items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
             }
