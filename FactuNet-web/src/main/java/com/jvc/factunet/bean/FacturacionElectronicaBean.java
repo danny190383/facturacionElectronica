@@ -820,9 +820,19 @@ public class FacturacionElectronicaBean implements Serializable{
                 codigoAuxiliar.appendChild(codigoAuxiliarValue);
                 
                 Element descripcion = document.createElement("descripcion"); 
-                Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre() + (detalleFactura.getDescripcion() != null ? " " + detalleFactura.getDescripcion() : ""));
-                descripcion.appendChild(descripcionValue);
-                
+                if(factura.getEmpresa().getTipoEmpresaWeb() != null){
+                    if(factura.getEmpresa().getTipoEmpresaWeb().getNombre().equals("AGUA")){
+                        Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre() + (detalleFactura.getDescripcion() != null ? " " + detalleFactura.getDescripcion() : ""));
+                        descripcion.appendChild(descripcionValue);
+                    }else{
+                        Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre());
+                        descripcion.appendChild(descripcionValue);
+                    }
+                }else{
+                    Text descripcionValue = document.createTextNode(detalleFactura.getProductoServicio().getNombre());
+                    descripcion.appendChild(descripcionValue);
+                }
+             
                 Element cantidad = document.createElement("cantidad"); 
                 Text cantidadValue = document.createTextNode(detalleFactura.getCantidad().toString());
                 cantidad.appendChild(cantidadValue);

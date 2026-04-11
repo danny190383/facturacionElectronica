@@ -30,6 +30,218 @@
                  </div>
             </ui:define>
             <ui:define name="content">
+
+                <!-- =====================================================
+                     ESTILOS: usar <style> directo, NO h:outputStylesheet
+                     con CDATA. h:outputStylesheet es solo para archivos externos.
+                ===================================================== -->
+                <style type="text/css">
+
+                /* ===================================================
+                   A. DATAGRID EXTERNO DE MESAS (columns="2")
+                   Fuerza 50% exacto por columna sin importar contenido
+                =================================================== */
+
+                /* Tabla raíz del dataGrid de mesas */
+                .ui-datagrid .ui-datagrid-content > table {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                    border-collapse: collapse !important;
+                }
+
+                /* Cada celda td del dataGrid de mesas: exactamente 50% */
+                .ui-datagrid .ui-datagrid-content > table > tbody > tr > td {
+                    width: 50% !important;
+                    max-width: 50% !important;
+                    vertical-align: top !important;
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                    padding: 4px !important;
+                }
+
+                /* Panel (tarjeta de mesa) dentro de cada celda: 
+                   ocupa todo el ancho disponible sin salirse */
+                .ui-datagrid .ui-datagrid-content > table > tbody > tr > td > .ui-panel {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    box-sizing: border-box !important;
+                    overflow: hidden !important;
+                    display: block !important;
+                }
+
+                /* Contenido interior del panel de mesa */
+                .ui-datagrid .ui-datagrid-content > table > tbody > tr > td > .ui-panel > .ui-panel-content {
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    overflow: hidden !important;
+                    padding: 4px !important;
+                }
+
+                /* ===================================================
+                   B. DATAGRID INTERNO DE PEDIDOS (columns="1")
+                   Dentro del scrollPanel, también debe respetar 100%
+                =================================================== */
+
+                /* scrollPanel: contener todo horizontalmente */
+                .ui-scrollpanel {
+                    box-sizing: border-box !important;
+                    width: 100% !important;
+                }
+
+                .ui-scrollpanel .ui-scrollpanel-container {
+                    box-sizing: border-box !important;
+                    width: 100% !important;
+                }
+
+                .ui-scrollpanel .ui-scrollpanel-content {
+                    box-sizing: border-box !important;
+                    width: 100% !important;
+                    overflow-x: hidden !important;
+                    padding-right: 18px !important; /* espacio para scrollbar vertical */
+                }
+
+                /* Tabla interna del dataGrid de pedidos (columns="1") */
+                .ui-scrollpanel .ui-datagrid .ui-datagrid-content > table {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                }
+
+                .ui-scrollpanel .ui-datagrid .ui-datagrid-content > table > tbody > tr > td {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                }
+
+                /* ===================================================
+                   C. panelGrid de cabecera de cada pedido (columns="4")
+                   Debe ajustarse al ancho disponible
+                =================================================== */
+
+                /* El h:panelGrid con columns="4" que contiene 
+                   checkbox + datos cliente + telefono + botones */
+                .ui-scrollpanel .ui-panelgrid {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                    box-sizing: border-box !important;
+                }
+
+                .ui-scrollpanel .ui-panelgrid td {
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                    vertical-align: top !important;
+                }
+
+                /* ===================================================
+                   D. DATATABLE DE DETALLE (tablaFacturaVentaDetalle)
+                   ID namespaceado JSF: usar [id*=] en lugar de [id=] o [id$=]
+                =================================================== */
+
+                /* Selector robusto para ID namespaceado de JSF:
+                   el ID real sera algo como: frmCabecera:j_idt45:tablaFacturaVentaDetalle */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable .ui-datatable-tablewrapper > table {
+                    table-layout: fixed !important;
+                    width: 100% !important;
+                }
+
+                /* Celdas del detalle: no expandan columnas */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td {
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                    /* NO poner white-space:nowrap aqui globalmente 
+                       porque el textarea necesita wrap */
+                }
+
+                /* Labels de solo lectura: texto largo con ellipsis */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td label,
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td .ui-outputlabel {
+                    display: block !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    white-space: nowrap !important;
+                    max-width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+
+                /* Textarea de detalle: wrap normal, no overflow */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td .ui-inputtextarea {
+                    width: 90% !important;
+                    max-width: 90% !important;
+                    box-sizing: border-box !important;
+                    white-space: normal !important;
+                    resize: none !important;
+                    overflow: auto !important;
+                }
+
+                /* inputNumber de cantidad: no se desborde */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td .ui-inputnumber {
+                    max-width: 100% !important;
+                    display: block !important;
+                }
+
+                [id*="tablaFacturaVentaDetalle"].ui-datatable td .ui-inputnumber input {
+                    width: 80% !important;
+                    min-width: 0 !important;
+                    box-sizing: border-box !important;
+                    text-align: right !important;
+                }
+
+                /* Header del datatable (IVA / Total) */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable .ui-datatable-header {
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                    width: 100% !important;
+                }
+
+                /* panelGrid de 2 columnas (IVA label / Total label) en el header */
+                [id*="tablaFacturaVentaDetalle"].ui-datatable .ui-datatable-header .ui-panelgrid {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                }
+
+                /* ===================================================
+                   E. BOTONES: no expandan su celda contenedora
+                =================================================== */
+
+                /* Botones de accion dentro del panel de mesa */
+                .ui-panel .ui-button {
+                    max-width: 100% !important;
+                    box-sizing: border-box !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    white-space: nowrap !important;
+                }
+
+                /* Boton con texto largo: permitir que se achique */
+                .ui-panel .ui-panelgrid td .ui-button {
+                    max-width: 100% !important;
+                    min-width: 0 !important;
+                }
+
+                /* El panelGrid de 5 botones (buscar cliente, nuevo, etc.) */
+                .ui-panel > .ui-panel-content > .ui-panelgrid {
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+
+                /* ===================================================
+                   F. FORZAR que el p:panel de mesa NO crezca
+                   mas alla del espacio disponible (altura fija)
+                =================================================== */
+                .ui-panel[style*="height:400px"] {
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                }
+
+                .ui-panel[style*="height:400px"] .ui-panel-content {
+                    height: calc(400px - 34px) !important; /* 34px = header del panel */
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                    padding: 4px !important;
+                }
+
+                </style>
+
                 <p:panel header="#{msg.administracion} #{msg.pedidoVenta}"
                          id="pnlPrincipal">
                     <p:tabView>
@@ -40,7 +252,7 @@
                                             value="#{seccion.mesaList}" 
                                             columns="2">
                                     <p:panel header="#{mesa.nombre}" 
-                                             style="text-align:center;height: 400px;width: 100%">
+                                             style="text-align:center;height:400px;width:100%;overflow:hidden;box-sizing:border-box;">
                                         <h:panelGrid columns="1"
                                                      id="pnlDatosCliente"
                                                      width="100%">
@@ -89,7 +301,7 @@
                                                 </h:panelGrid>
                                             </p:fragment>
                                         </h:panelGrid>
-                                        <p:scrollPanel style="height:300px"
+                                        <p:scrollPanel style="height:300px;width:100%;overflow-x:hidden;"
                                                        id="scrollID">
                                             <p:dataGrid var="items" 
                                                         id="tablaFacturaVenta"
@@ -137,11 +349,11 @@
                                                             
                                                             <p:commandButton icon="ui-icon-minus"
                                                                              title="#{msg.imprimir}"
-                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"/>
+                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"/>
                                                             
                                                             <p:commandButton icon="ui-icon-plus"
                                                                              title="#{msg.imprimir}"
-                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"/>
+                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"/>
 
                                                             <p:commandButton icon="ui-icon-search"
                                                                              title="#{msg.productos}"
@@ -283,6 +495,7 @@
                         </c:forEach>
                     </p:tabView>
                 </p:panel>
+
             </ui:define>
         </ui:composition>
     </body>

@@ -13,7 +13,7 @@ import javax.print.SimpleDoc;
 @ManagedBean
 @ApplicationScoped
 public class TicketPedido {
-    private String contentTicket = 
+     private String contentTicket = 
                                  "\n"+
                                  "PEDIDO:  {{empresa}}\n"+
                                  "MESA:    {{mesa}}\n"+
@@ -33,10 +33,15 @@ public class TicketPedido {
      
       private String contentTicketValores = 
                                  "\n"+
+                                 "--------------PRE FACTURA-------------\n"+
                                  "PEDIDO:  {{empresa}}\n"+
                                  "MESA:    {{mesa}}\n"+
                                  "FECHA:   {{ciudadFecha}}\n"+
+                                 "CÈDULA/RUC: {{cedula}}\n"+
                                  "CLIENTE: {{cliente}}\n"+
+                                 "DIRECCIÒN: {{direccion}}\n"+
+                                 "TELÈFONO: {{telefono}}\n"+
+                                 "CORREO: {{correo}}\n"+
                                  "------------------------------------\n"+
                                  "CANT. PRODUCTO           V.TOTAL\n"+
                                  "------------------------------------\n"+
@@ -45,6 +50,8 @@ public class TicketPedido {
                                  "   IMPORTE DEL IVA: {{iva}}\n"+
                                  "   SUMA TOTAL:      {{total}}\n"+
                                  "\n"+
+                                 "DOCUMENTO NO TRIBUTABLE\n"+
+                                 "SOLICITE SU FACTURA\n"+
                                  "\n"+
                                  "\n"+
                                  "\n"+
@@ -59,7 +66,8 @@ public class TicketPedido {
         this.contentTicket = this.contentTicket.replace("{{items}}", items);
     }
       
-    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total) {
+    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total
+                       , String cedula, String direccion, String telefono, String correo) {
         this.contentTicketValores = this.contentTicketValores.replace("{{empresa}}", empresa);
         this.contentTicketValores = this.contentTicketValores.replace("{{ciudadFecha}}", ciudadFecha);
         this.contentTicketValores = this.contentTicketValores.replace("{{mesa}}", mesa);
@@ -67,18 +75,23 @@ public class TicketPedido {
         this.contentTicketValores = this.contentTicketValores.replace("{{items}}", items);
         this.contentTicketValores = this.contentTicketValores.replace("{{iva}}", iva);
         this.contentTicketValores = this.contentTicketValores.replace("{{total}}", total);
+        
+        this.contentTicketValores = this.contentTicketValores.replace("{{cedula}}", cedula);
+        this.contentTicketValores = this.contentTicketValores.replace("{{direccion}}", direccion);
+        this.contentTicketValores = this.contentTicketValores.replace("{{telefono}}", telefono);
+        this.contentTicketValores = this.contentTicketValores.replace("{{correo}}", correo);
     }
     
-    public Boolean print(String impresora, String tipoTiket) {
+    public Boolean print(String impresora, Integer tipoTiket) {
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         byte[] bytes = null;
         switch (tipoTiket) {
-            case "1":
-                bytes = this.contentTicket.getBytes();
-                break;
-            case "2":
+            case 1:
                 bytes = this.contentTicketValores.getBytes();
+                break;
+            case 2:
+                bytes = this.contentTicket.getBytes();
                 break;
             default:
                 break;

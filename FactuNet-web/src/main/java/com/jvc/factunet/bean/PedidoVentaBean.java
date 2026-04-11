@@ -14,6 +14,7 @@ import com.jvc.factunet.entidades.ProductoImpuestoTarifa;
 import com.jvc.factunet.entidades.ProductoPaquete;
 import com.jvc.factunet.entidades.PuntoRestriccion;
 import com.jvc.factunet.entidades.PuntoVenta;
+import com.jvc.factunet.entidades.ReporteImpresora;
 import com.jvc.factunet.entidades.Seccion;
 import com.jvc.factunet.icefacesUtil.FacesUtils;
 import com.jvc.factunet.icefacesUtil.ImprimirReportesBean;
@@ -22,6 +23,7 @@ import com.jvc.factunet.print.TicketPedido;
 import com.jvc.factunet.servicios.ClienteServicio;
 import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.EmpresaServicio;
+import com.jvc.factunet.servicios.ReporteImpresoraServicio;
 import com.jvc.factunet.session.Login;
 import com.jvc.factunet.utilitarios.Fecha;
 import java.io.IOException;
@@ -60,6 +62,9 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
     private EmpresaServicio empresaServicio;
     @EJB
     public ClienteServicio clienteServicio;
+    @EJB
+    private ReporteImpresoraServicio reporteImpresoraServicio;
+    
     @ManagedProperty(value = "#{pedidoCompraBean}")
     private PedidoCompraBean pedidoCompraBean;
     
@@ -510,33 +515,90 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         return listaReturn;
     }
     
-    public void generarReporteBean(PedidoVenta pedido, String tipo) throws ClassNotFoundException{
+    public void generarReporteBean(PedidoVenta pedido, Integer tipoReporte) throws ClassNotFoundException{
         if(pedido.getFacturaDetalleList() != null)
         {
-            List<PuntoVenta> listaPuntos = new ArrayList<>();
-            listaPuntos.addAll(this.verPuntoMovil());
-            for(PuntoVenta punto : listaPuntos){
-                List<FacturaDetalle> listaPrint = verificarRestriccion(pedido.getFacturaDetalleList(),punto);
-                if(!listaPrint.isEmpty()){
-                    if(punto.getTipoImpresora().equals("1")){
+            List<ReporteImpresora> listaReporteImpresa = new ArrayList<>();
+            listaReporteImpresa.addAll(reporteImpresoraServicio.listar(this.empresa.getCodigo(), tipoReporte));
+            if(listaReporteImpresa != null){
+                for(ReporteImpresora controlReporte : listaReporteImpresa){
+                    if(controlReporte.getRestriccion()){
+                        imprimirConRestriccion(pedido, tipoReporte,controlReporte.getImpresora().getImpresora());
+                    }else{
+                        imprimirTiket(pedido.getFacturaDetalleList(),pedido.getPuntoVenta(), pedido, tipoReporte, controlReporte.getImpresora().getImpresora());
+                    } 
+                }
+            }else{
+                imprimirConRestriccion(pedido, tipoReporte, null);
+            }       
+        }
+        
+    }
+    
+    public void imprimirConRestriccion (PedidoVenta pedido, Integer tipoReporte, String impresora) {
+        List<PuntoVenta> listaPuntos = new ArrayList<>();
+        listaPuntos.addAll(this.verPuntoMovil());
+        for(PuntoVenta punto : listaPuntos){
+            List<FacturaDetalle> listaPrint = verificarRestriccion(pedido.getFacturaDetalleList(),punto);
+            if(!listaPrint.isEmpty()){
+                if(punto.getTipoImpresora().equals("1")){
+                    try {
+                        super.getParametros().put("empresa", pedido.getEmpresa().getNombre());
+                        super.getParametros().put("mesa", pedido.getMesa().getNombre());
+                        super.getParametros().put("fecha", pedido.getFecha());
+                        JasperReportUtil jasperBean = (JasperReportUtil) FacesUtils.getManagedBean(JasperReportUtil.NOMBRE_BEAN);
                         try {
-                            super.getParametros().put("empresa", pedido.getEmpresa().getNombre());
-                            super.getParametros().put("mesa", pedido.getMesa().getNombre());
-                            super.getParametros().put("fecha", pedido.getFecha());
-                            JasperReportUtil jasperBean = (JasperReportUtil) FacesUtils.getManagedBean(JasperReportUtil.NOMBRE_BEAN);
                             jasperBean.jasperReportPrintBean(JasperReportUtil.PATH_REPORTE_PEDIDO_BEAN,super.getParametros(),listaPrint,punto.getImpresora());
-                        } catch (IOException ex) {
+                        } catch (ClassNotFoundException ex) {
                             Logger.getLogger(PedidoVentaBean.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    } catch (IOException ex) {
+                        Logger.getLogger(PedidoVentaBean.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    else
-                    {
-                        this.imprimirTiket(listaPrint,punto,pedido, tipo);
-                    }
+                }
+                else
+                {
+                    String nombreImpresora = impresora == null ? punto.getImpresora() : impresora;
+                    this.imprimirTiket(listaPrint,punto,pedido, tipoReporte,nombreImpresora);
                 }
             }
         }
-        
+    }
+    
+   public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, Integer tipoReporte, String impresora){
+        String items = StringUtils.EMPTY;
+        List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
+        TicketPedido ticket;
+        if(tipoReporte == 2){
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
+            }
+            ticket = new TicketPedido(pedido.getCodigo().toString(), 
+                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
+                                               pedido.getMesa().getNombre(),
+                                               pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
+                                               items);
+        }else{
+            for(FacturaDetalle detalleTiket : listaOrdenada){
+                items = items + this.generaItemComprobanteValores(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
+            }
+            ticket = new TicketPedido(pedido.getCodigo().toString(), 
+                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
+                                               pedido.getMesa().getNombre(),
+                                               pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
+                                               items,
+                                               pedido.getIva().toString(),
+                                               pedido.getTotal().toString(),
+                                               pedido.getCliente().getPersona().getCedula(),
+                                               pedido.getCliente().getPersona().getDireccion() == null ? " " : pedido.getCliente().getPersona().getDireccion(),
+                                               pedido.getCliente().getPersona().getTelefono() == null ? " " : pedido.getCliente().getPersona().getTelefono(),
+                                               pedido.getCliente().getPersona().getEmail() == null ? " " : pedido.getCliente().getPersona().getEmail());
+        }
+        String nombreImpresora = impresora == null ? punto.getImpresora() : impresora;
+        if(ticket.print(nombreImpresora,tipoReporte)){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
     
     public List<FacturaDetalle> verificarRestriccion(List<FacturaDetalle> listaDetalles, PuntoVenta punto){
@@ -587,37 +649,6 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
             nombre = nombre.substring(0, 20)+temp[0];
         }
         return cantString+nombre+total;
-    }
-    
-    public Boolean imprimirTiket(List<FacturaDetalle> lista,PuntoVenta punto, PedidoVenta pedido, String tipoReporte){
-        String items = StringUtils.EMPTY;
-        List<FacturaDetalle> listaOrdenada = ordenarPorGrupoPadre(lista);
-        TicketPedido ticket;
-        if(tipoReporte.equals("1")){
-            for(FacturaDetalle detalleTiket : listaOrdenada){
-                items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
-            }
-            ticket = new TicketPedido(pedido.getCodigo().toString(), 
-                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
-                                               pedido.getMesa().getNombre(),
-                                               pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
-                                               items);
-        }else{
-            for(FacturaDetalle detalleTiket : listaOrdenada){
-                items = items + this.generaItemComprobanteValores(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getSubtotalConDescuento().setScale(2,RoundingMode.FLOOR).toString()) + "\n";
-            }
-            ticket = new TicketPedido(pedido.getCodigo().toString(), 
-                                               this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
-                                               pedido.getMesa().getNombre(),
-                                               pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
-                                               items,
-                                               pedido.getIva().toString(),
-                                               pedido.getTotal().toString());
-        }
-        if(ticket.print(punto.getImpresora(),tipoReporte)){
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
     }
     
      public List<FacturaDetalle> ordenarPorGrupoPadre(List<FacturaDetalle> lista) {

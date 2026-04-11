@@ -34,11 +34,16 @@ public class TicketPedido {
      
       private String contentTicketValores = 
                                  "\n"+
-                                 "------------{{aumento}}------------\n"+
+                                 "--------------{{aumento}}-------------\n"+
+                                 "--------------PRE FACTURA-------------\n"+
                                  "PEDIDO:  {{empresa}}\n"+
                                  "MESA:    {{mesa}}\n"+
                                  "FECHA:   {{ciudadFecha}}\n"+
+                                 "CÈDULA/RUC: {{cedula}}\n"+
                                  "CLIENTE: {{cliente}}\n"+
+                                 "DIRECCIÒN: {{direccion}}\n"+
+                                 "TELÈFONO: {{telefono}}\n"+
+                                 "CORREO: {{correo}}\n"+
                                  "------------------------------------\n"+
                                  "CANT. PRODUCTO           V.TOTAL\n"+
                                  "------------------------------------\n"+
@@ -47,6 +52,8 @@ public class TicketPedido {
                                  "   IMPORTE DEL IVA: {{iva}}\n"+
                                  "   SUMA TOTAL:      {{total}}\n"+
                                  "\n"+
+                                 "DOCUMENTO NO TRIBUTABLE\n"+
+                                 "SOLICITE SU FACTURA\n"+
                                  "\n"+
                                  "\n"+
                                  "\n"+
@@ -62,7 +69,8 @@ public class TicketPedido {
         this.contentTicket = this.contentTicket.replace("{{aumento}}", aumento);
     }
       
-    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total, String aumento) {
+    public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String iva, String total, String aumento
+                       , String cedula, String direccion, String telefono, String correo) {
         this.contentTicketValores = this.contentTicketValores.replace("{{empresa}}", empresa);
         this.contentTicketValores = this.contentTicketValores.replace("{{ciudadFecha}}", ciudadFecha);
         this.contentTicketValores = this.contentTicketValores.replace("{{mesa}}", mesa);
@@ -71,6 +79,11 @@ public class TicketPedido {
         this.contentTicketValores = this.contentTicketValores.replace("{{iva}}", iva);
         this.contentTicketValores = this.contentTicketValores.replace("{{total}}", total);
         this.contentTicketValores = this.contentTicketValores.replace("{{aumento}}", aumento);
+        
+        this.contentTicketValores = this.contentTicketValores.replace("{{cedula}}", cedula);
+        this.contentTicketValores = this.contentTicketValores.replace("{{direccion}}", direccion);
+        this.contentTicketValores = this.contentTicketValores.replace("{{telefono}}", telefono);
+        this.contentTicketValores = this.contentTicketValores.replace("{{correo}}", correo);
     }
     
     public Boolean print(String impresora, Integer tipoTiket) {

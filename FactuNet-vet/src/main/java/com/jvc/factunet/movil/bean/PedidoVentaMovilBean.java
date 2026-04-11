@@ -1083,7 +1083,11 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
                                                items,
                                                pedido.getIva().toString(),
                                                pedido.getTotal().toString(),
-                                               this.aumento);
+                                               this.aumento,
+                                               pedido.getCliente().getPersona().getCedula(),
+                                               pedido.getCliente().getPersona().getDireccion() == null ? " " : pedido.getCliente().getPersona().getDireccion(),
+                                               pedido.getCliente().getPersona().getTelefono() == null ? " " : pedido.getCliente().getPersona().getTelefono(),
+                                               pedido.getCliente().getPersona().getEmail() == null ? " " : pedido.getCliente().getPersona().getEmail());
         }
         String nombreImpresora = impresora == null ? punto.getImpresora() : impresora;
         if(ticket.print(nombreImpresora,tipoReporte)){
