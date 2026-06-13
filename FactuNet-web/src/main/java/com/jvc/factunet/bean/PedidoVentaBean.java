@@ -162,9 +162,9 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         options.put("draggable", false);
         options.put("modal", true);
         options.put("width", 1200);
-        options.put("height", 600);
+        options.put("height", 650);
         options.put("contentWidth", 1200);
-        options.put("contentHeight", 600);
+        options.put("contentHeight", 650);
         PrimeFaces.current().dialog().openDynamic("/busquedas/buscarProductosStockDialog", options, null);
     }
     
@@ -378,9 +378,9 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         options.put("modal", true);
         if(this.empresa.getTipoEmpresa().equals("1")){
             options.put("width", 750);
-            options.put("height", 500);
+            options.put("height", 550);
             options.put("contentWidth", 750);
-            options.put("contentHeight", 500);
+            options.put("contentHeight", 550);
             PrimeFaces.current().dialog().openDynamic("/busquedas/buscarClientesDialog", options, null);
         }
         else

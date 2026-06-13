@@ -150,6 +150,13 @@
                                 <f:selectItem itemLabel="#{msg.no}" itemValue="2" />
                             </p:selectOneMenu>
                             
+                            <p:outputLabel value="#{msg.pantalla}" />
+                            <p:selectOneMenu value="#{miPerfilBean.cuenta.tipoPantalla}" 
+                                             style="width: 147px">
+                                <f:selectItem itemLabel="#{msg.lista}" itemValue="LISTA" />
+                                <f:selectItem itemLabel="#{msg.tactil}" itemValue="TACTIL" />
+                            </p:selectOneMenu>
+                            
                         </h:panelGrid>
                         <h:panelGrid columns="1" 
                                      style="text-align: center">

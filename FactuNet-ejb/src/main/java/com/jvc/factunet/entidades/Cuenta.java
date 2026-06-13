@@ -36,6 +36,9 @@ public class Cuenta implements Serializable {
     @Size(min = 1, max = 1)
     @Column(name = "ver_grupo_busqueda")
     private String verGrupoBusqueda;
+    @Size(min = 1, max = 10)
+    @Column(name = "tipo_pantalla")
+    private String tipoPantalla;
     @JoinColumn(name = "rol", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.EAGER)
     private Rol rol;
@@ -47,6 +50,8 @@ public class Cuenta implements Serializable {
     private Cliente cliente;
     
     public Cuenta() {
+        this.verGrupoBusqueda = "S";
+        this.tipoPantalla = "LISTA";
     }
 
     public Cuenta(String identificador) {
@@ -112,6 +117,14 @@ public class Cuenta implements Serializable {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public String getTipoPantalla() {
+        return tipoPantalla;
+    }
+
+    public void setTipoPantalla(String tipoPantalla) {
+        this.tipoPantalla = tipoPantalla;
     }
     
     @Override

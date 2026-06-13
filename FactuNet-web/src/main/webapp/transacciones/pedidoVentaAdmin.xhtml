@@ -240,10 +240,66 @@
                     padding: 4px !important;
                 }
 
+                /* ===================================================
+                    F. AJUSTES PARA PANTALLA TÁCTIL (EQUILIBRADO)
+                 =================================================== */
+
+                 /* Botones con texto (Buscar cliente, Facturar, etc) */
+                 .modo-tactil .ui-button {
+                     height: 34px !important; /* Altura cómoda pero no exagerada */
+                     padding: 2px 10px !important;
+                     margin: 2px !important;
+                 }
+
+                 .modo-tactil .ui-button-text {
+                     font-size: 12px !important; /* Texto estándar legible */
+                     font-weight: bold !important;
+                 }
+
+                 /* Botones de solo icono (Imprimir, Eliminar, Buscar Producto) */
+                 .modo-tactil .ui-button.ui-button-icon-only {
+                     width: 36px !important;  /* Antes era 50px, ahora 36px */
+                     height: 36px !important;
+                     margin: 1px !important;
+                 }
+
+                 /* Iconos internos de PrimeFaces (Escala sutil) */
+                 .modo-tactil .ui-button .ui-icon {
+                     transform: scale(1.2) !important; /* Aumento del 20% en lugar del 50% */
+                 }
+
+                 /* Pestañas (Tabs) */
+                 .modo-tactil .ui-tabs-nav li a {
+                     padding: 8px 15px !important; /* Más compactas que el ajuste anterior */
+                     font-size: 13px !important;
+                 }
+
+                 /* Checkbox de facturar */
+                 .modo-tactil .ui-chkbox .ui-chkbox-box {
+                     width: 22px !important; /* Tamaño intermedio ideal para el dedo */
+                     height: 22px !important;
+                 }
+
+                 .modo-tactil .ui-chkbox-icon {
+                     font-size: 18px !important;
+                     margin-top: 1px !important;
+                 }
+
+                 /* Ajuste de Labels de la tabla */
+                 .modo-tactil h:outputLabel, 
+                 .modo-tactil .ui-outputlabel {
+                     font-size: 12px !important;
+                 }
+
+                 /* Scrollpanel: un poco más de aire para no tocar bordes */
+                 .modo-tactil .ui-scrollpanel-content {
+                     padding: 8px !important;
+                 }
                 </style>
 
                 <p:panel header="#{msg.administracion} #{msg.pedidoVenta}"
-                         id="pnlPrincipal">
+                         id="pnlPrincipal"
+                         styleClass="#{login.empleado.cuenta.tipoPantalla eq 'TACTIL' ? 'modo-tactil' : ''}">
                     <p:tabView>
                         <c:forEach var="seccion"
                                    items="#{pedidoVentaBean.empresa.seccionList}">
@@ -479,8 +535,7 @@
                                                         <p:commandButton icon="ui-icon-close" 
                                                                          update=":frmCabecera:grMensajes, tablaFacturaVentaDetalle" 
                                                                          actionListener="#{pedidoVentaBean.eliminarDetalle(itemsD,items)}"
-                                                                         title="#{msg.eliminar}"
-                                                                         style="font-size: 10px;">
+                                                                         title="#{msg.eliminar}">
                                                             <p:confirm header="#{msg.confirmacion}" 
                                                                        message="#{msg.eliminar}" 
                                                                        icon="ui-icon-alert" />

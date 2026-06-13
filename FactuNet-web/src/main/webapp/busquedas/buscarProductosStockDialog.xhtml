@@ -12,10 +12,52 @@
 
     <h:body>
         <style>
-            .columna{
-                vertical-align: top;
-            }
-        </style>
+    .columna-50 {
+        width: 50% !important;
+        vertical-align: top;
+    }
+    
+    .tactil-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 4px;
+        text-align: center;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+        /* Reducimos la altura considerablemente */
+        height: 115px; 
+        margin-bottom: 2px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tactil-card:hover {
+        background-color: #f0f7ff;
+        border-color: #2196F3;
+        transform: translateY(-2px);
+    }
+
+    .nombre-prod {
+        font-size: 10px; /* Texto un poco más pequeño */
+        font-weight: bold;
+        display: block;
+        height: 24px; /* Altura fija para 2 líneas máximo */
+        line-height: 12px;
+        overflow: hidden;
+        margin: 2px 0;
+        color: #444;
+    }
+    
+    .precio-prod {
+        color: #2196F3;
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+</style>
         <h:form style="width: 100%"
                 id="frmBusquedaProductos">
             
@@ -54,7 +96,7 @@
 
             <h:panelGrid columns="2"
                          width="100%"
-                         columnClasses="columna, columna">
+                         columnClasses="columna-50, columna-50">
             
             <p:fieldset id="flsProductos">
                 
@@ -78,6 +120,7 @@
                 
                 <p:dataTable var="producto" 
                             id="tablaProductos"
+                            rendered="#{buscarProductosStockBean.opcion eq 'P' and buscarProductosStockBean.modoVisualizacion eq 'LISTA'}"
                             value="#{buscarProductosStockBean.lazyModelStock}" 
                             paginator="true" 
                             emptyMessage="#{msg.tablaVacia}"
@@ -85,7 +128,6 @@
                             lazy="true"  
                             rowKey="#{producto.productoBodega.codigo}"
                             style="position: static; top: 0px"
-                            rendered="#{buscarProductosStockBean.opcion eq 'P'}"
                             widgetVar="tablaProductosWidgetVar">
 
                     <p:ajax event="rowSelectRadio" 
@@ -159,15 +201,14 @@
                 <p:dataTable var="servicio" 
                              id="tablaServicios"
                              value="#{buscarProductosStockBean.lazyModelServicios}" 
+                             rendered="#{buscarProductosStockBean.opcion eq 'S' and buscarProductosStockBean.modoVisualizacion eq 'LISTA'}"
                              paginator="true" 
                              emptyMessage="#{msg.tablaVacia}"
                              rows="8" 
                              lazy="true"   
                              rowKey="#{servicio.codigo}"
                              style="position: static; top: 0px"
-                             
-                             widgetVar="tablaProductosSWidgetVar"
-                             rendered="#{buscarProductosStockBean.opcion eq 'S'}">
+                             widgetVar="tablaProductosSWidgetVar">
 
                     <p:ajax event="rowSelectRadio" 
                             listener="#{buscarProductosStockBean.onRowSelect}" 
@@ -207,14 +248,14 @@
 
                 <p:dataTable var="paquete" 
                              id="tablaPaquetes"
-                             value="#{buscarProductosStockBean.lazyModelPaquetes}" 
+                             value="#{buscarProductosStockBean.lazyModelPaquetes}"
+                             rendered="#{buscarProductosStockBean.opcion eq 'PA' and buscarProductosStockBean.modoVisualizacion eq 'LISTA'}"
                              paginator="true" 
                              emptyMessage="#{msg.tablaVacia}"
                              rows="8" 
                              lazy="true" 
                              rowKey="#{paquete.codigo}"
-                             style="position: static; top: 0px"
-                             rendered="#{buscarProductosStockBean.opcion eq 'PA'}">
+                             style="position: static; top: 0px">
 
                     <p:column selectionMode="single" 
                               style="text-align:center"
@@ -280,6 +321,54 @@
                     </p:column>
 
                 </p:dataTable>
+                
+                <p:dataGrid var="prodStock" 
+                            id="gridProductos"
+                            value="#{buscarProductosStockBean.lazyModelStock}" 
+                            columns="3" layout="grid"
+                            paginator="true" rows="9" lazy="true"
+                            rendered="#{buscarProductosStockBean.opcion eq 'P' and buscarProductosStockBean.modoVisualizacion eq 'TACTIL'}"
+                            emptyMessage="#{msg.tablaVacia}">
+
+                    <p:commandLink actionListener="#{buscarProductosStockBean.onRowSelectDesdeTactil(prodStock)}"
+                                   update=":frmBusquedaProductos:tablaSeleccionados">
+                        <div class="tactil-card">
+                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoGrid(prodStock.productoBodega.foto, prodStock.productoBodega.codigo)}"
+                                            width="80px" height="80px" cache="false"
+                                            style="object-fit: contain; border-radius: 4px;" />
+
+                            <h:outputText value="#{prodStock.productoBodega.nombre}" class="texto-producto" />
+
+                            <h:outputText value="#{prodStock.productoBodega.pvp}" style="color: #2196F3; font-weight: bold; font-size: 13px;">
+                                <f:convertNumber type="currency" currencySymbol="$" />
+                            </h:outputText>
+                        </div>
+                    </p:commandLink>
+                </p:dataGrid>
+
+                <p:dataGrid var="prodServicio" 
+                            id="gridProductosServicios"
+                            value="#{buscarProductosStockBean.lazyModelServicios}" 
+                            columns="3" layout="grid"
+                            paginator="true" rows="9" lazy="true"
+                            rendered="#{buscarProductosStockBean.opcion eq 'S' and buscarProductosStockBean.modoVisualizacion eq 'TACTIL'}"
+                            emptyMessage="#{msg.tablaVacia}">
+
+                    <p:commandLink actionListener="#{buscarProductosStockBean.onRowSelectDesdeTactil(prodServicio)}"
+                                   update=":frmBusquedaProductos:tablaSeleccionados">
+                        <div class="tactil-card">
+                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoGrid(prodServicio.foto, prodServicio.codigo)}"
+                                            width="80px" height="80px" cache="false"
+                                            style="object-fit: contain;" />
+
+                            <h:outputText value="#{prodServicio.nombre}" class="texto-producto" />
+
+                            <h:outputText value="#{prodServicio.pvp}" style="color: #2196F3; font-weight: bold; font-size: 13px;">
+                                <f:convertNumber type="currency" currencySymbol="$" />
+                            </h:outputText>
+                        </div>
+                    </p:commandLink>
+                </p:dataGrid>
             </p:fieldset>
             <p:fieldset>
                 <p:dataTable var="selec" 

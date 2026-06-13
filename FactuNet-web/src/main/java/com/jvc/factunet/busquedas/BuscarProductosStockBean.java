@@ -13,9 +13,12 @@ import com.jvc.factunet.servicios.DocumentosServicios;
 import com.jvc.factunet.servicios.ProductoPaqueteServicio;
 import com.jvc.factunet.servicios.ProductoServiciosServicio;
 import com.jvc.factunet.session.Login;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +27,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -53,6 +57,7 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
     private List<GrupoProducto> listaPadres;
     private List<Producto> listaProductosTodosSelc;
     private List<FacturaDetalle> lotes;
+    private String modoVisualizacion = "LISTA"; 
 
     public BuscarProductosStockBean() {
         this.listaPadres = new ArrayList<>();
@@ -66,6 +71,7 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
             this.listaPadres = super.grupoProductoServicio.listarPorNivel(1,this.empresa.getCodigo());
             this.opcion = "P";
             this.visible = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getCuenta().getVerGrupoBusqueda().equals("1");
+            this.modoVisualizacion = ((Login)FacesUtils.getManagedBean("login")).getEmpleado().getCuenta().getTipoPantalla();
             super.getListaBodegas().clear();
             super.getListaBodegas().addAll(super.bodegaServicio.listar(this.empresa.getCodigo()));
             super.setBodegaSelc(super.getListaBodegas().get(0).getCodigo());
@@ -445,5 +451,133 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
 
     public void setProductoSelc(Producto productoSelc) {
         this.productoSelc = productoSelc;
+    }
+    
+    public String getModoVisualizacion() {
+        return modoVisualizacion;
+    }
+
+    public void setModoVisualizacion(String modoVisualizacion) {
+        this.modoVisualizacion = modoVisualizacion;
+    }
+
+    public class CustomSelectEvent extends SelectEvent {
+        public CustomSelectEvent(Object object) {
+            super(new javax.faces.component.UIComponentBase() {
+                @Override public String getFamily() { return ""; }
+            }, null, object);
+        }
+    }
+    
+    public String getUrlFotoGrid(byte[] foto, Integer codigo) {
+        if (foto == null || foto.length == 0) {
+            return "/resources/imagenes/help2.png"; 
+        }
+
+        try {
+            String rootPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
+            String tempPath = rootPath + File.separator + "temp";
+
+            File folder = new File(tempPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            String nombreArchivo = "prod_" + codigo + ".jpg";
+            String destinoFisico = tempPath + File.separator + nombreArchivo;
+            File archivo = new File(destinoFisico);
+
+            if (!archivo.exists()) {
+                try (FileOutputStream fos = new FileOutputStream(destinoFisico)) {
+                    fos.write(foto);
+                    fos.flush();
+                }
+            }
+
+            return "/temp/" + nombreArchivo;
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error al crear imagen temporal", e);
+            return "/resources/imagenes/help2.png";
+        }
+    }
+
+    public void onRowSelectDesdeTactil(Object objeto) {
+        procesarSeleccion(objeto);
+    }
+
+    private void procesarSeleccion(Object objeto) {
+        if (objeto == null) return;
+
+        if (objeto instanceof ProductoStock) {
+            ProductoStock stock = (ProductoStock) objeto;
+            ProductoBodega producto = stock.getProductoBodega();
+            producto.setStock(stock.getStock());
+            producto.setBodega(stock.getBodega());
+
+            // Buscamos si ya está en la lista de seleccionados
+            Producto existente = buscarEnSeleccionados(producto.getCodigo());
+
+            if (existente != null) {
+                // Si ya existe, solo aumentamos la cantidad y salimos
+                existente.setCantidad(existente.getCantidad().add(BigDecimal.ONE));
+            } else {
+                // Si NO existe, procedemos con la lógica de lotes o agregamos nuevo
+                this.productoSelc = producto; 
+                this.lotes.clear();
+                this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCero(producto.getCodigo(), producto.getBodega().getCodigo()));
+                this.lotes.addAll(documentosServicios.buscarLotesCompraMayorCeroDestino(producto.getCodigo(), producto.getBodega().getCodigo()));
+
+                if (!lotes.isEmpty() && lotes.size() > 0) {
+                    if (lotes.size() > 1) {
+                        PrimeFaces.current().executeScript("PF('mdlLoteProducto').show();");
+                        PrimeFaces.current().executeScript("PF('mdlLoteProducto').update();");
+                    } else {
+                        producto.setLote(this.lotes.get(0));
+                        producto.setCantidad(BigDecimal.ONE);
+                        this.listaProductosTodosSelc.add(producto);
+                    }
+                } else {
+                    producto.setCantidad(BigDecimal.ONE);
+                    this.listaProductosTodosSelc.add(producto);
+                }
+            }
+        } else if (objeto instanceof Producto) {
+            // Lógica para Servicios y Paquetes
+            Producto producto = (Producto) objeto;
+            Producto existente = buscarEnSeleccionados(producto.getCodigo());
+
+            if (existente != null) {
+                existente.setCantidad(existente.getCantidad().add(BigDecimal.ONE));
+            } else {
+                producto.setCantidad(BigDecimal.ONE);
+                this.listaProductosTodosSelc.add(producto);
+            }
+        }
+    }
+
+    // Método auxiliar para buscar por código
+    private Producto buscarEnSeleccionados(Integer codigo) {
+        for (Producto p : this.listaProductosTodosSelc) {
+            if (Objects.equals(codigo, p.getCodigo())) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    // Método auxiliar para evitar duplicados en la tabla de abajo
+    private void agregarAListaSeleccionados(Producto nuevo) {
+        boolean banExiste = false;
+        for (Producto p : this.listaProductosTodosSelc) {
+            if (Objects.equals(nuevo.getCodigo(), p.getCodigo())) {
+                p.setCantidad(p.getCantidad().add(BigDecimal.ONE));
+                banExiste = true;
+                break;
+            }
+        }
+        if (!banExiste) {
+            this.listaProductosTodosSelc.add(nuevo);
+        }
     }
 }
