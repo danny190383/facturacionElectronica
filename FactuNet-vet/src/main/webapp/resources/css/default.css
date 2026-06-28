@@ -1,73 +1,330 @@
-body {
-    background-repeat: repeat, no-repeat;
-    background-position: center -100px;
-    font-size: 12px;
-    font-family: Verda;
-    color: #000000;  
-    font-style: normal;
-    overflow: auto;    
-    margin: 0px;
+/* ========================================================== */
+/* 1. RESET Y CONFIGURACIÓN GLOBAL                            */
+/* ========================================================== */
+body { font-size: 12px !important; background-color: #f4f4f4; }
+#pedido\:btnBuscarClientes, #pedido\:btnBuscarProductos, 
+#pedido\:btnCambiarMesa, .ui-header .ui-btn { display: none !important; }
+.ui-spacer { display: none !important; }
+
+/* ========================================================== */
+/* 2. PANTALLA: buscarProducto (CATEGORÍAS Y SELECCIONADOS)   */
+/* ========================================================== */
+
+/* Cuadrícula de Categorías (Izquierda) */
+#buscarProducto .ui-tabs-panels .ui-datagrid-content table,
+#buscarProducto .ui-tabs-panels .ui-datagrid-content tbody {
+    display: block !important; width: 100% !important;
+}
+#buscarProducto .ui-tabs-panels .ui-datagrid-content tr {
+    display: inline-block !important; vertical-align: top !important;
+    width: 20% !important; padding: 3px !important; box-sizing: border-box !important;
+}
+@media (max-width: 1024px) { #buscarProducto .ui-tabs-panels .ui-datagrid-content tr { width: 33.33% !important; } }
+@media (max-width: 640px) { #buscarProducto .ui-tabs-panels .ui-datagrid-content tr { width: 50% !important; } }
+
+.btn-categoria-responsive {
+    width: 100% !important; min-height: 40px !important;
+    background-color: #d2b48c !important; font-size: 11px !important; text-shadow: none !important;
 }
 
-.texto_obligatorio{
-    background-color: khaki 
+/* LISTA DE SELECCIONADOS (Derecha) */
+#buscarProducto\:frmCabecera4\:tablaProductosSelc thead { display: none !important; }
+#buscarProducto\:frmCabecera4\:tablaProductosSelc .ui-datatable-tablewrapper { overflow-x: hidden !important; }
+
+.fila-nombre {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 8px 10px; background: #fdfdfd;
+}
+.fila-controles {
+    display: flex; align-items: center; gap: 10px; padding: 5px 10px 10px 10px;
 }
 
-.texto_numerico{
-    text-align: right    
+/* RECUPERACIÓN DEL BOTÓN ROSA */
+.btn-eliminar-cant {
+    background-color: #fce4ec !important; color: #c2185b !important;
+    border: 1px solid #d81b60 !important; font-size: 16px !important;
+    font-weight: bold !important; padding-left: 30px !important;
+    height: 36px !important; width: 70px !important;
+    position: relative !important; display: flex !important; align-items: center;
+}
+.btn-eliminar-cant:after {
+    left: 8px !important; width: 16px !important; height: 16px !important;
+    margin-top: -9px !important; background-color: #c2185b !important;
+}
+.btn-ajuste { width: 35px !important; height: 35px !important; margin: 0 !important; }
+
+/* ========================================================== */
+/* 3. PANTALLA: pedido (PANTALLA INICIAL DE MESAS)            */
+/* ========================================================== */
+
+/* Mesas en 1 columna para móviles */
+@media (max-width: 640px) {
+    #pedido\:frmCabecera\:pnlMesa > div > table,
+    #pedido\:frmCabecera\:pnlMesa > div > table > tbody,
+    #pedido\:frmCabecera\:pnlMesa > div > table > tbody > tr,
+    #pedido\:frmCabecera\:pnlMesa > div > table > tbody > tr > td {
+        display: block !important; width: 100% !important;
+    }
 }
 
-.texto_negrita{
-    font-style: normal;
-    font-weight: bold;
+/* Cabecera de la mesa (Buscar y C. Final) */
+.contenedor-header-mesa {
+    display: flex !important; justify-content: center !important;
+    gap: 10px !important; margin-top: 5px !important;
 }
 
-.ui-widget {
-    font-size: 12px;
+/* CUADRO AQUAMARINE (Iconos en fila) */
+#tablaFacturaVenta .ui-panelgrid-content, 
+#tablaFacturaVenta .ui-panelgrid td {
+    background-color: aquamarine !important; border: none !important; padding: 5px !important;
 }
 
-.ui-panel .ui-panel-titlebar {
-    padding: 0;
-    font-family: Arial;
-    font-style: normal;
-    font-weight: bold;
-    font-variant: normal;
-    font-size: 12px;
+/* Forzar estructura de bloque solo en esta tabla */
+#tablaFacturaVenta table, #tablaFacturaVenta tbody, 
+#tablaFacturaVenta tr, #tablaFacturaVenta td {
+    display: block !important; width: 100% !important;
 }
 
-
-.topAligned {
-    vertical-align: top;
+.contenedor-acciones-pedido {
+    display: flex !important; flex-direction: row !important;
+    justify-content: center !important; flex-wrap: wrap !important;
+    gap: 4px !important; width: 100% !important; margin-bottom: 8px !important;
 }
 
-.flex-container {
-    display: flex; /* Activa el modo Flexbox */
-    justify-content: space-between; /* ¡Esta es la magia! Empuja los hijos a los extremos opuestos */
-    align-items: center; /* Alinea verticalmente los elementos al centro */
-    width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+.contenedor-acciones-pedido .ui-btn {
+    width: 42px !important; height: 42px !important;
+    margin: 0 !important; display: flex !important;
+    align-items: center; justify-content: center;
 }
 
-.flex-left-items {
-    display: flex; /* Hacemos que los elementos de la izquierda también sean flexibles */
-    align-items: center; /* Para que se alineen bien entre ellos */
+/* Selector de pago y Total */
+#tablaFacturaVenta .ui-selectonemenu { width: 100% !important; margin: 5px 0 10px 0 !important; }
+
+.flex-container .ui-btn {
+    width: 100% !important; background: white !important;
+    color: black !important; border: 1px solid #999 !important;
+    font-weight: bold !important; padding: 10px 5px !important;
+    white-space: normal !important;
 }
 
 /* ========================================================== */
-/*    FIX PARA DIÁLOGOS GLOBALES - VERSIÓN PRIMEFACES MOBILE  */
+/* 4. AJUSTES FINALES RESPONSIVOS                             */
 /* ========================================================== */
-
-/* 1. La capa de fondo (overlay) en PFM. */
-/* Esta es la clase correcta para la capa grisácea de fondo. */
-.ui-popup-screen {
-    background: rgba(0, 0, 0, 0.5) !important; /* Fondo negro con 50% de opacidad */
-    z-index: 1040 !important;
+@media (max-width: 800px) {
+    #buscarProducto\:frmCabecera4 .ui-panelgrid .ui-grid-row { display: block !important; }
+    #buscarProducto\:frmCabecera4 .ui-panelgrid .ui-grid-col-2,
+    #buscarProducto\:frmCabecera4 .ui-panelgrid .ui-grid-col-8 {
+        width: 100% !important; display: block !important;
+    }
 }
 
-/* 2. El contenedor del diálogo en PFM. */
-/* Usamos las clases que identificaste para forzar un fondo sólido. */
-/* PFM a veces hace el contenedor transparente y le da color a los hijos. */
-.ui-popup-container {
-    background-color: #ffffff !important; /* Fondo blanco sólido para el diálogo */
-    z-index: 1050 !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,.5); /* Sombra para que destaque y parezca "flotar" */
+/* ========================================================== */
+/* 7. CORRECCIÓN DE DIÁLOGOS TRANSPARENTES (Popups)           */
+/* ========================================================== */
+
+/* Forzar fondo sólido a todos los diálogos y popups */
+.ui-dialog, 
+.ui-popup, 
+.ui-confirm-dialog,
+.ui-popup-container,
+.ui-dialog-contain {
+    background-color: #ffffff !important; /* Fondo blanco sólido */
+    background-image: none !important;
+    opacity: 1 !important; /* Asegurar que no haya opacidad heredada */
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important; /* Sombra para dar profundidad */
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+}
+
+/* Arreglar el encabezado de los diálogos */
+.ui-dialog-titlebar, 
+.ui-header.ui-bar-inherit {
+    background-color: #eeeeee !important; /* Gris claro para el título */
+    border-bottom: 1px solid #ddd !important;
+    color: #333 !important;
+    text-shadow: none !important;
+}
+
+/* Asegurar que el contenido del diálogo sea visible */
+.ui-dialog-content, 
+.ui-popup .ui-content {
+    background-color: #ffffff !important;
+    padding: 15px !important;
+}
+
+/* Corregir el ConfirmDialog específicamente (el de eliminar) */
+.ui-confirm-dialog {
+    max-width: 90% !important;
+    width: 300px !important;
+}
+
+/* Fondo oscuro detrás del popup (Overlay) */
+.ui-popup-screen.ui-overlay-b, 
+.ui-dialog-mask {
+    background-color: rgba(0,0,0,0.6) !important; /* Oscurece el fondo */
+    opacity: 1 !important;
+}
+
+/* Evitar que las tablas dentro de diálogos hereden el fondo aquamarine */
+.ui-dialog table, 
+.ui-dialog td, 
+.ui-confirm-dialog td {
+    background-color: transparent !important;
+}
+
+/* ========================================================== */
+/* 8. PANTALLA: busquedaClientes                              */
+/* ========================================================== */
+
+/* Hacer que la tabla de clientes sea fluida en móviles */
+@media (max-width: 640px) {
+    /* Quitamos los anchos fijos de las columnas que vienen del HTML */
+    #busquedaClientes\:frmCabecera2\:tablaClientes table,
+    #busquedaClientes\:frmCabecera2\:tablaClientes thead,
+    #busquedaClientes\:frmCabecera2\:tablaClientes tbody,
+    #busquedaClientes\:frmCabecera2\:tablaClientes tr,
+    #busquedaClientes\:frmCabecera2\:tablaClientes td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Ocultar el encabezado de la tabla en móvil para ganar espacio */
+    #busquedaClientes\:frmCabecera2\:tablaClientes thead {
+        display: none !important;
+    }
+
+    /* Estilo para cada fila (cada cliente) */
+    #busquedaClientes\:frmCabecera2\:tablaClientes tr {
+        margin-bottom: 10px !important;
+        border: 1px solid #ccc !important;
+        border-radius: 8px !important;
+        background: #fff !important;
+        padding: 5px !important;
+        display: flex !important;
+        flex-wrap: wrap !important; /* Permite que los elementos se acomoden */
+    }
+
+    /* Columna 1: El botón de la Cédula */
+    #busquedaClientes\:frmCabecera2\:tablaClientes td:nth-child(1) {
+        order: 1;
+        width: 70% !important; /* Le damos espacio para que la cédula respire */
+        padding: 5px !important;
+    }
+
+    /* Columna 2: El botón de Editar (el icono) */
+    #busquedaClientes\:frmCabecera2\:tablaClientes td:nth-child(2) {
+        order: 2;
+        width: 30% !important;
+        text-align: right !important;
+        padding: 5px !important;
+    }
+
+    /* Columna 3: El nombre del cliente */
+    #busquedaClientes\:frmCabecera2\:tablaClientes td:nth-child(3) {
+        order: 3;
+        width: 100% !important;
+        padding: 8px 5px !important;
+        border-top: 1px dashed #eee !important;
+    }
+}
+
+/* Estilo del botón de cédula para que sea legible y fácil de tocar */
+#busquedaClientes\:frmCabecera2\:tablaClientes .ui-btn {
+    font-size: 14px !important; /* Aumentamos un poco la letra */
+    font-weight: bold !important;
+    margin: 0 !important;
+    padding: 0.6em !important;
+    text-shadow: none !important;
+}
+
+/* Ajuste de los inputs de búsqueda superiores */
+#busquedaClientes\:frmCabecera2 input[type="search"] {
+    height: 45px !important;
+    font-size: 16px !important; /* Evita que el iPhone haga zoom al escribir */
+    margin-bottom: 10px !important;
+}
+
+/* El botón de "Regresar" y "Nuevo" de arriba */
+#busquedaClientes\:frmCabecera2 .ui-panelgrid .ui-grid-row {
+    display: flex !important;
+    gap: 10px;
+}
+
+
+
+
+/* Altura del contenedor de productos para activar scroll */
+.contenedor-scroll-productos {
+    height: 85vh !important; /* Ajusta este valor según prefieras */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+/* Ocultar encabezados y paginadores de la tabla de búsqueda */
+#buscarProducto\:frmCabecera4\:tablaProductos thead,
+#buscarProducto\:frmCabecera4\:tablaServicios thead,
+#buscarProducto\:frmCabecera4\:tablaProductos .ui-paginator,
+#buscarProducto\:frmCabecera4\:tablaServicios .ui-paginator {
+    display: none !important;
+}
+
+/* Botones de producto tipo lista */
+#buscarProducto\:frmCabecera4\:tablaProductos .ui-btn,
+#buscarProducto\:frmCabecera4\:tablaServicios .ui-btn {
+    text-align: left !important;
+    margin: 2px 0 !important;
+    background-color: #fcfcfc !important;
+}
+
+/* ========================================================== */
+/* 10. CORRECCIÓN DE DESBORDAMIENTO Y TEXTO TRUNCADO          */
+/* ========================================================== */
+
+/* BUSCADOR: Evitar que se monte en la columna de al lado */
+#buscarProducto\:frmCabecera4 .ui-input-search {
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important; /* Crucial para que el padding no lo estire */
+}
+
+#buscarProducto\:frmCabecera4 input[type="search"] {
+    width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+/* TABLA DE PRODUCTOS: Evitar "CALDO DE..." y mostrar nombre completo */
+#buscarProducto\:frmCabecera4\:tablaProductos .ui-btn,
+#buscarProducto\:frmCabecera4\:tablaServicios .ui-btn {
+    white-space: normal !important;    /* PERMITE SALTO DE LÍNEA */
+    text-align: left !important;
+    overflow: visible !important;      /* Quita los puntos suspensivos */
+    text-overflow: clip !important;
+    padding-left: 10px !important;     /* Ajuste de espacio para iconos */
+    line-height: 1.4 !important;       /* Mejora la lectura si hay 2 líneas */
+    height: auto !important;           /* Que el botón crezca según el texto */
+}
+
+/* Ajuste de las columnas de la tabla de búsqueda para dar más espacio al nombre */
+#buscarProducto\:frmCabecera4\:tablaProductos td:first-child,
+#buscarProducto\:frmCabecera4\:tablaServicios td:first-child {
+    width: 75% !important; /* Más espacio al nombre */
+}
+
+#buscarProducto\:frmCabecera4\:tablaProductos td:last-child,
+#buscarProducto\:frmCabecera4\:tablaServicios td:last-child {
+    width: 25% !important; /* Menos espacio al precio */
+    vertical-align: middle !important;
+}
+
+/* Asegurar que la columna del precio no se mueva */
+.contenedor-scroll-productos label {
+    display: block;
+    width: 100%;
+    text-align: right;
+    font-size: 14px !important;
 }

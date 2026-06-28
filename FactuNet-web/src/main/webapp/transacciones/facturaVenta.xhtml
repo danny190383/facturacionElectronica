@@ -167,19 +167,34 @@
                         </f:facet>
                     </p:toolbar>
                 </div> 
-                <div class="caja-notificacion">
-                    <h:panelGrid columns="2"
-                                 id="pnlProductoVer">
-                        <p:panel style="width: 800px;height: 30px">
-                            <h:outputText value="#{facturaVentaBean.productoVer.nombre}"
-                                          styleClass="texto_notificacion" />
-                        </p:panel>
-                        <p:panel style="width: 120px;text-align: right;height: 30px">
-                            <h:outputText value="#{facturaVentaBean.productoVer.pvp}" 
-                                          styleClass="texto_notificacion" />
-                        </p:panel>
-                    </h:panelGrid>
-                </div>
+                <h:panelGroup id="pnlProductoVer">
+                    
+                    <h:panelGroup styleClass="caja-notificacion" 
+                                  rendered="#{facturaVentaBean.productoVer.codigo ne null}">
+        
+                    <h:panelGroup layout="block" styleClass="notificacion-grid">
+
+                        <h:outputText value="#{facturaVentaBean.productoVer.nombre}"
+                                      style="font-weight: bold; font-size: 12px; color: #333; text-transform: uppercase;"/>
+
+                        <h:panelGroup>
+                            <h:outputLabel value="PVP: " style="font-size: 9px; color: #666;"/>
+                            <h:outputText value="#{facturaVentaBean.productoVer.pvp}" style="font-size: 13px;">
+                                <f:convertNumber pattern="#0.00" />
+                            </h:outputText>
+                        </h:panelGroup>
+
+                        <h:panelGroup style="padding: 0px 6px; background: #fcf8e3; border-radius: 3px; border: 1px solid #faebcc; display: inline-block;">
+                            <h:outputLabel value="PVP+IVA: " style="font-size: 9px; color: #8a6d3b;"/>
+                            <h:outputText value="#{facturaVentaBean.pvpIvaMostrar}" 
+                                          style="font-size: 15px; font-weight: bold; color: #a94442;">
+                                <f:convertNumber pattern="#0.00" />
+                            </h:outputText>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
             </ui:define>
             <ui:define name="content">
                 <style>
@@ -1198,6 +1213,17 @@
                                     </p:inputNumber> 
                                 </f:facet>
                             </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="V. #{msg.unitario}"
+                                  width="5%"
+                                  style="text-align:right">
+                            <h:outputLabel value="#{items.precioVentaUnitario}">
+                                <f:convertNumber type="number" 
+                                                 groupingUsed="true" 
+                                                 minFractionDigits="#{login.empleado.cuenta.empleado.empresa.decimales}"
+                                                 pattern="#0.00"/>
+                            </h:outputLabel>
                         </p:column>
                         
                         <p:column headerText="% Des."

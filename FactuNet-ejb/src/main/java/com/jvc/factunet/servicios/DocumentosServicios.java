@@ -1164,4 +1164,8 @@ public class DocumentosServicios {
     public List<FacturaDetalle> buscarLotesCompraMayorCeroDestino(Integer producto){
         return this.documentosDAO.buscarLotesCompraMayorCeroDestino(producto);
     }
+    
+    public BigDecimal totalVendidoHoy(Integer productoId, Integer empresaId) {
+        return this.documentosDAO.totalVendidoHoy(productoId, empresaId);
+    }
 }

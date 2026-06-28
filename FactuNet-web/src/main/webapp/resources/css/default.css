@@ -9,12 +9,30 @@ body {
     margin: 0px;
 }
 
-.caja-notificacion{
-    position: fixed; /*para que la caja se mantenga fija*/
-    top: 1px; /*movemos la caja de arriba*/
-    /*left: 310px;*/
-    /*background-color: #ffffff;  el color de fondo de la barra*/
-    z-index: 200;  
+.caja-notificacion {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.notificacion-grid {
+    display: flex;
+    align-items: center;
+    gap: 10px;                
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ccc;
+    border-radius: 6px;      
+    padding: 6px 12px;        
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    width: fit-content;
+    white-space: nowrap;
+}
+
+/* Ajuste para el texto dentro de la notificación */
+.texto_notificacion {
+    font-size: 16px !important;
+    font-weight: bold;
 }
 
 .caja-datos-secion{

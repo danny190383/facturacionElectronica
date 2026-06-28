@@ -295,6 +295,39 @@
                  .modo-tactil .ui-scrollpanel-content {
                      padding: 8px !important;
                  }
+                 
+                 /* Contenedor principal de la cabecera del pedido */
+                .cabecera-pedido-flex {
+                    display: flex;
+                    align-items: center; /* Centra todo verticalmente */
+                    justify-content: space-between; /* Separa info de botones */
+                    padding: 8px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 5px 5px 0 0;
+                }
+
+                .info-izquierda {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px; /* Espacio entre checkbox, hora, alias y nombre */
+                }
+
+                .datos-cliente-col {
+                    display: flex;
+                    flex-direction: column; /* Nombre arriba, mascota abajo */
+                }
+
+                .input-alias {
+                    width: 90px !important;
+                    font-size: 11px !important;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #d9534f;
+                    border: 1px solid #ccc !important;
+                    padding: 3px !important;
+                    background: #fff !important;
+                }
                 </style>
 
                 <p:panel header="#{msg.administracion} #{msg.pedidoVenta}"
@@ -364,86 +397,66 @@
                                                         value="#{mesa.listaPedidosVenta}" 
                                                         columns="1"
                                                         emptyMessage="#{msg.tablaVacia}">
-                                                <h:panelGrid columns="4"
-                                                             style="width: 100%">
-                                                    <p:selectBooleanCheckbox value="#{items.facturar}"
-                                                                             style="float:left">
-                                                        <p:ajax/> 
-                                                    </p:selectBooleanCheckbox>
-                                                    <h:panelGrid columns="2"
-                                                                 style="float:left">
+                                                <div class="cabecera-pedido-flex">
+                                                    <div class="info-izquierda">
+                                                        <p:selectBooleanCheckbox value="#{items.facturar}">
+                                                            <p:ajax/> 
+                                                        </p:selectBooleanCheckbox>
 
-                                                        <h:outputLabel value="#{items.fecha}" 
-                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left">
-                                                                <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" 
-                                                                                   pattern="#{parametrosApplication.formatoHoraSMS}"/>
+                                                        <h:outputLabel value="#{items.fecha}" style="font-weight: bold; color: #555; font-size: 13px;">
+                                                            <f:convertDateTime timeZone="#{parametrosApplication.timeZone}" pattern="HH:mm"/>
                                                         </h:outputLabel>
 
-                                                        <h:outputLabel value="#{items.cliente.persona.nombres } #{items.cliente.persona.apellidos}" 
-                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left"/>
+                                                        <!-- CAMPO ALIAS CORREGIDO -->
+                                                        <p:inputText value="#{items.nombrePedido}" 
+                                                                     placeholder="Alias" 
+                                                                     maxlength="20"
+                                                                     styleClass="input-alias">
+                                                            <p:ajax event="change" listener="#{pedidoVentaBean.onHeaderEdit(items)}" process="@this" update=":frmCabecera:grMensajes"/>
+                                                        </p:inputText>
 
-                                                        <h:outputLabel rendered="#{pedidoVentaBean.empresa.tipoEmpresa eq 2}"/>
+                                                        <div class="datos-cliente-col">
+                                                            <h:outputText value="#{items.cliente.persona.nombres} #{items.cliente.persona.apellidos}" 
+                                                                           style="font-size: 13px; font-weight: bold; color: #333; text-transform: uppercase;"/>
 
-                                                        <h:outputLabel value="#{items.mascota.nombre} #{items.mascota.raza.nombre}" 
-                                                                       rendered="#{pedidoVentaBean.empresa.tipoEmpresa eq 2}"
-                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;color: red;float:left"/>
-                                                        
-                                                    </h:panelGrid>
-                                                    <h:panelGrid columns="1">
-                                                        <h:outputLabel value="#{items.cliente.persona.telefono}" 
-                                                                       style="font-size: 12px;font-style: normal;font-weight: bold;float:left"/>
-                                                        <p:dataScroller value="#{items.cliente.persona.contactarPersonaList}" 
-                                                                        var="contactar"
-                                                                        rendered="#{clie.contactarPersonaList.size()>0}">
-                                                            <h:outputText value="#{contactar.valor}"/>
-                                                        </p:dataScroller>
-                                                    </h:panelGrid>
-                                                    <h:panelGrid columns="3"
-                                                                 style="float:right">
+                                                            <h:outputText value="#{items.mascota.nombre} (#{items.mascota.raza.nombre})" 
+                                                                           rendered="#{pedidoVentaBean.empresa.tipoEmpresa eq 2}"
+                                                                           style="font-size: 11px; color: #d9534f; font-weight: bold;"/>
+                                                        </div>
+                                                    </div>
 
-                                                        <p:fragment autoUpdate="true">
-                                                            
-                                                            <p:commandButton icon="ui-icon-minus"
-                                                                             title="#{msg.imprimir}"
-                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"/>
-                                                            
-                                                            <p:commandButton icon="ui-icon-plus"
-                                                                             title="#{msg.imprimir}"
-                                                                             actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"/>
+                                                    <!-- PARTE DERECHA: Botones de Acción -->
+                                                    <div style="display: flex; gap: 4px;">
+                                                        <p:commandButton icon="ui-icon-minus" title="Ticket Cocina"
+                                                                         actionListener="#{pedidoVentaBean.generarReporteBean(items, 2)}"
+                                                                         style="width: 32px; height: 32px;"/>
 
-                                                            <p:commandButton icon="ui-icon-search"
-                                                                             title="#{msg.productos}"
-                                                                            actionListener="#{pedidoVentaBean.verBusquedaProductosStock(items)}">
-                                                                 <p:ajax event="dialogReturn" 
-                                                                         listener="#{pedidoVentaBean.onProductoSelect}" 
-                                                                         update=":frmCabecera:pnlPrincipal, tablaFacturaVentaDetalle, :frmCabecera:grMensajes" />
-                                                            </p:commandButton>
+                                                        <p:commandButton icon="ui-icon-plus" title="Pre-Factura"
+                                                                         actionListener="#{pedidoVentaBean.generarReporteBean(items, 1)}"
+                                                                         style="width: 32px; height: 32px;"/>
 
-                                                            <p:commandButton title="#{msg.notaMedica}"  
-                                                                             icon="ui-icon-comment"
-                                                                             actionListener="#{pedidoVentaBean.verNotaMedica(items)}"
-                                                                             rendered="#{login.empleado.cuenta.empleado.empresa.tipoEmpresa eq 2}"/>
+                                                        <p:commandButton icon="ui-icon-search" title="Agregar Productos"
+                                                                         actionListener="#{pedidoVentaBean.verBusquedaProductosStock(items)}"
+                                                                         style="width: 32px; height: 32px;">
+                                                             <p:ajax event="dialogReturn" listener="#{pedidoVentaBean.onProductoSelect}" 
+                                                                     update=":frmCabecera:pnlPrincipal, :frmCabecera:grMensajes" />
+                                                        </p:commandButton>
 
-                                                            <p:commandButton icon="ui-icon-refresh"
-                                                                             title="#{msg.cambiar}"
-                                                                             actionListener="#{pedidoVentaBean.cambiarMesa(mesa,items)}">
-                                                                <p:ajax event="dialogReturn" 
-                                                                        listener="#{pedidoVentaBean.guardarCambioMesa}" 
-                                                                         update=":frmCabecera:pnlPrincipal, :frmCabecera:grMensajes" />
-                                                            </p:commandButton>
+                                                        <p:commandButton icon="ui-icon-refresh" title="Cambiar Mesa"
+                                                                         actionListener="#{pedidoVentaBean.cambiarMesa(mesa,items)}"
+                                                                         style="width: 32px; height: 32px;">
+                                                            <p:ajax event="dialogReturn" listener="#{pedidoVentaBean.guardarCambioMesa}" 
+                                                                    update=":frmCabecera:pnlPrincipal, :frmCabecera:grMensajes" />
+                                                        </p:commandButton>
 
-                                                            <p:commandButton icon="ui-icon-close" 
-                                                                             update=":frmCabecera:grMensajes, tablaFacturaVenta" 
-                                                                             actionListener="#{pedidoVentaBean.eliminarPedidoMesa(mesa,items)}"
-                                                                             title="#{msg.eliminar}">
-                                                                <p:confirm header="#{msg.confirmacion}" 
-                                                                           message="#{msg.eliminar}" 
-                                                                           icon="ui-icon-alert" />
-                                                            </p:commandButton>
-
-                                                        </p:fragment>
-                                                    </h:panelGrid>              
-                                                </h:panelGrid>
+                                                        <p:commandButton icon="ui-icon-close" title="Eliminar Pedido"
+                                                                         update=":frmCabecera:grMensajes, :frmCabecera:pnlPrincipal" 
+                                                                         actionListener="#{pedidoVentaBean.eliminarPedidoMesa(mesa,items)}"
+                                                                         style="width: 32px; height: 32px; background: #f2dede; border-color: #ebccd1;">
+                                                            <p:confirm header="Confirmación" message="¿Eliminar todo el pedido?" icon="ui-icon-alert" />
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
                                                 <p:dataTable var="itemsD" 
                                                              id="tablaFacturaVentaDetalle"
                                                              value="#{items.facturaDetalleList}"

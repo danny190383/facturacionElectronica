@@ -179,6 +179,9 @@ public class Factura implements Serializable {
     @JoinColumn(name = "punto_venta", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private PuntoVenta puntoVenta;
+    @Size(max = 20)
+    @Column(name = "nombre_pedido")
+    private String nombrePedido;
     
     @Transient
     private SecuenciaDocumento secuenciaDocumento;
@@ -651,6 +654,14 @@ public class Factura implements Serializable {
 
     public void setFacturaInfoAdicionalList(List<FacturaInfoAdicional> facturaInfoAdicionalList) {
         this.facturaInfoAdicionalList = facturaInfoAdicionalList;
+    }
+
+    public String getNombrePedido() {
+        return nombrePedido;
+    }
+
+    public void setNombrePedido(String nombrePedido) {
+        this.nombrePedido = nombrePedido;
     }
     
     @Override

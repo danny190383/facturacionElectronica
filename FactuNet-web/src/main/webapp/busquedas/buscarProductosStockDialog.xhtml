@@ -396,7 +396,12 @@
                     </p:column>
 
                     <p:column headerText="#{msg.producto}" >
-                        <h:outputLabel value="#{selec.nombre}" />
+                        <p:commandLink actionListener="#{buscarProductosStockBean.verVentasHoy(selec)}"
+                                       update=":frmBusquedaProductos:grMensajes"
+                                       title="Clic para ver ventas de hoy"
+                                       style="color: #2196F3; font-weight: bold; text-decoration: underline;">
+                            <h:outputText value="#{selec.nombre}" />
+                        </p:commandLink>
                     </p:column>
 
                     <p:column headerText="#{msg.grupo}" 

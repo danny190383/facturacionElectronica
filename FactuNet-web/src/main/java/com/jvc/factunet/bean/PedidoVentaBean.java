@@ -573,7 +573,8 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
             for(FacturaDetalle detalleTiket : listaOrdenada){
                 items = items + this.generaItemComprobante(detalleTiket.getCantidad().intValue(), detalleTiket.getProductoServicio().getNombre(), detalleTiket.getDescripcion()) + "\n";
             }
-            ticket = new TicketPedido(pedido.getCodigo().toString(), 
+            String aliasTicket = StringUtils.isBlank(pedido.getNombrePedido()) ? "" : " - " + pedido.getNombrePedido();
+            ticket = new TicketPedido(pedido.getCodigo().toString() + " " + aliasTicket, 
                                                this.empresa.getCiudad().getNombre() + "," + Fecha.formatoDateTimeToStringF0(new Date()),
                                                pedido.getMesa().getNombre(),
                                                pedido.getCliente().getPersona().getNombres() + " " + pedido.getCliente().getPersona().getApellidos(),
@@ -694,6 +695,17 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
             return detalle.getProductoServicio().getNombre();
         }
         return "";
+    }
+    
+    public void onHeaderEdit(PedidoVenta pedido) {
+        try {
+            if (pedido != null && pedido.getCodigo() != null) {
+                this.documentosServicios.actualizar(pedido);
+                FacesUtils.addInfoMessage("Nombre guardado");
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al guardar nombre del pedido.", ex);
+        }
     }
 
     public Empresa getEmpresa() {

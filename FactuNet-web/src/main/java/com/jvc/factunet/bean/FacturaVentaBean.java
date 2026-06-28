@@ -2042,6 +2042,19 @@ public class FacturaVentaBean extends PedidoCompraBean implements Serializable{
         }
         return BigDecimal.ZERO;
     }
+    
+    public BigDecimal getPvpIvaMostrar() {
+        if (getProductoVer() != null && getProductoVer().getPvp() != null) {
+            BigDecimal iva = ivaProducto(getProductoVer());
+            if (iva == null) {
+                return getProductoVer().getPvp();
+            }
+            return getProductoVer().getPvp()
+                    .multiply(iva.divide(new BigDecimal("100")).add(BigDecimal.ONE))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
 
     public List<FacturaDetalle> getLotes() {
         return lotes;

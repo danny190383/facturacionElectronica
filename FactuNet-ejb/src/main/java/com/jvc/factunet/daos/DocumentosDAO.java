@@ -20,6 +20,7 @@ import com.jvc.factunet.entidades.PendientesCompra;
 import com.jvc.factunet.entidades.Proforma;
 import com.jvc.factunet.entidades.TransferenciaProductos;
 import com.jvc.factunet.utilitarios.Fecha;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1399,6 +1400,33 @@ public class DocumentosDAO extends GenericDAO{
             return q.getResultList();
         } catch (Exception e) {
             return null;
+        }
+    }
+    
+    public BigDecimal totalVendidoHoy(Integer productoId, Integer empresaId) {
+        try {
+            Date fechaInicio = Fecha.fechaInicio(new Date());
+            Date fechaFin = Fecha.fechaFin(new Date());
+
+            String sql = "SELECT SUM(d.cantidad) FROM factura_detalle d " +
+                         "JOIN factura f ON d.factura = f.codigo " + 
+                         "WHERE d.producto_servicio = ?1 " + 
+                         "AND f.empresa = ?2 " +
+                         "AND f.fecha BETWEEN ?3 AND ?4 " +
+                         "AND f.estado <> '3' " +
+                         "AND f.discriminador IN (3, 5)";
+
+            Query q = em.createNativeQuery(sql);
+            q.setParameter(1, productoId);
+            q.setParameter(2, empresaId);
+            q.setParameter(3, fechaInicio);
+            q.setParameter(4, fechaFin);
+
+            Object resultado = q.getSingleResult();
+
+            return resultado != null ? new BigDecimal(resultado.toString()) : BigDecimal.ZERO;
+        } catch (Exception e) {
+            return BigDecimal.ZERO;
         }
     }
 }

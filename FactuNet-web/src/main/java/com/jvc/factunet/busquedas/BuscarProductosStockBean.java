@@ -580,4 +580,15 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
             this.listaProductosTodosSelc.add(nuevo);
         }
     }
+    
+    public void verVentasHoy(Producto producto) {
+    if (producto != null && producto.getCodigo() != null) {
+        BigDecimal total = documentosServicios.totalVendidoHoy(producto.getCodigo(), producto.getEmpresa().getCodigo());
+        
+        String msg = "Producto '" + producto.getNombre() + "': " +
+                     "\n - Total hoy (Ventas + Pedidos): " + total;
+        
+        FacesUtils.addInfoMessage("Resumen del Día", msg);
+    }
+}
 }
