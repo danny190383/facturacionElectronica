@@ -469,35 +469,49 @@ public class BuscarProductosStockBean extends ProductoStockBean implements Seria
         }
     }
     
-    public String getUrlFotoGrid(byte[] foto, Integer codigo) {
+    public String getUrlFotoLista(byte[] foto, Integer codigo) {
         if (foto == null || foto.length == 0) {
             return "/resources/imagenes/help2.png"; 
         }
-
         try {
             String rootPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
-            String tempPath = rootPath + File.separator + "temp";
+            String tempPath = rootPath + "temp";
 
             File folder = new File(tempPath);
             if (!folder.exists()) {
                 folder.mkdirs();
             }
 
-            String nombreArchivo = "prod_" + codigo + ".jpg";
-            String destinoFisico = tempPath + File.separator + nombreArchivo;
-            File archivo = new File(destinoFisico);
+            // Nombre único por código para que no se repitan
+            String nombreArchivo = "prod_list_" + codigo + ".jpg";
+            File archivoFisico = new File(tempPath + File.separator + nombreArchivo);
 
-            if (!archivo.exists()) {
-                try (FileOutputStream fos = new FileOutputStream(destinoFisico)) {
+            // Si el archivo no existe o está vacío, lo escribimos
+            if (!archivoFisico.exists() || archivoFisico.length() == 0) {
+                try (FileOutputStream fos = new FileOutputStream(archivoFisico)) {
                     fos.write(foto);
                     fos.flush();
                 }
             }
-
+            // Retornamos la ruta que el atributo 'url' entiende
             return "/temp/" + nombreArchivo;
 
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error al crear imagen temporal", e);
+            LOG.log(Level.SEVERE, "Error al crear imagen de lista", e);
+            return "/resources/imagenes/help2.png";
+        }
+    }
+    
+    public String getImagenProducto(byte[] foto) {
+        if (foto == null || foto.length == 0) {
+            return "/resources/imagenes/help2.png"; 
+        }
+        try {
+            // Convertimos los bytes a cadena Base64
+            String b64 = java.util.Base64.getEncoder().encodeToString(foto);
+            // Retornamos el prefijo Data URI para que el navegador lo entienda
+            return "data:image/png;base64," + b64;
+        } catch (Exception e) {
             return "/resources/imagenes/help2.png";
         }
     }

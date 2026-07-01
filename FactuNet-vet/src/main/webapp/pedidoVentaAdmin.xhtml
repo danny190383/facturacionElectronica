@@ -55,7 +55,11 @@
                                         <f:facet name="header">
                                             <p:fieldset style="border: black solid 2px;background-color: cadetblue;color: red">
                                                 <h:outputLabel value="#{mesa.nombre}"
-                                                               style="color: red;font-size: 15px;font-style: normal;"/>
+                                                               style="color: red; 
+                                                                      font-size: 18px;
+                                                                      font-style: normal; 
+                                                                      text-shadow: none !important; 
+                                                                      font-weight: bold;" />
                                                 <h:panelGroup layout="block" styleClass="contenedor-header-mesa">
                                                     <p:commandButton actionListener="#{pedidoVentaMovilBean.verBusquedaClientes(mesa)}"
                                                                      icon="ui-icon-search" value="#{msg.buscar}"

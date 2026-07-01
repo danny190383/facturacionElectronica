@@ -333,7 +333,7 @@
                     <p:commandLink actionListener="#{buscarProductosStockBean.onRowSelectDesdeTactil(prodStock)}"
                                    update=":frmBusquedaProductos:tablaSeleccionados">
                         <div class="tactil-card">
-                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoGrid(prodStock.productoBodega.foto, prodStock.productoBodega.codigo)}"
+                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoLista(prodStock.productoBodega.foto, prodStock.productoBodega.codigo)}"
                                             width="80px" height="80px" cache="false"
                                             style="object-fit: contain; border-radius: 4px;" />
 
@@ -357,7 +357,7 @@
                     <p:commandLink actionListener="#{buscarProductosStockBean.onRowSelectDesdeTactil(prodServicio)}"
                                    update=":frmBusquedaProductos:tablaSeleccionados">
                         <div class="tactil-card">
-                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoGrid(prodServicio.foto, prodServicio.codigo)}"
+                            <p:graphicImage url="#{buscarProductosStockBean.getUrlFotoLista(prodServicio.foto, prodServicio.codigo)}"
                                             width="80px" height="80px" cache="false"
                                             style="object-fit: contain;" />
 
