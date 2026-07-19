@@ -19,6 +19,9 @@ public class Anio implements Serializable{
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
+    
+    @Column(name = "estado")
+    private Boolean estado;
 
     public Anio() {
     }
@@ -37,6 +40,14 @@ public class Anio implements Serializable{
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
     
     @Override

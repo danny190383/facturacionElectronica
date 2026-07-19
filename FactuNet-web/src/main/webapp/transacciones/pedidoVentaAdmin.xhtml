@@ -347,7 +347,7 @@
                                                      width="100%">
                                             <p:fragment autoUpdate="true">
                                                 <h:panelGrid columns="5">
-                                                    <p:commandButton value="#{msg.buscar} #{msg.cliente}"  
+                                                    <p:commandButton value="#{msg.buscar}"  
                                                                     icon="ui-icon-search"
                                                                     actionListener="#{pedidoVentaBean.verBusquedaClientes(mesa)}">
                                                      <p:ajax event="dialogReturn" 
@@ -357,7 +357,7 @@
                                                     </p:commandButton>
 
                                                     <p:commandButton title="#{msg.nuevo} #{msg.cliente}"
-                                                                     value="#{msg.nuevo} #{msg.cliente}"
+                                                                     value="#{msg.nuevo}"
                                                                      actionListener="#{pedidoVentaBean.verNuevoCliente(mesa)}" 
                                                                      icon="ui-icon-comment">
                                                           <p:ajax event="dialogReturn" 
@@ -489,11 +489,7 @@
                                                    <p:column headerText="#{msg.productos}"
                                                              style="text-align: left">
                                                        <h:outputLabel value="#{itemsD.productoServicio.nombre}" 
-                                                                      style="font-size: 10px"/>
-                                                   </p:column>
-
-                                                   <p:column headerText="#{msg.detalle}"
-                                                             style="text-align: left">
+                                                                      style="font-size: 10px"/><br/>
                                                        <p:inputTextarea rows="2" cols="30" 
                                                                         autoResize="false" 
                                                                         maxlength="800"
@@ -505,7 +501,7 @@
                                                    </p:column>
 
                                                    <p:column headerText="Cant."
-                                                             width="5%"
+                                                             width="8%"
                                                              style="text-align:right">
                                                        <p:inputNumber value="#{itemsD.cantidad}" 
                                                                         decimalPlaces="2"

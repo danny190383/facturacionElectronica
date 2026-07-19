@@ -20,40 +20,89 @@
             document.onkeypress = stopRKey;
         </script>
         <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCUmbh1CLsnQfkSVtFctPwxNx3j8xD6xT0"></script>
-        <style>
-            .fijo-arriba{
-                position: fixed !important;
-                top: -2px; 
-                z-index: 1250; 
-            }
-            .fijo-izquierda{
-                position: fixed !important;
-                vertical-align: top;
-                height: 100%;
-            }
-            .izquierda{
-                text-align: left !important;
-            }
-            .centro{
-                text-align: center !important;
-            }
-            .derecha{
-                text-align: right !important;
-            }
-            .ui-icon {
-                overflow: initial !important;
-            }
-            
-            .ui-panel {
-                padding: .2em;
-                background: transparent;
-                border: none;
-            }
-            .ui-tabs {
-                background: transparent;
-                border: none;
-            }
-        </style> 
+        <style type="text/css">
+    /* 1. ESTILOS BASE ORIGINALES (No tocamos nada aquí) */
+    .fijo-arriba {
+        position: fixed !important;
+        top: -2px; 
+        z-index: 1250; 
+    }
+    .fijo-izquierda {
+        position: fixed !important;
+        vertical-align: top;
+        height: 100%;
+    }
+    .izquierda{ text-align: left !important; }
+    .centro{ text-align: center !important; }
+    .derecha{ text-align: right !important; }
+    .ui-icon { overflow: initial !important; }
+    .ui-panel { padding: .2em; background: transparent; border: none; }
+    .ui-tabs { background: transparent; border: none; }
+
+    /* 2. SOLO PARA MODO TÁCTIL (Encapsulado) */
+    
+    /* Contenedor principal cuando es táctil */
+    .modo-tactil-menu {
+        width: 60px !important;
+        text-align: center !important;
+        background-color: white !important;
+        border-right: 1px solid #e0e0e0 !important;
+    }
+
+    /* Imágenes superiores solo en táctil */
+    .modo-tactil-menu img {
+        width: 35px !important;
+        height: 35px !important;
+        display: block !important;
+        margin: 5px auto !important; 
+    }
+
+    /* Reset de listas del menú solo en táctil */
+    .modo-tactil-menu .ui-menu .ui-menu-list {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Centrado de los iconos negros solo en táctil */
+    .modo-tactil-menu .ui-menu .ui-menuitem-link {
+        height: 50px !important;
+        width: 100% !important;
+        display: flex !important;          
+        align-items: center !important;     
+        justify-content: center !important; 
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        overflow: visible !important;
+    }
+
+    /* Icono de PrimeFaces ajustado solo en táctil */
+    .modo-tactil-menu .ui-menu .ui-icon {
+        position: relative !important; /* Rompe el absolute original */
+        left: 0 !important;            /* Quita el desplazamiento a la izquierda */
+        margin: 0 auto !important;     
+        width: 25px !important;  
+        height: 25px !important;
+        overflow: visible !important; 
+        transform: scale(1.7) !important;
+        transform-origin: center center !important;
+        display: block !important;
+    }
+
+    /* Separador solo en táctil */
+    .modo-tactil-menu .ui-separator {
+        margin: 10px auto !important;
+        width: 60% !important;
+    }
+    
+    .posicion-derecha {
+        right: 0 !important;
+        left: auto !important;
+        border-right: none !important;
+        border-left: 1px solid #e0e0e0 !important;
+    }
+</style>
     </h:head>
 
     <h:body>
@@ -126,10 +175,10 @@
             </p:sidebar>
             <h:panelGrid columns="1"
                          columnClasses="menu2"
-                         class="fijo-izquierda">
+                         styleClass="fijo-izquierda #{login.empleado.cuenta.tipoPantalla eq 'TACTIL' ? 'modo-tactil-menu posicion-derecha' : ''}">
                 
                 <h:panelGrid columns="1"
-                             style="text-align: center">
+                             cellpadding="0" cellspacing="0">
                     <h:panelGrid columns="1">
                         <h:form>
                             <p:commandLink onclick="PF('sidebar1').show()"
@@ -177,10 +226,10 @@
                 </h:panelGrid>
             </h:panelGrid>
             <h:panelGrid columns="2"   
-                         columnClasses="menu,contenido"
                          width="100%"
-                         style="min-height: 100vh; background: ##{request.getParameter('color')}; border:none;">
-                <p:spacer width="55"/>
+                         columnClasses="#{login.empleado.cuenta.tipoPantalla eq 'TACTIL' ? 'contenido,menu' : 'menu,contenido'}"
+             style="min-height: 100vh; background: ##{request.getParameter('color')}; border:none;">
+                <p:spacer width="55" rendered="#{login.empleado.cuenta.tipoPantalla ne 'TACTIL'}"/>
                 <p:fieldset style="min-height: 100vh;">
                     <h:panelGrid columns="2">
                         <p:outputLabel value="FIN DE CONTRATO:"
@@ -201,6 +250,7 @@
                         <ui:insert name="content" id="content"></ui:insert>
                     </h:form>
                 </p:fieldset>
+                <p:spacer width="55" rendered="#{login.empleado.cuenta.tipoPantalla eq 'TACTIL'}"/> 
             </h:panelGrid>
             
             <h:form>

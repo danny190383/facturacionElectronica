@@ -976,7 +976,7 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         {
             List<ReporteImpresora> listaReporteImpresa = new ArrayList<>();
             listaReporteImpresa.addAll(reporteImpresoraServicio.listar(this.empresa.getCodigo(), tipoReporte));
-            if(listaReporteImpresa != null && !listaPrintTotal.isEmpty()){
+            if(listaReporteImpresa != null && listaReporteImpresa.size()>0){
                 for(ReporteImpresora controlReporte : listaReporteImpresa){
                     if(controlReporte.getRestriccion()){
                         print = imprimirConRestriccion(listaPrintTotal, pedido, tipoReporte,controlReporte.getImpresora().getImpresora());
@@ -1035,8 +1035,8 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         for(int i = cantString.length() ; i<=4 ; i++){
             cantString = cantString +temp[0];
         }
-        if(nombre.length()>30){
-            nombre = nombre.substring(0, 30);
+         if(nombre.length() > 25){ 
+            nombre = nombre.substring(0, 25); 
         }
         return cantString+nombre+ "\n" +temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+temp[0]+descripcion;
     }

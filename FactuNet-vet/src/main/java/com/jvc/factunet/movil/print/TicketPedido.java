@@ -9,56 +9,58 @@ import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
+import java.io.UnsupportedEncodingException;
 
 @ManagedBean
 @ApplicationScoped
 public class TicketPedido {
-     private String contentTicket = 
-                                 "\n"+
-                                 "------------{{aumento}}------------\n"+
-                                 "PEDIDO:  {{empresa}}\n"+
-                                 "MESA:    {{mesa}}\n"+
-                                 "FECHA:   {{ciudadFecha}}\n"+
-                                 "CLIENTE: {{cliente}}\n"+
-                                 "--------------------------------------\n"+
-                                 "CANT.         PRODUCTO \n"+
-                                 "--------------------------------------\n"+
-                                 "{{items}}"+
-                                 "--------------------------------------\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n";
+
+    private final String ESC = "\u001B";
+    private final String INITIALIZE = ESC + "@";
+    
+    private final String FONT_SIZE_BIG = ESC + "!" + "\u0018"; 
+    private final String FONT_SIZE_NORMAL = ESC + "!" + "\u0000"; 
+
+    private String contentTicket = 
+            INITIALIZE + 
+            "\n"+
+            "--------------{{aumento}}-------------\n"+ 
+            "--------------- PEDIDO --------------\n"+ 
+            FONT_SIZE_BIG + "  PEDIDO:  {{empresa}}\n" + FONT_SIZE_NORMAL +  
+            FONT_SIZE_BIG + "  MESA:    {{mesa}}\n" + FONT_SIZE_NORMAL +     
+            "  FECHA:   {{ciudadFecha}}\n"+
+            "  CLIENTE: {{cliente}}\n"+
+            "-------------------------------------\n"+
+            "  CANT.      PRODUCTO \n"+
+            "-------------------------------------\n"+
+            "{{items}}"+
+            "-------------------------------------\n"+
+            "\n\n\n\n\n\n";
      
-      private String contentTicketValores = 
-                                 "\n"+
-                                 "--------------{{aumento}}-------------\n"+
-                                 "--------------PRE FACTURA-------------\n"+
-                                 "PEDIDO:  {{empresa}}\n"+
-                                 "MESA:    {{mesa}}\n"+
-                                 "FECHA:   {{ciudadFecha}}\n"+
-                                 "CÈDULA/RUC: {{cedula}}\n"+
-                                 "CLIENTE: {{cliente}}\n"+
-                                 "DIRECCIÒN: {{direccion}}\n"+
-                                 "TELÈFONO: {{telefono}}\n"+
-                                 "CORREO: {{correo}}\n"+
-                                 "------------------------------------\n"+
-                                 "CANT. PRODUCTO           V.TOTAL\n"+
-                                 "------------------------------------\n"+
-                                 "{{items}}"+
-                                 "------------------------------------\n"+
-                                 "   IMPORTE DEL IVA: {{iva}}\n"+
-                                 "   SUMA TOTAL:      {{total}}\n"+
-                                 "\n"+
-                                 "DOCUMENTO NO TRIBUTABLE\n"+
-                                 "SOLICITE SU FACTURA\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n"+
-                                 "\n";
+    private String contentTicketValores = 
+            INITIALIZE +
+            "\n"+
+            "--------------{{aumento}}-------------\n"+
+            "--------------PRE FACTURA-------------\n"+
+            FONT_SIZE_BIG + "PEDIDO:  {{empresa}}\n" + FONT_SIZE_NORMAL +
+            FONT_SIZE_BIG + "MESA:    {{mesa}}\n" + FONT_SIZE_NORMAL +
+            "FECHA:   {{ciudadFecha}}\n"+
+            "CÈDULA/RUC: {{cedula}}\n"+
+            "CLIENTE: {{cliente}}\n"+
+            "DIRECCIÒN: {{direccion}}\n"+
+            "TELÈFONO: {{telefono}}\n"+
+            "CORREO: {{correo}}\n"+
+            "------------------------------------\n"+
+            "CANT. PRODUCTO           V.TOTAL\n"+
+            "------------------------------------\n"+
+            "{{items}}"+
+            "------------------------------------\n"+
+            "   IMPORTE DEL IVA: {{iva}}\n"+
+            FONT_SIZE_BIG +"   SUMA TOTAL:      {{total}}\n"+ FONT_SIZE_NORMAL +
+            "\n"+
+            "DOCUMENTO NO TRIBUTABLE\n"+
+            "SOLICITE SU FACTURA\n"+
+            "\n\n\n\n\n\n";
    
     public TicketPedido(String empresa, String ciudadFecha, String mesa, String cliente, String items, String aumento) {
         this.contentTicket = this.contentTicket.replace("{{empresa}}", empresa);
@@ -79,7 +81,6 @@ public class TicketPedido {
         this.contentTicketValores = this.contentTicketValores.replace("{{iva}}", iva);
         this.contentTicketValores = this.contentTicketValores.replace("{{total}}", total);
         this.contentTicketValores = this.contentTicketValores.replace("{{aumento}}", aumento);
-        
         this.contentTicketValores = this.contentTicketValores.replace("{{cedula}}", cedula);
         this.contentTicketValores = this.contentTicketValores.replace("{{direccion}}", direccion);
         this.contentTicketValores = this.contentTicketValores.replace("{{telefono}}", telefono);
@@ -90,46 +91,55 @@ public class TicketPedido {
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
         byte[] bytes = null;
-        switch (tipoTiket) {
-            case 1:
-                bytes = this.contentTicketValores.getBytes();
-                break;
-            case 2:
-                bytes = this.contentTicket.getBytes();
-                break;
-            default:
-                break;
+        
+        try {
+            switch (tipoTiket) {
+                case 1:
+                    bytes = this.contentTicketValores.getBytes("ISO-8859-1");
+                    break;
+                case 2:
+                    bytes = this.contentTicket.getBytes("ISO-8859-1");
+                    break;
+                default:
+                    return Boolean.FALSE;
+            }
+        } catch (UnsupportedEncodingException ex) {
+            bytes = (tipoTiket == 1) ? this.contentTicketValores.getBytes() : this.contentTicket.getBytes();
         }
-        Doc doc = new SimpleDoc(bytes,flavor,null);
+
+        Doc doc = new SimpleDoc(bytes, flavor, null);
         DocPrintJob job = null;
-        DocPrintJob jobCorte = null;
+        DocPrintJob jobCorte = null; // Restauramos la variable para el segundo trabajo
+
         if (services.length > 0) {
-            for (int i = 0; i < services.length; i++) {
-                if (services[i].getName().equals(impresora)) {
-                    job = services[i].createPrintJob();
-                    jobCorte = services[i].createPrintJob();
-                    System.out.println(i + ": " + services[i].getName());
+            for (PrintService service : services) {
+                if (service.getName().equals(impresora)) {
+                    job = service.createPrintJob();
+                    jobCorte = service.createPrintJob(); // Inicializamos el segundo trabajo
                     break;
                 }
             }
         }
-        if(job != null)
-        {
+
+        if (job != null) {
             try {
+                // PRIMER TRABAJO: Imprimir el texto
                 job.print(doc, null);
-                byte[] bytesCorte = {27, 109, 1};
-                DocFlavor flavorCorte = DocFlavor.BYTE_ARRAY.AUTOSENSE;
-                Doc docCorte = new SimpleDoc(bytesCorte, flavorCorte, null);
-                jobCorte.print(docCorte, null);
+                
+                // SEGUNDO TRABAJO: Ejecutar el corte
+                if (jobCorte != null) {
+                    byte[] bytesCorte = {27, 109, 1}; // Comando ESC m 1
+                    DocFlavor flavorCorte = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+                    Doc docCorte = new SimpleDoc(bytesCorte, flavorCorte, null);
+                    jobCorte.print(docCorte, null); // Usamos jobCorte específicamente
+                }
+                
                 return Boolean.TRUE;
             } catch (PrintException ex) {
-                System.out.println("Error de driver o conexion");
+                System.out.println("Error en la impresión: " + ex.getMessage());
                 return Boolean.FALSE;
             }
-        }
-        else
-        {
-            System.out.println("Impresora no encontrada");
+        } else {
             return Boolean.FALSE;
         }
     }

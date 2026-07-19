@@ -12,21 +12,125 @@
 
     <h:body>
         <style>
-    .columna-50 {
-        width: 50% !important;
-        vertical-align: top;
+    /* --- ESTRUCTURA BASE --- */
+    .columna-50 { 
+        width: 50% !important; 
+        vertical-align: top; 
+    }
+
+    /* --- TABS CABECERAS (Nivel 1) --- */
+    .ui-tabs .ui-tabs-nav li.ui-state-active { 
+        background: #2c3e50 !important; 
+        color: white !important; 
+        border-radius: 4px 4px 0 0;
+    }
+    .ui-tabs .ui-tabs-nav li.ui-state-active a { 
+        color: white !important; 
+    }
+
+    /* --- BOTONES DE GRUPO (HIJOS - DINÁMICOS) --- */
+    .btn-grupo-tactil {
+        color: white !important;
+        font-weight: bold !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        border: 1px solid rgba(0,0,0,0.2) !important;
+        border-radius: 8px !important;
+        background-image: none !important; /* Mata el degradado del tema para ver el color real */
+        position: relative !important;
+        overflow: visible !important; /* Evita que el icono se corte */
+        transition: transform 0.1s ease;
     }
     
+    .btn-grupo-tactil:active {
+        transform: scale(0.96);
+    }
+    
+    /* ICONO: Centrado vertical perfecto y sin recortes */
+    .btn-grupo-tactil .ui-button-icon-left {
+        font-size: 1.7em !important; /* Tamaño grande y legible */
+        position: absolute !important;
+        top: 50% !important;
+        left: 10px !important;
+        transform: translateY(-50%) !important; /* Centrado preciso */
+        margin-top: 0 !important;
+        width: auto !important;  /* Elimina la restricción de 16px de PrimeFaces */
+        height: auto !important; /* Elimina la restricción de 16px de PrimeFaces */
+        display: block !important;
+    }
+    
+    /* TEXTO: Ajustado para convivir con el icono grande */
+    .btn-grupo-tactil .ui-button-text {
+        padding: 0.8em 0.5em 0.8em 42px !important; /* Espacio suficiente para el icono */
+        font-size: 11px !important;
+        display: block !important;
+        text-align: left !important;
+        white-space: normal !important; /* Permite 2 líneas si el nombre es largo */
+        line-height: 1.1 !important;
+    }
+
+    /* --- BOTÓN AGREGAR SELECCIÓN (ESTILO POS) --- */
+    .btn-agregar-pos {
+        background-color: #d32f2f !important;
+        background-image: none !important;
+        color: white !important;
+        font-weight: bold !important;
+        border: 1px solid #b71c1c !important;
+        border-radius: 8px !important;
+        height: 45px !important;
+        overflow: visible !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    }
+    
+    .btn-agregar-pos .ui-button-icon-left {
+        font-size: 1.5em !important;
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        left: 12px !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    .btn-agregar-pos .ui-button-text {
+        padding-left: 40px !important;
+        padding-right: 15px !important;
+        font-size: 12px !important;
+        text-transform: uppercase;
+    }
+
+    /* --- PAGINADOR (TAMAÑO TÁCTIL OPTIMIZADO) --- */
+    .paginador-tactil .ui-paginator-page, 
+    .paginador-tactil .ui-paginator-next, 
+    .paginador-tactil .ui-paginator-prev, 
+    .paginador-tactil .ui-paginator-first, 
+    .paginador-tactil .ui-paginator-last {
+        width: 32px !important;
+        height: 32px !important;
+        line-height: 32px !important;
+        margin: 2px !important;
+        background-image: none !important;
+        background: white !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+        font-size: 1em !important;
+    }
+    
+    .paginador-tactil .ui-paginator-page.ui-state-active {
+        background: #2c3e50 !important;
+        color: white !important;
+        border-color: #2c3e50 !important;
+    }
+
+    /* --- CARDS DE PRODUCTOS --- */
     .tactil-card {
         border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 4px;
+        padding: 6px;
         text-align: center;
         background-color: #ffffff;
         transition: all 0.2s ease;
-        /* Reducimos la altura considerablemente */
-        height: 115px; 
-        margin-bottom: 2px;
+        height: 120px; 
+        margin-bottom: 4px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
@@ -34,17 +138,11 @@
         align-items: center;
     }
 
-    .tactil-card:hover {
-        background-color: #f0f7ff;
-        border-color: #2196F3;
-        transform: translateY(-2px);
-    }
-
     .nombre-prod {
-        font-size: 10px; /* Texto un poco más pequeño */
+        font-size: 11px;
         font-weight: bold;
         display: block;
-        height: 24px; /* Altura fija para 2 líneas máximo */
+        height: 24px; 
         line-height: 12px;
         overflow: hidden;
         margin: 2px 0;
@@ -54,7 +152,7 @@
     .precio-prod {
         color: #2196F3;
         font-weight: bold;
-        font-size: 12px;
+        font-size: 13px;
         margin-bottom: 2px;
     }
 </style>
@@ -69,17 +167,21 @@
                 <p:ajax event="tabChange" 
                         listener="#{buscarProductosStockBean.onTabChange}" 
                         update=":frmBusquedaProductos:flsProductos"/>
-                <c:forEach var="padre"
-                           items="#{buscarProductosStockBean.listaPadres}">
-                    <p:tab title="#{padre.nombre}">
+                <c:forEach var="padre" items="#{buscarProductosStockBean.listaPadres}">
+                    <p:tab title="#{padre.nombre}"
+                           titleStyle="background-color: #{padre.color} !important; 
+                                        padding: 5px 10px !important; 
+                                        font-size: 1.2em !important;">
                          <p:dataGrid var="hijo" 
                                     value="#{padre.grupoProductoList}" 
-                                    columns="9" 
+                                    columns="7" 
                                     layout="grid">
-                                <p:commandButton value="#{hijo.nombre}"
-                                                 style="height:30px"
-                                                 update=":frmBusquedaProductos:flsProductos" 
-                                                 actionListener="#{buscarProductosStockBean.onNodeSelect(hijo)}"/>
+                                  <p:commandButton value="#{hijo.nombre}"
+                                                    icon="#{hijo.icono}"
+                                                    styleClass="btn-grupo-tactil"
+                                                    style="height:50px; background-color: #{hijo.color} !important; width: 100%"
+                                                    update=":frmBusquedaProductos:flsProductos" 
+                                                    actionListener="#{buscarProductosStockBean.onNodeSelect(hijo)}"/>
                         </p:dataGrid>
                     </p:tab>
                 </c:forEach>
@@ -326,7 +428,9 @@
                             id="gridProductos"
                             value="#{buscarProductosStockBean.lazyModelStock}" 
                             columns="3" layout="grid"
+                            styleClass="paginador-tactil"
                             paginator="true" rows="9" lazy="true"
+                            paginatorPosition="top"
                             rendered="#{buscarProductosStockBean.opcion eq 'P' and buscarProductosStockBean.modoVisualizacion eq 'TACTIL'}"
                             emptyMessage="#{msg.tablaVacia}">
 
@@ -350,6 +454,8 @@
                             id="gridProductosServicios"
                             value="#{buscarProductosStockBean.lazyModelServicios}" 
                             columns="3" layout="grid"
+                            styleClass="paginador-tactil"
+                            paginatorPosition="top"
                             paginator="true" rows="9" lazy="true"
                             rendered="#{buscarProductosStockBean.opcion eq 'S' and buscarProductosStockBean.modoVisualizacion eq 'TACTIL'}"
                             emptyMessage="#{msg.tablaVacia}">
@@ -379,10 +485,12 @@
 
                     <f:facet name="header" >
                         <p:commandButton process="tablaSeleccionados" 
-                                         icon="ui-icon-check" 
-                                         update=":frmBusquedaProductos:grMensajes"
-                                         value="#{msg.agregarSeleccion}" 
-                                         action="#{buscarProductosStockBean.seleccionarLista}"/>
+                     icon="fa fa-cart-plus" 
+                     styleClass="btn-agregar-pos"
+                     update=":frmBusquedaProductos:grMensajes"
+                     value="AGREGAR SELECCIÓN" 
+                     action="#{buscarProductosStockBean.seleccionarLista}"/>
+                        
                     </f:facet>
                     
                     <p:column headerText="#{msg.lote}" 

@@ -25,6 +25,10 @@ public class GrupoProducto extends Mantenimiento implements Serializable {
     private Integer nivel;
     @Column(name = "tipo")
     private Integer tipo;
+    @Column(name = "icono")
+    private String icono;
+    @Column(name = "color")
+    private String color;
     @JoinColumn(name = "padre", referencedColumnName = "codigo")
     @ManyToOne(fetch = FetchType.LAZY)
     private GrupoProducto padre;
@@ -77,4 +81,22 @@ public class GrupoProducto extends Mantenimiento implements Serializable {
     public void setTipo(Integer tipo) {
         this.tipo = tipo;
     }
+
+    public String getIcono() {
+        return icono;
+    }
+
+    public void setIcono(String icono) {
+        this.icono = icono;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+    
+    
 }

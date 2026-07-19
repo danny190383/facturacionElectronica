@@ -162,9 +162,9 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         options.put("draggable", false);
         options.put("modal", true);
         options.put("width", 1200);
-        options.put("height", 650);
+        options.put("height", 700);
         options.put("contentWidth", 1200);
-        options.put("contentHeight", 650);
+        options.put("contentHeight", 700);
         PrimeFaces.current().dialog().openDynamic("/busquedas/buscarProductosStockDialog", options, null);
     }
     
@@ -520,7 +520,7 @@ public class PedidoVentaBean extends ImprimirReportesBean implements Serializabl
         {
             List<ReporteImpresora> listaReporteImpresa = new ArrayList<>();
             listaReporteImpresa.addAll(reporteImpresoraServicio.listar(this.empresa.getCodigo(), tipoReporte));
-            if(listaReporteImpresa != null){
+            if(listaReporteImpresa != null && listaReporteImpresa.size()>0){
                 for(ReporteImpresora controlReporte : listaReporteImpresa){
                     if(controlReporte.getRestriccion()){
                         imprimirConRestriccion(pedido, tipoReporte,controlReporte.getImpresora().getImpresora());

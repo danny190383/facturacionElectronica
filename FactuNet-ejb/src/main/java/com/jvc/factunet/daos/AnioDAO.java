@@ -9,7 +9,7 @@ import javax.persistence.Query;
 @Stateless
 public class AnioDAO extends GenericDAO{
     public List<Anio> listar() {
-        Query q = em.createQuery("select o from Anio o ORDER BY o.nombre");
+        Query q = em.createQuery("select o from Anio o where o.estado = true ORDER BY o.nombre");
         return q.getResultList();
     }
 }
