@@ -18,6 +18,7 @@ public class TicketPedido {
     private final String ESC = "\u001B";
     private final String INITIALIZE = ESC + "@";
     
+    private final String FONT_SIZE_MEDIUM = ESC + "!" + "\u0008";
     private final String FONT_SIZE_BIG = ESC + "!" + "\u0018"; 
     private final String FONT_SIZE_NORMAL = ESC + "!" + "\u0000"; 
 
@@ -42,8 +43,8 @@ public class TicketPedido {
             "\n"+
             "--------------{{aumento}}-------------\n"+
             "--------------PRE FACTURA-------------\n"+
-            FONT_SIZE_BIG + "PEDIDO:  {{empresa}}\n" + FONT_SIZE_NORMAL +
-            FONT_SIZE_BIG + "MESA:    {{mesa}}\n" + FONT_SIZE_NORMAL +
+            FONT_SIZE_MEDIUM + "PEDIDO:  {{empresa}}\n" + FONT_SIZE_NORMAL +
+            FONT_SIZE_MEDIUM + "MESA:    {{mesa}}\n" + FONT_SIZE_NORMAL +
             "FECHA:   {{ciudadFecha}}\n"+
             "CÈDULA/RUC: {{cedula}}\n"+
             "CLIENTE: {{cliente}}\n"+
@@ -56,7 +57,7 @@ public class TicketPedido {
             "{{items}}"+
             "------------------------------------\n"+
             "   IMPORTE DEL IVA: {{iva}}\n"+
-            FONT_SIZE_BIG +"   SUMA TOTAL:      {{total}}\n"+ FONT_SIZE_NORMAL +
+            FONT_SIZE_MEDIUM +"   SUMA TOTAL:      {{total}}\n"+ FONT_SIZE_NORMAL +
             "\n"+
             "DOCUMENTO NO TRIBUTABLE\n"+
             "SOLICITE SU FACTURA\n"+

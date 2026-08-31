@@ -113,6 +113,8 @@ public class Empresa implements Serializable {
     private BigDecimal coordenadaLatitud;
     @Column(name = "coordenada_long")
     private BigDecimal coordenadaLongitud;
+    @Column(name = "tamanio_letra")
+    private Integer tamanioLetra;
     @JoinColumns({
         @JoinColumn(name = "id_provincia", referencedColumnName = "id_provincia")
         , @JoinColumn(name = "id_canton", referencedColumnName = "id_canton")
@@ -148,6 +150,7 @@ public class Empresa implements Serializable {
         this.obligadoContabilidad = Boolean.FALSE;
         this.tipoEmpresa = "1";
         this.usaTablet = Boolean.FALSE;
+        this.tamanioLetra = 11;
     }
 
     public Empresa(Integer codigo) {
@@ -474,6 +477,13 @@ public class Empresa implements Serializable {
         this.reporteImpresoraEmpresaList = reporteImpresoraEmpresaList;
     }
     
+    public Integer getTamanioLetra() {
+        return tamanioLetra;
+    }
+
+    public void setTamanioLetra(Integer tamanioLetra) {
+        this.tamanioLetra = tamanioLetra;
+    }
     
     @Override
     public int hashCode() {

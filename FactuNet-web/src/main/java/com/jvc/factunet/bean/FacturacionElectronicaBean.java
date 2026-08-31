@@ -918,8 +918,17 @@ public class FacturacionElectronicaBean implements Serializable{
             attrNombre2.setValue("Email");
             campoAdicional2.setAttributeNode(attrNombre2);
             
+            Element campoAdicional3  = document.createElement("campoAdicional"); 
+            Text campoAdicional3Value = document.createTextNode("1600319329001");
+            campoAdicional3.appendChild(campoAdicional3Value);
+            
+            Attr attrNombre3 = document.createAttribute("nombre");
+            attrNombre3.setValue("RUC Proveedor");
+            campoAdicional3.setAttributeNode(attrNombre3);
+            
             infoAdicional.appendChild(campoAdicional1);
             infoAdicional.appendChild(campoAdicional2);
+            infoAdicional.appendChild(campoAdicional3);
             
             if(factura.getFacturaInfoAdicionalList() != null || 
                !factura.getFacturaInfoAdicionalList().isEmpty()){
@@ -1228,6 +1237,20 @@ public class FacturacionElectronicaBean implements Serializable{
         
         raiz.appendChild(detalles);
         
+        Element infoAdicional = document.createElement("infoAdicional");
+
+        Element campoAdicionalRucProveedor = document.createElement("campoAdicional");
+        Text campoAdicionalRucProveedorValue = document.createTextNode("1600319329001");
+        campoAdicionalRucProveedor.appendChild(campoAdicionalRucProveedorValue);
+
+        Attr attrNombreRucProveedor = document.createAttribute("nombre");
+        attrNombreRucProveedor.setValue("RUC Proveedor");
+        campoAdicionalRucProveedor.setAttributeNode(attrNombreRucProveedor);
+
+        infoAdicional.appendChild(campoAdicionalRucProveedor);
+
+        raiz.appendChild(infoAdicional);
+        
         //Generate XML
         Source source = new DOMSource(document);
         //Indicamos donde lo queremos almacenar
@@ -1498,6 +1521,20 @@ public class FacturacionElectronicaBean implements Serializable{
             }
         
         raiz.appendChild(detalles);
+        
+        Element infoAdicional = document.createElement("infoAdicional");
+
+        Element campoAdicionalRucProveedor = document.createElement("campoAdicional");
+        Text campoAdicionalRucProveedorValue = document.createTextNode("1600319329001");
+        campoAdicionalRucProveedor.appendChild(campoAdicionalRucProveedorValue);
+
+        Attr attrNombreRucProveedor = document.createAttribute("nombre");
+        attrNombreRucProveedor.setValue("RUC Proveedor");
+        campoAdicionalRucProveedor.setAttributeNode(attrNombreRucProveedor);
+
+        infoAdicional.appendChild(campoAdicionalRucProveedor);
+
+        raiz.appendChild(infoAdicional);
         
         //Generate XML
         Source source = new DOMSource(document);

@@ -105,6 +105,8 @@ public class Ticket {
                                  "--------------------------------\n"+
                                  "{{pagos}}"+
                                  "--------------------------------\n"+
+                                 "Ruc Proveedor: 1600319329001"+
+                                 "\n"+
                                  "REVICE SU FACTURA ELECTRÓNICA \n"+
                                  "INGRESANDO A SU CORREO        \n"+
                                  "\n"+

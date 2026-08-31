@@ -157,6 +157,11 @@ public class PedidoVentaMovilBean extends CatalogosPersonaMovilBean implements S
         this.initCliente();
     }
     
+    public String getEstiloFuenteDinamico() {
+        Integer base = (empresa != null && empresa.getTamanioLetra() != null) ? empresa.getTamanioLetra() : 11;
+        return "font-size: " + base + "px !important;";
+    }
+    
     public void initCliente()
     {
         Path pathL = Paths.get(getServletContext().getRealPath("/") + File.separator + "temp");
